@@ -1,32 +1,29 @@
 /* =========================================
-   iOS Chrome / WKWebView "white overscroll" mitigation
-   (cannot remove bounce, but forces dark canvas)
+   iOS Chrome / Discord in-app browser fix
+   (prevents white top/bottom during overscroll)
    ========================================= */
-
-:root {
-  color-scheme: dark;
-}
+:root { color-scheme: dark; }
 
 html, body {
   background: #050509 !important;
   background-color: #050509 !important;
 }
 
-/* Fixed background layer behind everything */
+/* Real fixed background layer behind everything */
 .fixed-bg {
   position: fixed;
-  inset: -300px;              /* oversized to cover rubber-band area */
+  inset: -300px;              /* oversized so bounce never reveals white */
   z-index: -9999;
   pointer-events: none;
   background: radial-gradient(circle at top, #1a1430, #050509 55%);
 }
 
-/* Normal mode also updates the fixed background */
+/* Sync fixed bg with Normal Mode */
 body.theme-normal .fixed-bg {
   background: radial-gradient(circle at top, #101018, #050508 60%);
 }
 
-/* ===== your existing CSS starts here ===== */
+/* ====== Your original styling ====== */
 :root {
   --bg-main: #0c0c0f;
   --bg-card: #1b1b20;
@@ -42,9 +39,7 @@ body.theme-normal .fixed-bg {
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -62,7 +57,6 @@ body {
 }
 
 /* ---------- HERO / BANNER ---------- */
-
 .hero {
   position: relative;
   padding-bottom: 4rem;
@@ -83,9 +77,7 @@ body {
   transform: translateY(-30px) scale(1.02);
   animation: heroSlideIn 0.9s ease-out 0.15s forwards;
 
-  transition:
-    transform 0.35s ease,
-    box-shadow 0.35s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
 .hero-banner-img {
@@ -103,11 +95,10 @@ body {
 
 @keyframes heroSlideIn {
   from { opacity: 0; transform: translateY(-40px) scale(1.04); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ---------- PROFILE CARD ---------- */
-
 .profile-card {
   max-width: 720px;
   margin: -120px auto 0;
@@ -127,6 +118,7 @@ body {
   box-shadow: 0 26px 70px rgba(0, 0, 0, 0.85);
 }
 
+/* Theme toggle button */
 .theme-toggle {
   position: absolute;
   top: 1.25rem;
@@ -145,12 +137,7 @@ body {
   cursor: pointer;
   backdrop-filter: blur(10px);
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
-  transition:
-    background 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .theme-toggle-icon { display: inline-flex; align-items: center; justify-content: center; }
@@ -183,7 +170,12 @@ body {
   box-shadow: 0 0 35px rgba(255, 42, 127, 0.85);
 }
 
-.name { margin-top: 1rem; margin-bottom: 0.35rem; font-size: 2rem; letter-spacing: 0.04em; }
+.name {
+  margin-top: 1rem;
+  margin-bottom: 0.35rem;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
+}
 
 .role-line {
   font-size: 0.95rem;
@@ -195,19 +187,20 @@ body {
 
 .bio {
   max-width: 540px;
-  margin: 0 auto 1.4rem;
+  margin: 0 auto 1.0rem;
   color: var(--text-muted);
   line-height: 1.6;
 }
 
 .bio-note {
   max-width: 620px;
-  margin: -0.6rem auto 1.2rem;
+  margin: 0 auto 1.2rem;
   color: #8c8ca3;
   line-height: 1.5;
   font-size: 0.9rem;
 }
 
+/* Button */
 .business-link {
   display: inline-flex;
   align-items: center;
@@ -221,11 +214,7 @@ body {
   text-decoration: none;
   border: 1px solid rgba(255, 42, 127, 0.5);
   backdrop-filter: blur(6px);
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .business-link:hover {
@@ -237,12 +226,222 @@ body {
     0 0 40px rgba(202, 115, 255, 0.4);
 }
 
-/* (rest of your CSS unchanged — keep everything below exactly as you already have it) */
+/* ---------- SOCIAL BUTTONS (restored + glow/border) ---------- */
+.social-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+
+  background: radial-gradient(circle at top, #191926, #101018);
+  border: 1px solid rgba(255, 42, 127, 0.6);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+
+  box-shadow:
+    0 0 6px rgba(255, 42, 127, 0.6),
+    0 0 12px rgba(143, 0, 255, 0.35);
+
+  transition: background 0.2s ease, transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.social-btn i { font-size: 0.95rem; }
+
+.social-btn:hover {
+  background: radial-gradient(circle at top, #251b35, #141423);
+  border-color: #ffffff;
+  color: var(--text-main);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 0 14px rgba(255, 42, 127, 0.9),
+    0 0 32px rgba(174, 86, 255, 0.7);
+}
+
+/* ---------- CONTENT SECTIONS (borders/boxes restored) ---------- */
+main {
+  flex: 1;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.content-section {
+  max-width: 900px;
+  margin: 0 auto 2.75rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 1.9rem 2rem;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.content-section:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 42, 127, 0.4);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.8);
+}
+
+.content-section h2 {
+  margin-top: 0;
+  margin-bottom: 0.9rem;
+  font-size: 1.35rem;
+}
+
+.content-section p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
+  margin-top: 0.75rem;
+}
+
+.card {
+  background: var(--bg-card-soft);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid #333344;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  font-size: 1.05rem;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 42, 127, 0.5);
+  box-shadow:
+    0 0 16px rgba(255, 42, 127, 0.5),
+    0 12px 32px rgba(0, 0, 0, 0.85);
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  padding: 1.4rem 1.5rem 1.7rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #8c8ca3;
+  border-top: 1px solid #1c1c25;
+  background: radial-gradient(circle at top, #17172a, #050508 65%);
+}
 
 /* ---------- NORMAL MODE OVERRIDES ---------- */
 body.theme-normal {
   background: radial-gradient(circle at top, #101018, #050508 60%);
 }
 
+body.theme-normal .hero-banner {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
+}
+
+body.theme-normal .hero-banner:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.9);
+}
+
+body.theme-normal .profile-card {
+  background: linear-gradient(145deg, #181821, #101018);
+}
+
+body.theme-normal .avatar {
+  border-color: #8888ff;
+  box-shadow: 0 0 18px rgba(128, 128, 255, 0.5);
+}
+
+body.theme-normal .role-line { color: #9d8cff; }
+
+body.theme-normal .business-link {
+  background: rgba(128, 128, 255, 0.1);
+  color: #c0c3ff;
+  border-color: rgba(128, 128, 255, 0.4);
+}
+
+body.theme-normal .business-link:hover {
+  box-shadow: 0 0 20px rgba(128, 128, 255, 0.5);
+}
+
+body.theme-normal .social-btn {
+  background: linear-gradient(145deg, #161621, #101018);
+  border-color: #3a3a4b;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.8);
+}
+
+body.theme-normal .social-btn:hover {
+  background: linear-gradient(145deg, #1f1f2c, #11111a);
+  border-color: #ffffff;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.9);
+}
+
+body.theme-normal .content-section:hover { border-color: #3e3e55; }
+
+body.theme-normal .card:hover {
+  border-color: #50506a;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.9);
+}
+
 /* ---------- RESPONSIVE ---------- */
-/* keep your existing media queries here */
+@media (max-width: 768px) {
+  .profile-card {
+    margin: -100px 1rem 0;
+    padding: 2.2rem 1.5rem 2rem;
+  }
+
+  .avatar { width: 120px; height: 120px; }
+
+  .name { font-size: 1.7rem; }
+
+  main { padding: 2.5rem 1rem 3rem; }
+
+  .content-section { padding-inline: 1.5rem; }
+
+  .cards { grid-template-columns: 1fr; }
+
+  .theme-toggle {
+    top: 0.9rem;
+    right: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card {
+    margin: -90px 0.75rem 0;
+    padding: 2rem 1.25rem 1.8rem;
+  }
+
+  .role-line { font-size: 0.8rem; letter-spacing: 0.12em; }
+
+  .bio { font-size: 0.9rem; }
+
+  .social-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .social-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
