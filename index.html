@@ -7,168 +7,168 @@
   <!-- iOS safe-area + better mobile viewport behavior -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <!-- Main stylesheet -->
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Font Awesome icons -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   />
 
-  <!-- Favicon (tab icon) using your avatar -->
   <link rel="icon" type="image/png" href="avatar.png">
   <link rel="shortcut icon" type="image/png" href="avatar.png">
 </head>
 
 <body>
-  <div class="site-wrapper">
+  <!-- Fixed background layer to prevent any white showing through -->
+  <div class="bg-fixed" aria-hidden="true"></div>
 
-    <!-- HERO / BANNER -->
-    <header class="hero">
-      <div class="hero-banner">
-        <img src="banner.png" alt="Dismeigh banner" class="hero-banner-img">
-      </div>
+  <!-- Make THIS the scroller, not the body -->
+  <div class="page-scroll">
+    <div class="site-wrapper">
 
-      <section class="profile-card">
-        <!-- Theme toggle -->
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">
-          <span class="theme-toggle-icon"><i class="fa-solid fa-bolt"></i></span>
-          <span class="theme-toggle-label">Cyberpunk Mode</span>
-        </button>
-
-        <img src="avatar.png" alt="Dismeigh avatar" class="avatar">
-
-        <h1 class="name">Dismeigh</h1>
-
-        <p class="role-line">
-          VTuber • Car Enthusiast • Voice Actor • Software &amp; Web Developer
-        </p>
-
-        <p class="bio">
-          Heyo, I’m Dismeigh! (pronounced like dismay) A rising VTuber, car enthusiast, and voice actor in the making.
-          I also develop custom software and websites and run my own business,
-          <strong>Denizen Technologies</strong>. I’m here to bring the vibes, the builds,
-          and the good times!
-        </p>
-
-        <p class="bio-note">
-          (The Denizen Technologies website is still in the making so the button currently doesn't work.
-          This message will be removed once the website is finished!)
-        </p>
-
-        <a
-          href="https://your-business-website-here.com"
-          class="business-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Visit Denizen Technologies
-        </a>
-
-        <!-- STATIC SOCIAL BUTTONS -->
-        <div class="social-buttons">
-          <a href="https://x.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-x-twitter"></i>
-            <span>Follow</span>
-            <span class="count"></span>
-          </a>
-
-          <a href="https://discord.gg/ttKfZbHnsj" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-discord"></i>
-            <span>Join</span>
-            <span class="count"></span>
-          </a>
-
-          <a href="https://twitch.tv/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-twitch"></i>
-            <span>Follow</span>
-            <span class="count"></span>
-          </a>
-
-          <a href="https://tiktok.com/@denizen.dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-tiktok"></i>
-            <span>Follow</span>
-            <span class="count"></span>
-          </a>
-
-          <a href="https://instagram.com/_dismeigh_" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-instagram"></i>
-            <span>Follow</span>
-            <span class="count"></span>
-          </a>
-
-          <a href="https://youtube.com/@dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-youtube"></i>
-            <span>Subscribe</span>
-            <span class="count"></span>
-          </a>
-
-          <a href="https://github.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-github"></i>
-            <span>GitHub</span>
-            <span class="count"></span>
-          </a>
+      <!-- HERO / BANNER -->
+      <header class="hero">
+        <div class="hero-banner">
+          <img src="banner.png" alt="Dismeigh banner" class="hero-banner-img">
         </div>
-      </section>
-    </header>
 
-    <!-- MAIN CONTENT -->
-    <main>
-      <section id="about" class="content-section">
-        <h2>About Me</h2>
-        <p>
-          I’m a creator who lives at the intersection of content and code. When I’m not
-          streaming, recording lines, or going to car meets, I’m building software and
-          websites – from clean landing pages and interactive apps to custom tools for
-          creators and small businesses.
-        </p>
-      </section>
+        <section class="profile-card">
+          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">
+            <span class="theme-toggle-icon"><i class="fa-solid fa-bolt"></i></span>
+            <span class="theme-toggle-label">Cyberpunk Mode</span>
+          </button>
 
-      <section id="work" class="content-section">
-        <h2>What I Do</h2>
-        <div class="cards">
-          <article class="card">
-            <h3>VTubing &amp; Content</h3>
-            <p>
-              Streams, clips, and videos full of energy, chaos, and good vibes with a focus
-              on gaming, cars, and late-night hangouts.
-            </p>
-          </article>
+          <img src="avatar.png" alt="Dismeigh avatar" class="avatar">
 
-          <article class="card">
-            <h3>Software &amp; Web Dev</h3>
-            <p>
-              Custom-built software and web experiences tailored to people and teams who
-              want something that actually fits them, not just a template.
-            </p>
-          </article>
+          <h1 class="name">Dismeigh</h1>
 
-          <article class="card">
-            <h3>Denizen Technologies</h3>
-            <p>
-              My own development studio where I design and build solutions for brands,
-              creators, and businesses who want their online presence to stand out.
-            </p>
-          </article>
-        </div>
-      </section>
-    </main>
+          <p class="role-line">
+            VTuber • Car Enthusiast • Voice Actor • Software &amp; Web Developer
+          </p>
 
-    <footer class="footer">
-      <p>&copy; <span id="year"></span> Dismeigh • Denizen Technologies</p>
-    </footer>
+          <p class="bio">
+            Heyo, I’m Dismeigh! (pronounced like dismay) A rising VTuber, car enthusiast, and voice actor in the making.
+            I also develop custom software and websites and run my own business,
+            <strong>Denizen Technologies</strong>. I’m here to bring the vibes, the builds,
+            and the good times!
+          </p>
+
+          <p class="bio-note">
+            (The Denizen Technologies website is still in the making so the button currently doesn't work.
+            This message will be removed once the website is finished!)
+          </p>
+
+          <a
+            href="https://your-business-website-here.com"
+            class="business-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit Denizen Technologies
+          </a>
+
+          <div class="social-buttons">
+            <a href="https://x.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-x-twitter"></i>
+              <span>Follow</span>
+              <span class="count"></span>
+            </a>
+
+            <a href="https://discord.gg/ttKfZbHnsj" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-discord"></i>
+              <span>Join</span>
+              <span class="count"></span>
+            </a>
+
+            <a href="https://twitch.tv/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-twitch"></i>
+              <span>Follow</span>
+              <span class="count"></span>
+            </a>
+
+            <a href="https://tiktok.com/@denizen.dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-tiktok"></i>
+              <span>Follow</span>
+              <span class="count"></span>
+            </a>
+
+            <a href="https://instagram.com/_dismeigh_" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-instagram"></i>
+              <span>Follow</span>
+              <span class="count"></span>
+            </a>
+
+            <a href="https://youtube.com/@dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-youtube"></i>
+              <span>Subscribe</span>
+              <span class="count"></span>
+            </a>
+
+            <a href="https://github.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-github"></i>
+              <span>GitHub</span>
+              <span class="count"></span>
+            </a>
+          </div>
+        </section>
+      </header>
+
+      <main>
+        <section id="about" class="content-section">
+          <h2>About Me</h2>
+          <p>
+            I’m a creator who lives at the intersection of content and code. When I’m not
+            streaming, recording lines, or going to car meets, I’m building software and
+            websites – from clean landing pages and interactive apps to custom tools for
+            creators and small businesses.
+          </p>
+        </section>
+
+        <section id="work" class="content-section">
+          <h2>What I Do</h2>
+          <div class="cards">
+            <article class="card">
+              <h3>VTubing &amp; Content</h3>
+              <p>
+                Streams, clips, and videos full of energy, chaos, and good vibes with a focus
+                on gaming, cars, and late-night hangouts.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Software &amp; Web Dev</h3>
+              <p>
+                Custom-built software and web experiences tailored to people and teams who
+                want something that actually fits them, not just a template.
+              </p>
+            </article>
+
+            <article class="card">
+              <h3>Denizen Technologies</h3>
+              <p>
+                My own development studio where I design and build solutions for brands,
+                creators, and businesses who want their online presence to stand out.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>&copy; <span id="year"></span> Dismeigh • Denizen Technologies</p>
+      </footer>
+
+    </div>
   </div>
 
   <script>
-    // Auto-update footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Theme toggle logic
     const body = document.body;
     const toggleBtn = document.getElementById('theme-toggle');
     const toggleLabel = document.querySelector('.theme-toggle-label');
     const toggleIcon = document.querySelector('.theme-toggle-icon i');
+    const bgFixed = document.querySelector('.bg-fixed');
 
     function applyTheme(mode) {
       const isNormal = mode === 'normal';
@@ -184,10 +184,12 @@
         toggleIcon.classList.add('fa-bolt');
       }
 
+      // Keep fixed background synced with theme
+      bgFixed.classList.toggle('bg-normal', isNormal);
+
       localStorage.setItem('theme', mode);
     }
 
-    // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'cyberpunk';
     applyTheme(savedTheme);
 
