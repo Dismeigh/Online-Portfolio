@@ -4,37 +4,38 @@
   <meta charset="UTF-8">
   <title>Dismeigh | Portfolio</title>
 
-  <!-- iOS safe-area + better mobile viewport behavior -->
+  <!-- Mobile viewport + safe areas -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- Tell iOS Chrome/Safari the page is dark so overscroll/UI canvas doesn't go white -->
+  <meta name="theme-color" content="#050509">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
 
-  <!-- Font Awesome icons -->
+  <!-- Cache-bust CSS so iOS Chrome actually downloads your new styles -->
+  <link rel="stylesheet" href="styles.css?v=2025-12-17a">
+
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   />
 
-  <!-- Favicon (tab icon) using your avatar -->
   <link rel="icon" type="image/png" href="avatar.png">
   <link rel="shortcut icon" type="image/png" href="avatar.png">
 </head>
 
 <body>
-  <!-- FIXED BACKGROUND LAYER (Discord / WKWebView overscroll white fix) -->
+  <!-- Fixed background layer -->
   <div class="fixed-bg" aria-hidden="true"></div>
 
   <div class="site-wrapper">
 
-    <!-- HERO / BANNER -->
     <header class="hero">
       <div class="hero-banner">
         <img src="banner.png" alt="Dismeigh banner" class="hero-banner-img">
       </div>
 
       <section class="profile-card">
-        <!-- Theme toggle -->
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme">
           <span class="theme-toggle-icon"><i class="fa-solid fa-bolt"></i></span>
           <span class="theme-toggle-label">Cyberpunk Mode</span>
@@ -69,56 +70,32 @@
           Visit Denizen Technologies
         </a>
 
-        <!-- STATIC SOCIAL BUTTONS -->
         <div class="social-buttons">
-
           <a href="https://x.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-x-twitter"></i>
-            <span>Follow</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-x-twitter"></i><span>Follow</span><span class="count"></span>
           </a>
-
           <a href="https://discord.gg/ttKfZbHnsj" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-discord"></i>
-            <span>Join</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-discord"></i><span>Join</span><span class="count"></span>
           </a>
-
           <a href="https://twitch.tv/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-twitch"></i>
-            <span>Follow</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-twitch"></i><span>Follow</span><span class="count"></span>
           </a>
-
           <a href="https://tiktok.com/@denizen.dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-tiktok"></i>
-            <span>Follow</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-tiktok"></i><span>Follow</span><span class="count"></span>
           </a>
-
           <a href="https://instagram.com/_dismeigh_" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-instagram"></i>
-            <span>Follow</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-instagram"></i><span>Follow</span><span class="count"></span>
           </a>
-
           <a href="https://youtube.com/@dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-youtube"></i>
-            <span>Subscribe</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-youtube"></i><span>Subscribe</span><span class="count"></span>
           </a>
-
           <a href="https://github.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-github"></i>
-            <span>GitHub</span>
-            <span class="count"></span>
+            <i class="fa-brands fa-github"></i><span>GitHub</span><span class="count"></span>
           </a>
-
         </div>
       </section>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main>
       <section id="about" class="content-section">
         <h2>About Me</h2>
@@ -135,26 +112,15 @@
         <div class="cards">
           <article class="card">
             <h3>VTubing &amp; Content</h3>
-            <p>
-              Streams, clips, and videos full of energy, chaos, and good vibes with a focus
-              on gaming, cars, and late-night hangouts.
-            </p>
+            <p>Streams, clips, and videos full of energy, chaos, and good vibes with a focus on gaming, cars, and late-night hangouts.</p>
           </article>
-
           <article class="card">
             <h3>Software &amp; Web Dev</h3>
-            <p>
-              Custom-built software and web experiences tailored to people and teams who
-              want something that actually fits them, not just a template.
-            </p>
+            <p>Custom-built software and web experiences tailored to people and teams who want something that actually fits them, not just a template.</p>
           </article>
-
           <article class="card">
             <h3>Denizen Technologies</h3>
-            <p>
-              My own development studio where I design and build solutions for brands,
-              creators, and businesses who want their online presence to stand out.
-            </p>
+            <p>My own development studio where I design and build solutions for brands, creators, and businesses who want their online presence to stand out.</p>
           </article>
         </div>
       </section>
@@ -166,10 +132,8 @@
   </div>
 
   <script>
-    // Auto-update footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Theme toggle logic
     const body = document.body;
     const toggleBtn = document.getElementById('theme-toggle');
     const toggleLabel = document.querySelector('.theme-toggle-label');
@@ -192,14 +156,12 @@
       localStorage.setItem('theme', mode);
     }
 
-    // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'cyberpunk';
     applyTheme(savedTheme);
 
     toggleBtn.addEventListener('click', () => {
       const current = body.classList.contains('theme-normal') ? 'normal' : 'cyberpunk';
-      const next = current === 'normal' ? 'cyberpunk' : 'normal';
-      applyTheme(next);
+      applyTheme(current === 'normal' ? 'cyberpunk' : 'normal');
     });
   </script>
 </body>
