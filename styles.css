@@ -226,7 +226,7 @@ body {
 }
 
 /* =========================================
-   SOCIAL BUTTONS + soft pulse
+   SOCIAL BUTTONS (staggered noticeable pulse)
    ========================================= */
 .social-buttons {
   display: flex;
@@ -247,13 +247,16 @@ body {
   color: var(--text-muted);
   font-size: 0.85rem;
   text-decoration: none;
-  box-shadow:
-    0 0 6px rgba(255, 42, 127, 0.6),
-    0 0 12px rgba(143, 0, 255, 0.35);
-  transition: background 0.2s ease, transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 
-  animation: socialPulse 3.8s ease-in-out infinite;
-  will-change: transform, box-shadow;
+  box-shadow:
+    0 0 6px rgba(255, 42, 127, 0.55),
+    0 0 12px rgba(143, 0, 255, 0.30);
+
+  transition: background 0.2s ease, transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, filter 0.2s ease;
+
+  /* More noticeable pulse */
+  animation: socialPulse 2.6s ease-in-out infinite;
+  will-change: transform, box-shadow, filter;
 }
 
 .social-btn i { font-size: 0.95rem; }
@@ -267,6 +270,7 @@ body {
   box-shadow:
     0 0 14px rgba(255, 42, 127, 0.9),
     0 0 32px rgba(174, 86, 255, 0.7);
+  filter: brightness(1.06);
 }
 
 /* Center GitHub on its own row */
@@ -277,13 +281,31 @@ body {
   justify-content: center;
 }
 
+/* Stagger pulse timing (each button starts at a different phase) */
+.social-buttons .social-btn:nth-child(1) { animation-delay: 0s; }
+.social-buttons .social-btn:nth-child(2) { animation-delay: 0.25s; }
+.social-buttons .social-btn:nth-child(3) { animation-delay: 0.5s; }
+.social-buttons .social-btn:nth-child(4) { animation-delay: 0.75s; }
+.social-buttons .social-btn:nth-child(5) { animation-delay: 1s; }
+.social-buttons .social-btn:nth-child(6) { animation-delay: 1.25s; }
+.social-buttons .social-btn:nth-child(7) { animation-delay: 1.5s; }
+
+/* Pulse animation */
 @keyframes socialPulse {
-  0%, 100% { transform: translateY(0); }
-  50% {
-    transform: translateY(-1px);
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
     box-shadow:
-      0 0 10px rgba(255, 42, 127, 0.55),
-      0 0 18px rgba(143, 0, 255, 0.28);
+      0 0 6px rgba(255, 42, 127, 0.55),
+      0 0 12px rgba(143, 0, 255, 0.30);
+  }
+
+  50% {
+    transform: translateY(-2px) scale(1.035);
+    filter: brightness(1.08);
+    box-shadow:
+      0 0 16px rgba(255, 42, 127, 0.85),
+      0 0 34px rgba(143, 0, 255, 0.55);
   }
 }
 
