@@ -17,48 +17,52 @@
   box-sizing: border-box;
 }
 
-/* ================================
-   iOS / Mobile Overscroll White Fix
-   ================================ */
-html,
-body {
+/* ====== THE IMPORTANT PART ======
+   We stop body from scrolling and make .page-scroll the scroller.
+   This prevents iOS from showing the white page background at the edges.
+*/
+html, body {
   height: 100%;
   width: 100%;
   margin: 0;
-  overflow-x: hidden;
-
-  /* This is what iOS shows during rubber-band overscroll */
-  background-color: #050509;
-  background: #050509;
+  overflow: hidden;         /* body no longer scrolls */
+  background: #050509;      /* fallback */
 }
 
-/* Keep the app filling the viewport on mobile (better than 100vh) */
-body {
-  min-height: 100dvh;
-
-  /* Prevent scroll chaining (works fully on Chromium; partial on iOS but harmless) */
-  overscroll-behavior-y: none;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* Fixed background layer (prevents ANY white bleed-through) */
+.bg-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
   background: radial-gradient(circle at top, #1a1430, #050509 55%);
+}
+
+/* Normal theme background for fixed layer */
+.bg-fixed.bg-normal {
+  background: radial-gradient(circle at top, #101018, #050508 60%);
+}
+
+/* This becomes the scrolling container */
+.page-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
+  overscroll-behavior-y: none;
+}
+
+/* Your original body styles */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text-main);
 }
 
-/* Paint a fixed dark layer behind everything so overscroll can’t flash white */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at top, #1a1430, #050509 55%);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* If your wrapper is the main page container, ensure it also fills */
+/* wrapper fills viewport */
 .site-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: 100%;
 }
 
 /* ---------- HERO / BANNER ---------- */
@@ -69,7 +73,6 @@ body::before {
   overflow: hidden;
 }
 
-/* Banner container with glow & animation */
 .hero-banner {
   position: relative;
   width: 100%;
@@ -89,14 +92,12 @@ body::before {
     box-shadow 0.35s ease;
 }
 
-/* Banner image – full image, no cropping, no fog overlay */
 .hero-banner-img {
   display: block;
   width: 100%;
   height: auto;
 }
 
-/* Hover: subtle lift + stronger glow */
 .hero-banner:hover {
   transform: translateY(-10px) scale(1.02);
   box-shadow:
@@ -104,16 +105,9 @@ body::before {
     0 0 65px rgba(132, 63, 255, 0.9);
 }
 
-/* Slide-in animation */
 @keyframes heroSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-40px) scale(1.04);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(-40px) scale(1.04); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* ---------- PROFILE CARD ---------- */
@@ -136,8 +130,6 @@ body::before {
   transform: translateY(-3px);
   box-shadow: 0 26px 70px rgba(0, 0, 0, 0.85);
 }
-
-/* Theme toggle button */
 
 .theme-toggle {
   position: absolute;
@@ -171,9 +163,7 @@ body::before {
   justify-content: center;
 }
 
-.theme-toggle-icon i {
-  font-size: 0.8rem;
-}
+.theme-toggle-icon i { font-size: 0.8rem; }
 
 .theme-toggle:hover {
   background: rgba(20, 20, 35, 0.95);
@@ -222,6 +212,14 @@ body::before {
   margin: 0 auto 1.4rem;
   color: var(--text-muted);
   line-height: 1.6;
+}
+
+.bio-note {
+  max-width: 620px;
+  margin: -0.6rem auto 1.2rem;
+  color: #8c8ca3;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .business-link {
@@ -285,13 +283,8 @@ body::before {
     color 0.2s ease;
 }
 
-.social-btn i {
-  font-size: 0.9rem;
-}
-
-.social-btn .count {
-  opacity: 0.8;
-}
+.social-btn i { font-size: 0.9rem; }
+.social-btn .count { opacity: 0.8; }
 
 .social-btn:hover {
   background: radial-gradient(circle at top, #251b35, #141423);
@@ -386,17 +379,6 @@ main {
 }
 
 /* ---------- NORMAL MODE OVERRIDES ---------- */
-
-body.theme-normal {
-  background: radial-gradient(circle at top, #101018, #050508 60%);
-}
-
-/* Make the overscroll background match normal mode too */
-body.theme-normal::before {
-  background: radial-gradient(circle at top, #101018, #050508 60%);
-}
-
-/* Softer banner */
 body.theme-normal .hero-banner {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
 }
@@ -406,7 +388,6 @@ body.theme-normal .hero-banner:hover {
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.9);
 }
 
-/* Softer card + avatar glow */
 body.theme-normal .profile-card {
   background: linear-gradient(145deg, #181821, #101018);
 }
@@ -416,10 +397,7 @@ body.theme-normal .avatar {
   box-shadow: 0 0 18px rgba(128, 128, 255, 0.5);
 }
 
-/* Softer accent + text */
-body.theme-normal .role-line {
-  color: #9d8cff;
-}
+body.theme-normal .role-line { color: #9d8cff; }
 
 body.theme-normal .business-link {
   background: rgba(128, 128, 255, 0.1);
@@ -431,7 +409,6 @@ body.theme-normal .business-link:hover {
   box-shadow: 0 0 20px rgba(128, 128, 255, 0.5);
 }
 
-/* Social buttons toned down */
 body.theme-normal .social-btn {
   background: linear-gradient(145deg, #161621, #101018);
   border-color: #3a3a4b;
@@ -444,10 +421,7 @@ body.theme-normal .social-btn:hover {
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.9);
 }
 
-/* Content cards softer accent */
-body.theme-normal .content-section:hover {
-  border-color: #3e3e55;
-}
+body.theme-normal .content-section:hover { border-color: #3e3e55; }
 
 body.theme-normal .card:hover {
   border-color: #50506a;
@@ -455,7 +429,6 @@ body.theme-normal .card:hover {
 }
 
 /* ---------- RESPONSIVE ---------- */
-
 @media (max-width: 768px) {
   .profile-card {
     margin: -100px 1rem 0;
@@ -467,25 +440,15 @@ body.theme-normal .card:hover {
     height: 120px;
   }
 
-  .name {
-    font-size: 1.7rem;
-  }
+  .name { font-size: 1.7rem; }
 
-  main {
-    padding: 2.5rem 1rem 3rem;
-  }
+  main { padding: 2.5rem 1rem 3rem; }
 
-  .content-section {
-    padding-inline: 1.5rem;
-  }
+  .content-section { padding-inline: 1.5rem; }
 
-  .cards {
-    grid-template-columns: 1fr;
-  }
+  .cards { grid-template-columns: 1fr; }
 
-  .social-buttons {
-    justify-content: center;
-  }
+  .social-buttons { justify-content: center; }
 
   .theme-toggle {
     top: 0.9rem;
@@ -493,7 +456,6 @@ body.theme-normal .card:hover {
   }
 }
 
-/* Extra small screens */
 @media (max-width: 480px) {
   .profile-card {
     margin: -90px 0.75rem 0;
@@ -505,9 +467,7 @@ body.theme-normal .card:hover {
     letter-spacing: 0.12em;
   }
 
-  .bio {
-    font-size: 0.9rem;
-  }
+  .bio { font-size: 0.9rem; }
 
   .social-buttons {
     display: grid;
