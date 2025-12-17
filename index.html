@@ -191,13 +191,10 @@
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          // restart animation reliably by toggling class
           entry.target.classList.remove('in-view');
-          // force reflow so animation restarts (safe, lightweight here)
-          void entry.target.offsetWidth;
+          void entry.target.offsetWidth; // restart animation
           entry.target.classList.add('in-view');
         } else {
-          // remove when leaving viewport so it can re-trigger
           entry.target.classList.remove('in-view');
         }
       }
