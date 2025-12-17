@@ -252,7 +252,6 @@ body {
     0 0 12px rgba(143, 0, 255, 0.35);
   transition: background 0.2s ease, transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 
-  /* Soft pulse (socials only) */
   animation: socialPulse 3.8s ease-in-out infinite;
   will-change: transform, box-shadow;
 }
@@ -278,7 +277,6 @@ body {
   justify-content: center;
 }
 
-/* Subtle pulse animation */
 @keyframes socialPulse {
   0%, 100% { transform: translateY(0); }
   50% {
@@ -308,7 +306,7 @@ main {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   position: relative;
   isolation: isolate;
-  overflow: hidden; /* enables clean sweep */
+  overflow: hidden;
 }
 
 .content-section:hover {
@@ -344,7 +342,7 @@ main {
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   position: relative;
   isolation: isolate;
-  overflow: hidden; /* enables clean sweep */
+  overflow: hidden;
 }
 
 .card:hover {
@@ -356,8 +354,7 @@ main {
 }
 
 /* =========================================
-   Scroll-triggered Glow Sweep
-   - runs once when .in-view is added
+   Scroll-triggered Glow Sweep (re-triggers)
    ========================================= */
 .sweep::after {
   content: "";
@@ -377,7 +374,6 @@ main {
     rgba(132, 63, 255, 0.22) 55%,
     rgba(255, 42, 127, 0) 100%
   );
-
   filter: blur(1px);
 }
 
@@ -392,7 +388,6 @@ main {
   100% { left: 130%; opacity: 0; }
 }
 
-/* A soft ambient glow that fades in on entry (optional but nice) */
 .sweep::before {
   content: "";
   position: absolute;
@@ -535,16 +530,15 @@ body.theme-normal .sweep.in-view::before {
     gap: 0.5rem;
   }
 
-  /* GitHub spans full width and stays centered */
+  .social-btn {
+    justify-content: center;
+    width: 100%;
+  }
+
   .social-btn-github {
     grid-column: 1 / -1;
     justify-self: center;
     width: fit-content;
-  }
-
-  .social-btn {
-    justify-content: center;
-    width: 100%;
   }
 }
 
