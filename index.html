@@ -185,18 +185,23 @@
       applyTheme(body.classList.contains('theme-normal') ? 'cyberpunk' : 'normal');
     });
 
-    // Scroll-triggered glow sweep
-    // Adds .in-view once when element enters viewport.
+    // Scroll-triggered glow sweep (re-triggers every time)
     const sweepTargets = document.querySelectorAll('.sweep');
 
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
+          // restart animation reliably by toggling class
+          entry.target.classList.remove('in-view');
+          // force reflow so animation restarts (safe, lightweight here)
+          void entry.target.offsetWidth;
           entry.target.classList.add('in-view');
-          io.unobserve(entry.target); // fire once
+        } else {
+          // remove when leaving viewport so it can re-trigger
+          entry.target.classList.remove('in-view');
         }
       }
-    }, { threshold: 0.2 });
+    }, { threshold: 0.25 });
 
     sweepTargets.forEach(el => io.observe(el));
   </script>
