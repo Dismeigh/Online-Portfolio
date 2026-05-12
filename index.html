@@ -2,9 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dismeigh | Portfolio</title>
+  <title>Dismeigh | VTuber, Cars & Creative Tech</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta
+    name="description"
+    content="Dismeigh is a rising VTuber, car enthusiast, voice actor, and creative developer sharing streams, builds, community links, sponsors, and tech projects."
+  >
+  <meta name="author" content="Dismeigh">
+  <link rel="canonical" href="https://www.denizen-dismeigh.com/">
+  <link rel="icon" type="image/png" href="avatar.png">
+  <link rel="apple-touch-icon" href="avatar.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.denizen-dismeigh.com/">
+  <meta property="og:title" content="Dismeigh | VTuber, Cars & Creative Tech">
+  <meta
+    property="og:description"
+    content="Streams, cars, voice work, community links, sponsors, and creative tech from Dismeigh."
+  >
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/banner.png">
+  <meta property="og:site_name" content="Dismeigh">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dismeigh | VTuber, Cars & Creative Tech">
+  <meta
+    name="twitter:description"
+    content="Streams, cars, voice work, community links, sponsors, and creative tech from Dismeigh."
+  >
+  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/banner.png">
 
   <!-- Dark UI hints for iOS / Discord / Chrome -->
   <meta name="theme-color" content="#050509">
@@ -12,7 +38,7 @@
   <meta name="supported-color-schemes" content="dark">
 
   <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -->
-  <link rel="stylesheet" href="styles.css?v=1">
+  <link rel="stylesheet" href="styles.css?v=3">
 
   <!-- Font Awesome icons -->
   <link
@@ -28,43 +54,39 @@
 <body>
   <!-- Fixed background for iOS/Discord overscroll -->
   <div class="fixed-bg" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
 
   <div class="site-wrapper">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#top">Home</a>
+      <a href="#live">Status</a>
+      <a href="#garage">Garage</a>
+      <a href="#highlights">Clips</a>
+      <a href="#sponsor-heading">Sponsors</a>
+    </nav>
 
     <!-- HERO -->
-    <header class="hero">
+    <header class="hero" id="top">
       <div class="hero-banner">
         <img src="banner.png" alt="Dismeigh banner" class="hero-banner-img">
       </div>
 
       <section class="profile-card">
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-          <span class="theme-toggle-icon"><i class="fa-solid fa-bolt"></i></span>
-          <span class="theme-toggle-label">Cyberpunk Mode</span>
-        </button>
-
         <img src="avatar.png" alt="Dismeigh avatar" class="avatar">
 
         <h1 class="name">Dismeigh</h1>
 
         <p class="role-line">
-          VTuber • Car Enthusiast • Voice Actor • Software &amp; Web Developer
+          VTuber • Car Enthusiast • Voice Actor • Creative Developer
         </p>
 
         <p class="bio">
-          Heyo, I’m Dismeigh! (pronounced like dismay) A rising VTuber, car enthusiast, and voice actor in the making.
-          I also develop custom software and websites and run my own business,
-          <strong>Denizen Technologies</strong>. I’m here to bring the vibes, the builds, and the good times!
+          Heyo, I’m Dismeigh! Pronounced like dismay, but with way better vibes.
+          I’m a VTuber in progress, a car nerd at heart, and someone who can bounce from stream chaos
+          to garage talk to random voice lines without warning. I also build websites and tools through
+          <strong>Denizen Technologies</strong>, but this place is mainly for the streams, the builds, the laughs,
+          and the people riding along!
         </p>
-
-        <a
-          href="https://www.denizen-tech.com"
-          class="business-link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Visit Denizen Technologies
-        </a>
 
         <!-- SOCIAL BUTTONS -->
         <div class="social-buttons">
@@ -97,45 +119,206 @@
             <i class="fa-brands fa-github"></i><span>GitHub</span>
           </a>
         </div>
+
+        <div class="sponsor-spot" aria-labelledby="sponsor-heading">
+          <h2 id="sponsor-heading">Sponsors</h2>
+          <p class="sponsor-copy">Creators and brands supporting the stream, the music, and the ride.</p>
+
+          <div class="sponsor-buttons">
+            <a href="https://open.spotify.com/artist/0W63po2spZKN7I2S6rzQU2?si=Y77QsfsfTyCT6yIRzQlevQ" class="sponsor-btn" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-music"></i><span>Xssy</span>
+            </a>
+
+            <a href="https://www.dubby.gg/discount/DISMEIGH?ref=ihmpwedr" class="sponsor-btn" target="_blank" rel="noopener noreferrer">
+              <img src="assets/dubby-symbol-bw.png" alt="" class="sponsor-logo"><span>Dubby</span>
+            </a>
+          </div>
+        </div>
       </section>
     </header>
 
     <!-- MAIN -->
     <main>
-      <section id="about" class="content-section sweep">
-        <h2>About Me</h2>
+      <section id="live" class="content-section command-center sweep">
+        <div class="section-kicker">Signal Check</div>
+        <div class="command-layout">
+          <div>
+            <h2>Creator Dashboard</h2>
+            <p>
+              A quick pulse check on whatever lane I’m drifting through today: stream plans, car brain, voice work,
+              and whatever side quest stole my attention.
+            </p>
+            <div class="live-actions">
+              <a href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-twitch"></i> Twitch
+              </a>
+              <a href="https://youtube.com/@dismeigh" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-youtube"></i> YouTube
+              </a>
+              <a href="https://tiktok.com/@denizen.dismeigh" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-tiktok"></i> TikTok
+              </a>
+            </div>
+          </div>
+
+          <div class="status-console" aria-label="Creator status">
+            <div class="status-row stream-status is-checking" id="stream-status">
+              <span class="status-dot"></span>
+              <span>Stream Status</span>
+              <strong id="stream-status-copy">Checking the signal...</strong>
+            </div>
+            <div class="status-row">
+              <i class="fa-brands fa-discord"></i>
+              <span>Discord</span>
+              <strong>Pull up and say hey</strong>
+            </div>
+            <div class="status-row">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>Current Energy</span>
+              <strong>Full send, mostly</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dismeigh-mode" class="content-section stat-section sweep">
+        <div class="section-kicker">Dismeigh Mode</div>
+        <h2>Personality Loadout</h2>
+        <div class="stat-grid">
+          <div class="stat-chip">
+            <span>Stream Energy</span>
+            <strong>Good vibes with a warning light on</strong>
+          </div>
+          <div class="stat-chip">
+            <span>Garage Mood</span>
+            <strong>Dream builds and questionable ideas</strong>
+          </div>
+          <div class="stat-chip">
+            <span>Voice Lane</span>
+            <strong>Practicing until the bit becomes canon</strong>
+          </div>
+          <div class="stat-chip">
+            <span>Creative Stack</span>
+            <strong>Content, code, cars, chaos</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="garage" class="content-section garage-section sweep">
+        <div class="section-kicker">The Garage</div>
+        <div class="garage-layout">
+          <div class="garage-copy">
+            <h2>Cars Are Part Of The Lore</h2>
+            <p>
+              I’m not here to pretend cars are just a side interest. The garage brain is real:
+              dream builds, meets, mods I probably should not price-check, and the kind of car talk
+              that turns a normal stream into a whole hangout.
+            </p>
+          </div>
+
+          <div class="garage-meter" aria-label="Garage style meter">
+            <div class="meter-face">
+              <span>RPM</span>
+              <strong>7.2k</strong>
+            </div>
+            <div class="meter-needle"></div>
+          </div>
+        </div>
+
+        <div class="garage-gallery" aria-label="Car photo gallery">
+          <figure class="garage-photo garage-photo-tall">
+            <img src="assets/cars/car-01.jpg" alt="Blue hatchback parked at night in a city garage">
+          </figure>
+          <figure class="garage-photo garage-photo-wide">
+            <img src="assets/cars/car-02.jpg" alt="Blue hatchback under a dramatic cloudy sunset sky">
+          </figure>
+          <figure class="garage-photo">
+            <img src="assets/cars/car-03.jpg" alt="Two cars facing each other at sunset">
+          </figure>
+          <figure class="garage-photo">
+            <img src="assets/cars/car-04.jpg" alt="Two cars silhouetted at sunset">
+          </figure>
+        </div>
+      </section>
+
+      <section id="highlights" class="content-section highlight-section sweep">
+        <div class="section-kicker">Highlights</div>
+        <h2>Gaming Clip Chaos</h2>
         <p>
-          I’m a creator who lives at the intersection of content and code. When I’m not
-          streaming, recording lines, or going to car meets, I’m building software and
-          websites – from clean landing pages and interactive apps to custom tools for
-          creators and small businesses.
+          Gaming clips, stream moments, and the best little bursts of chaos, playing right here without leaving the site.
         </p>
+        <div class="featured-clip-label">
+          <i class="fa-solid fa-star"></i>
+          <span>Featured Moment</span>
+        </div>
+        <div class="clip-carousel" aria-label="Featured gaming clips">
+          <div class="clip-frame">
+            <div class="clip-panel is-active">
+              <video controls muted autoplay playsinline preload="metadata">
+                <source src="assets/clips/clip-01.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="clip-panel">
+              <video controls muted autoplay playsinline preload="metadata">
+                <source src="assets/clips/clip-02.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="clip-panel">
+              <video controls muted autoplay playsinline preload="metadata">
+                <source src="assets/clips/clip-03.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="clip-panel">
+              <video controls muted autoplay playsinline preload="metadata">
+                <source src="assets/clips/clip-04.mp4" type="video/mp4">
+              </video>
+            </div>
+
+            <div class="clip-panel">
+              <video controls muted autoplay playsinline preload="metadata">
+                <source src="assets/clips/clip-05.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+
+          <div class="clip-controls" aria-label="Choose a gaming clip">
+            <button class="clip-dot is-active" type="button" aria-label="Show clip 1"></button>
+            <button class="clip-dot" type="button" aria-label="Show clip 2"></button>
+            <button class="clip-dot" type="button" aria-label="Show clip 3"></button>
+            <button class="clip-dot" type="button" aria-label="Show clip 4"></button>
+            <button class="clip-dot" type="button" aria-label="Show clip 5"></button>
+          </div>
+        </div>
       </section>
 
       <section id="work" class="content-section sweep">
-        <h2>What I Do</h2>
+        <h2>The Usual Chaos</h2>
         <div class="cards">
           <article class="card sweep">
             <h3>VTubing &amp; Content</h3>
             <p>
-              Streams, clips, and videos full of energy, chaos, and good vibes with a focus
-              on gaming, cars, and late-night hangouts.
+              Streams, clips, games, bits, and whatever turns into a memory because chat decided
+              to make it funnier than planned.
             </p>
           </article>
 
           <article class="card sweep">
-            <h3>Software &amp; Web Dev</h3>
+            <h3>Creative Tech</h3>
             <p>
-              Custom-built software and web experiences tailored to people and teams who
-              want something that actually fits them, not just a template.
+              I like building things that feel personal: websites, tools, experiments, and little digital
+              touches that make a project feel less cookie-cutter.
             </p>
           </article>
 
-          <article class="card sweep">
+          <article class="card side-quest-card sweep">
+            <div class="section-kicker">Side Quest</div>
             <h3>Denizen Technologies</h3>
             <p>
-              My own development studio where I design and build solutions for brands,
-              creators, and businesses who want their online presence to stand out.
+              My company side quest, where I take the same creative brain and use it to build sites
+              and tools for creators, brands, and small teams.
             </p>
           </article>
         </div>
@@ -143,7 +326,8 @@
     </main>
 
     <footer class="footer">
-      <p>&copy; <span id="year"></span> Dismeigh • Denizen Technologies</p>
+      <p class="footer-brand">Dismeigh</p>
+      <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
   </div>
 
@@ -151,34 +335,39 @@
     // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Theme toggle
-    const body = document.body;
-    const toggleBtn = document.getElementById('theme-toggle');
-    const toggleLabel = document.querySelector('.theme-toggle-label');
-    const toggleIcon = document.querySelector('.theme-toggle-icon i');
+    localStorage.removeItem('theme');
 
-    function applyTheme(mode) {
-      const isNormal = mode === 'normal';
-      body.classList.toggle('theme-normal', isNormal);
+    // Twitch live/offline status
+    const streamStatus = document.getElementById('stream-status');
+    const streamStatusCopy = document.getElementById('stream-status-copy');
+    const twitchStatusUrl = 'https://decapi.me/twitch/uptime/dismeigh';
 
-      if (isNormal) {
-        toggleLabel.textContent = 'Cyberpunk Mode';
-        toggleIcon.classList.remove('fa-bolt');
-        toggleIcon.classList.add('fa-moon');
-      } else {
-        toggleLabel.textContent = 'Normal Mode';
-        toggleIcon.classList.remove('fa-moon');
-        toggleIcon.classList.add('fa-bolt');
-      }
-
-      localStorage.setItem('theme', mode);
+    function setStreamStatus(state, message) {
+      streamStatus.classList.remove('is-live', 'is-offline', 'is-checking');
+      streamStatus.classList.add(`is-${state}`);
+      streamStatusCopy.textContent = message;
     }
 
-    applyTheme(localStorage.getItem('theme') || 'cyberpunk');
+    async function refreshStreamStatus() {
+      setStreamStatus('checking', 'Checking the signal...');
 
-    toggleBtn.addEventListener('click', () => {
-      applyTheme(body.classList.contains('theme-normal') ? 'cyberpunk' : 'normal');
-    });
+      try {
+        const response = await fetch(`${twitchStatusUrl}?t=${Date.now()}`, { cache: 'no-store' });
+        const text = (await response.text()).trim().toLowerCase();
+        const isOffline = text.includes('offline') || text.includes('not live') || text.includes('not currently');
+
+        if (response.ok && !isOffline) {
+          setStreamStatus('live', 'Live now. Come watch the questionable decisions happen in real time.');
+        } else {
+          setStreamStatus('offline', 'Probably cooking something');
+        }
+      } catch {
+        setStreamStatus('offline', 'Probably cooking something');
+      }
+    }
+
+    refreshStreamStatus();
+    window.setInterval(refreshStreamStatus, 120000);
 
     // Scroll-triggered glow sweep (re-triggers every time)
     const sweepTargets = document.querySelectorAll('.sweep');
@@ -196,6 +385,105 @@
     }, { threshold: 0.25 });
 
     sweepTargets.forEach(el => io.observe(el));
+
+    // Local gaming clip carousel
+    const clipCarousel = document.querySelector('.clip-carousel');
+    const clipPanels = [...document.querySelectorAll('.clip-panel')];
+    const clipDots = [...document.querySelectorAll('.clip-dot')];
+    let activeClip = 0;
+    let clipTimer;
+    let clipCarouselInView = false;
+
+    function getActiveClipVideo() {
+      return clipPanels[activeClip]?.querySelector('video');
+    }
+
+    function playActiveClip() {
+      if (!clipCarouselInView) return;
+
+      const video = getActiveClipVideo();
+      if (!video) return;
+
+      video.muted = true;
+      video.play().catch(() => {
+        // Some browsers still block autoplay until the first user interaction.
+      });
+    }
+
+    function showClip(index) {
+      activeClip = (index + clipPanels.length) % clipPanels.length;
+
+      clipPanels.forEach((panel, panelIndex) => {
+        const isActive = panelIndex === activeClip;
+        panel.classList.toggle('is-active', isActive);
+
+        if (!isActive) {
+          panel.querySelector('video')?.pause();
+        }
+      });
+
+      clipDots.forEach((dot, dotIndex) => {
+        dot.classList.toggle('is-active', dotIndex === activeClip);
+      });
+
+      playActiveClip();
+    }
+
+    function startClipCycle() {
+      window.clearInterval(clipTimer);
+      clipTimer = window.setInterval(() => showClip(activeClip + 1), 11000);
+    }
+
+    clipDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        showClip(index);
+        startClipCycle();
+      });
+    });
+
+    const clipObserver = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      clipCarouselInView = entry.isIntersecting;
+
+      if (clipCarouselInView) {
+        playActiveClip();
+        startClipCycle();
+      } else {
+        window.clearInterval(clipTimer);
+        getActiveClipVideo()?.pause();
+      }
+    }, { threshold: 0.45 });
+
+    clipObserver.observe(clipCarousel);
+    clipCarousel.addEventListener('mouseenter', () => window.clearInterval(clipTimer));
+    clipCarousel.addEventListener('mouseleave', () => {
+      if (clipCarouselInView) startClipCycle();
+    });
+    clipCarousel.addEventListener('focusin', () => window.clearInterval(clipTimer));
+    clipCarousel.addEventListener('focusout', () => {
+      if (clipCarouselInView) startClipCycle();
+    });
+
+    // Lightweight cursor glow and click sparks
+    const cursorGlow = document.querySelector('.cursor-glow');
+
+    window.addEventListener('pointermove', (event) => {
+      document.documentElement.style.setProperty('--cursor-x', `${event.clientX}px`);
+      document.documentElement.style.setProperty('--cursor-y', `${event.clientY}px`);
+      cursorGlow.classList.add('is-visible');
+    });
+
+    window.addEventListener('pointerdown', (event) => {
+      for (let index = 0; index < 6; index += 1) {
+        const spark = document.createElement('span');
+        spark.className = 'click-spark';
+        spark.style.left = `${event.clientX}px`;
+        spark.style.top = `${event.clientY}px`;
+        spark.style.setProperty('--spark-angle', `${index * 60}deg`);
+        document.body.appendChild(spark);
+        spark.addEventListener('animationend', () => spark.remove());
+      }
+    });
   </script>
 </body>
 </html>
