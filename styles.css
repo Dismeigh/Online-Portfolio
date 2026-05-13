@@ -744,6 +744,44 @@ main {
     inset 0 0 34px rgba(255, 42, 127, 0.08);
 }
 
+.clip-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: rgba(10, 10, 16, 0.72);
+  color: var(--text-main);
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow:
+    0 0 8px rgba(255, 42, 127, 0.2),
+    0 0 16px rgba(132, 63, 255, 0.14);
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.clip-arrow:hover {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(24, 18, 34, 0.88);
+  box-shadow:
+    0 0 10px rgba(255, 42, 127, 0.26),
+    0 0 18px rgba(132, 63, 255, 0.16);
+}
+
+.clip-arrow-prev {
+  left: 1rem;
+}
+
+.clip-arrow-next {
+  right: 1rem;
+}
+
 .clip-panel {
   grid-area: 1 / 1;
   display: flex;
@@ -790,14 +828,25 @@ main {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.12);
   cursor: pointer;
-  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  transition: background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .clip-dot:hover,
 .clip-dot.is-active {
-  transform: scale(1.22);
+  border-color: rgba(255, 255, 255, 0.55);
   background: var(--accent);
-  box-shadow: 0 0 16px rgba(255, 42, 127, 0.65);
+  box-shadow: 0 0 10px rgba(255, 42, 127, 0.4);
+}
+
+.clip-swipe-hint {
+  display: none;
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .cards {
@@ -1129,6 +1178,14 @@ main {
 
   .clip-frame {
     min-height: min(112vw, 520px);
+  }
+
+  .clip-arrow {
+    display: none;
+  }
+
+  .clip-swipe-hint {
+    display: block;
   }
 
   .clip-panel {

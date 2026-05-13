@@ -253,6 +253,10 @@
         </div>
         <div class="clip-carousel" aria-label="Featured gaming clips">
           <div class="clip-frame">
+            <button class="clip-arrow clip-arrow-prev" type="button" aria-label="Previous clip">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
             <div class="clip-panel is-active">
               <video controls muted autoplay playsinline preload="metadata">
                 <source src="assets/clips/clip-01.mp4" type="video/mp4">
@@ -282,6 +286,10 @@
                 <source src="assets/clips/clip-05.mp4" type="video/mp4">
               </video>
             </div>
+
+            <button class="clip-arrow clip-arrow-next" type="button" aria-label="Next clip">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
           </div>
 
           <div class="clip-controls" aria-label="Choose a gaming clip">
@@ -291,6 +299,7 @@
             <button class="clip-dot" type="button" aria-label="Show clip 4"></button>
             <button class="clip-dot" type="button" aria-label="Show clip 5"></button>
           </div>
+          <p class="clip-swipe-hint">Swipe clips</p>
         </div>
       </section>
 
@@ -388,11 +397,20 @@
 
     // Local gaming clip carousel
     const clipCarousel = document.querySelector('.clip-carousel');
+    const clipFrame = document.querySelector('.clip-frame');
     const clipPanels = [...document.querySelectorAll('.clip-panel')];
     const clipDots = [...document.querySelectorAll('.clip-dot')];
+    const clipVideos = [...document.querySelectorAll('.clip-panel video')];
+    const clipPrev = document.querySelector('.clip-arrow-prev');
+    const clipNext = document.querySelector('.clip-arrow-next');
     let activeClip = 0;
-    let clipTimer;
+    let clipAdvanceTimer;
     let clipCarouselInView = false;
+    let clipMuted = true;
+    let clipVolume = 1;
+    let syncingClipAudio = false;
+    let clipTouchStartX = 0;
+    let clipTouchStartY = 0;
 
     function getActiveClipVideo() {
       return clipPanels[activeClip]?.querySelector('video');
@@ -404,10 +422,27 @@
       const video = getActiveClipVideo();
       if (!video) return;
 
-      video.muted = true;
+      video.muted = clipMuted;
+      video.volume = clipVolume;
       video.play().catch(() => {
         // Some browsers still block autoplay until the first user interaction.
       });
+    }
+
+    function syncClipAudio(sourceVideo) {
+      if (syncingClipAudio) return;
+
+      clipMuted = sourceVideo.muted;
+      clipVolume = sourceVideo.volume;
+      syncingClipAudio = true;
+
+      clipVideos.forEach((video) => {
+        if (video === sourceVideo) return;
+        video.muted = clipMuted;
+        video.volume = clipVolume;
+      });
+
+      syncingClipAudio = false;
     }
 
     function showClip(index) {
@@ -415,10 +450,13 @@
 
       clipPanels.forEach((panel, panelIndex) => {
         const isActive = panelIndex === activeClip;
+        const video = panel.querySelector('video');
         panel.classList.toggle('is-active', isActive);
 
-        if (!isActive) {
-          panel.querySelector('video')?.pause();
+        if (isActive && video?.ended) {
+          video.currentTime = 0;
+        } else if (!isActive) {
+          video?.pause();
         }
       });
 
@@ -429,17 +467,43 @@
       playActiveClip();
     }
 
-    function startClipCycle() {
-      window.clearInterval(clipTimer);
-      clipTimer = window.setInterval(() => showClip(activeClip + 1), 11000);
+    function goToClip(index) {
+      window.clearTimeout(clipAdvanceTimer);
+      showClip(index);
     }
 
     clipDots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        showClip(index);
-        startClipCycle();
+      dot.addEventListener('click', () => goToClip(index));
+    });
+
+    clipVideos.forEach((video) => {
+      video.addEventListener('volumechange', () => syncClipAudio(video));
+      video.addEventListener('ended', () => {
+        if (video !== getActiveClipVideo()) return;
+        window.clearTimeout(clipAdvanceTimer);
+        clipAdvanceTimer = window.setTimeout(() => goToClip(activeClip + 1), 3000);
       });
     });
+
+    clipPrev.addEventListener('click', () => goToClip(activeClip - 1));
+    clipNext.addEventListener('click', () => goToClip(activeClip + 1));
+
+    clipFrame.addEventListener('touchstart', (event) => {
+      const [touch] = event.changedTouches;
+      clipTouchStartX = touch.clientX;
+      clipTouchStartY = touch.clientY;
+    }, { passive: true });
+
+    clipFrame.addEventListener('touchend', (event) => {
+      const [touch] = event.changedTouches;
+      const deltaX = touch.clientX - clipTouchStartX;
+      const deltaY = touch.clientY - clipTouchStartY;
+      const isHorizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.35;
+
+      if (!isHorizontalSwipe) return;
+
+      goToClip(deltaX < 0 ? activeClip + 1 : activeClip - 1);
+    }, { passive: true });
 
     const clipObserver = new IntersectionObserver((entries) => {
       const [entry] = entries;
@@ -447,22 +511,13 @@
 
       if (clipCarouselInView) {
         playActiveClip();
-        startClipCycle();
       } else {
-        window.clearInterval(clipTimer);
+        window.clearTimeout(clipAdvanceTimer);
         getActiveClipVideo()?.pause();
       }
     }, { threshold: 0.45 });
 
     clipObserver.observe(clipCarousel);
-    clipCarousel.addEventListener('mouseenter', () => window.clearInterval(clipTimer));
-    clipCarousel.addEventListener('mouseleave', () => {
-      if (clipCarouselInView) startClipCycle();
-    });
-    clipCarousel.addEventListener('focusin', () => window.clearInterval(clipTimer));
-    clipCarousel.addEventListener('focusout', () => {
-      if (clipCarouselInView) startClipCycle();
-    });
 
     // Lightweight cursor glow and click sparks
     const cursorGlow = document.querySelector('.cursor-glow');
