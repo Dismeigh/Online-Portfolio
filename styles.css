@@ -1033,6 +1033,14 @@ main {
   .hero-banner {
     height: clamp(190px, 42vw, 260px);
     border-radius: 0 0 20px 20px;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 42, 127, 0.16), transparent 55%),
+      #050509;
+  }
+
+  .hero-banner-img {
+    object-fit: contain;
+    object-position: center;
   }
 
   .hero-banner:hover {
@@ -1105,7 +1113,7 @@ main {
   }
 
   .hero-banner {
-    height: 190px;
+    height: 172px;
   }
 
   .profile-card {
