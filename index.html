@@ -453,7 +453,7 @@
         const video = panel.querySelector('video');
         panel.classList.toggle('is-active', isActive);
 
-        if (isActive && video?.ended) {
+        if (isActive && video) {
           video.currentTime = 0;
         } else if (!isActive) {
           video?.pause();
