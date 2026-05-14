@@ -113,11 +113,6 @@
           <a href="https://youtube.com/@dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer">
             <i class="fa-brands fa-youtube"></i><span>Subscribe</span>
           </a>
-
-          <!-- Centered GitHub button -->
-          <a href="https://github.com/dismeigh" class="social-btn social-btn-github" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-github"></i><span>GitHub</span>
-          </a>
         </div>
 
         <div class="sponsor-spot" aria-labelledby="sponsor-heading">
@@ -411,6 +406,7 @@
     let syncingClipAudio = false;
     let clipTouchStartX = 0;
     let clipTouchStartY = 0;
+    let clipTouchDirection = 0;
 
     function getActiveClipVideo() {
       return clipPanels[activeClip]?.querySelector('video');
@@ -452,6 +448,7 @@
         const isActive = panelIndex === activeClip;
         const video = panel.querySelector('video');
         panel.classList.toggle('is-active', isActive);
+        panel.classList.remove('is-peeking');
 
         if (isActive && video) {
           video.currentTime = 0;
@@ -488,22 +485,65 @@
     clipPrev.addEventListener('click', () => goToClip(activeClip - 1));
     clipNext.addEventListener('click', () => goToClip(activeClip + 1));
 
+    function clearClipDrag() {
+      clipFrame.classList.remove('is-dragging');
+      clipFrame.style.setProperty('--clip-drag-x', '0px');
+      clipFrame.style.setProperty('--clip-peek-x', '0px');
+      clipPanels.forEach(panel => panel.classList.remove('is-peeking'));
+      clipTouchDirection = 0;
+    }
+
+    function setClipPeek(direction, dragX) {
+      const nextIndex = (activeClip + direction + clipPanels.length) % clipPanels.length;
+      const frameWidth = clipFrame.clientWidth || 1;
+      const peekX = direction > 0 ? frameWidth + dragX : -frameWidth + dragX;
+
+      clipPanels.forEach((panel, panelIndex) => {
+        panel.classList.toggle('is-peeking', panelIndex === nextIndex);
+      });
+
+      clipFrame.style.setProperty('--clip-peek-x', `${peekX}px`);
+    }
+
     clipFrame.addEventListener('touchstart', (event) => {
       const [touch] = event.changedTouches;
       clipTouchStartX = touch.clientX;
       clipTouchStartY = touch.clientY;
+      window.clearTimeout(clipAdvanceTimer);
     }, { passive: true });
+
+    clipFrame.addEventListener('touchmove', (event) => {
+      const [touch] = event.changedTouches;
+      const deltaX = touch.clientX - clipTouchStartX;
+      const deltaY = touch.clientY - clipTouchStartY;
+      const isHorizontalDrag = Math.abs(deltaX) > 12 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2;
+
+      if (!isHorizontalDrag) return;
+
+      event.preventDefault();
+      clipTouchDirection = deltaX < 0 ? 1 : -1;
+
+      const frameWidth = clipFrame.clientWidth || 1;
+      const limitedX = Math.max(Math.min(deltaX, frameWidth * 0.42), -frameWidth * 0.42);
+      clipFrame.classList.add('is-dragging');
+      clipFrame.style.setProperty('--clip-drag-x', `${limitedX}px`);
+      setClipPeek(clipTouchDirection, limitedX);
+    }, { passive: false });
 
     clipFrame.addEventListener('touchend', (event) => {
       const [touch] = event.changedTouches;
       const deltaX = touch.clientX - clipTouchStartX;
       const deltaY = touch.clientY - clipTouchStartY;
       const isHorizontalSwipe = Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.35;
+      const direction = deltaX < 0 ? 1 : -1;
 
+      clearClipDrag();
       if (!isHorizontalSwipe) return;
 
-      goToClip(deltaX < 0 ? activeClip + 1 : activeClip - 1);
+      goToClip(activeClip + direction);
     }, { passive: true });
+
+    clipFrame.addEventListener('touchcancel', clearClipDrag, { passive: true });
 
     const clipObserver = new IntersectionObserver((entries) => {
       const [entry] = entries;

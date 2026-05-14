@@ -331,14 +331,6 @@ body::before {
     0 0 24px rgba(132, 63, 255, 0.22);
 }
 
-/* Center GitHub on its own row */
-.social-btn-github {
-  flex-basis: 100%;
-  width: fit-content;
-  margin-top: 0.4rem;
-  justify-content: center;
-}
-
 .error-home-link {
   width: fit-content;
   margin: 0 auto;
@@ -732,6 +724,8 @@ main {
   position: relative;
   display: grid;
   min-height: 560px;
+  --clip-drag-x: 0px;
+  --clip-peek-x: 0px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
@@ -798,6 +792,19 @@ main {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
+}
+
+.clip-frame.is-dragging .clip-panel {
+  transition: none;
+}
+
+.clip-frame.is-dragging .clip-panel.is-active {
+  transform: translateX(var(--clip-drag-x)) scale(0.99);
+}
+
+.clip-frame.is-dragging .clip-panel.is-peeking {
+  opacity: 0.62;
+  transform: translateX(var(--clip-peek-x)) scale(0.985);
 }
 
 .clip-panel video {
@@ -1215,12 +1222,6 @@ main {
     width: 100%;
   }
 
-  .social-btn-github {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: fit-content;
-  }
-
   .sponsor-spot {
     margin-top: 1.25rem;
     padding-top: 0.9rem;
@@ -1250,9 +1251,6 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .social-btn-github {
-    width: 100%;
-  }
 }
 
 /* Respect reduced motion */
