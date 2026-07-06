@@ -380,7 +380,7 @@ body::before {
 }
 
 .support-btn {
-  min-width: min(100%, 280px);
+  min-width: min(100%, 210px);
 }
 
 .sponsor-logo {
