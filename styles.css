@@ -371,6 +371,18 @@ body::before {
   min-width: 132px;
 }
 
+.support-spot {
+  margin-top: 1rem;
+}
+
+.support-buttons {
+  display: flex;
+}
+
+.support-btn {
+  min-width: min(100%, 280px);
+}
+
 .sponsor-logo {
   width: 1.05rem;
   height: 1.05rem;
@@ -1242,6 +1254,15 @@ main {
     min-height: 2.45rem;
     padding-inline: 0.65rem;
     width: 100%;
+  }
+
+  .support-buttons {
+    display: flex;
+    justify-content: center;
+  }
+
+  .support-btn {
+    width: min(100%, 320px);
   }
 }
 
