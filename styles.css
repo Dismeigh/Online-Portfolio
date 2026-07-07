@@ -377,10 +377,20 @@ body::before {
 
 .support-buttons {
   display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.55rem;
 }
 
 .support-btn {
-  min-width: min(100%, 210px);
+  flex: 0 1 210px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.support-btn span {
+  line-height: 1.15;
+  text-align: center;
 }
 
 .sponsor-logo {
@@ -1258,11 +1268,18 @@ main {
 
   .support-buttons {
     display: flex;
+    flex-wrap: nowrap;
     justify-content: center;
+    gap: 0.45rem;
   }
 
   .support-btn {
-    width: min(100%, 320px);
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    padding-inline: 0.5rem;
+    font-size: 0.74rem;
+    white-space: normal;
   }
 }
 
@@ -1272,6 +1289,20 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .support-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .support-btn {
+    padding-inline: 0.42rem;
+    font-size: 0.68rem;
+  }
+
+  .support-btn i {
+    display: none;
+  }
 }
 
 /* Respect reduced motion */
