@@ -375,20 +375,25 @@ body::before {
   margin-top: 1rem;
 }
 
-.support-buttons {
-  display: flex;
-  flex-wrap: nowrap;
+.support-spot .support-shop-buttons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
   justify-content: center;
-  gap: 0.55rem;
+  width: min(100%, 420px);
+  margin: 0 auto;
 }
 
-.support-btn {
-  flex: 0 1 210px;
+.support-spot .support-shop-button {
+  display: inline-flex;
+  width: 100%;
+  max-width: none;
   min-width: 0;
   white-space: nowrap;
 }
 
-.support-btn span {
+.support-spot .support-shop-button span {
   line-height: 1.15;
   text-align: center;
 }
@@ -1266,17 +1271,15 @@ main {
     width: 100%;
   }
 
-  .support-buttons {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    gap: 0.45rem;
+  .support-spot .support-shop-buttons {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
+    width: 100%;
   }
 
-  .support-btn {
-    flex: 1 1 0;
-    min-width: 0;
-    width: auto;
+  .support-spot .support-shop-button {
+    min-height: 2.45rem;
     padding-inline: 0.5rem;
     font-size: 0.74rem;
     white-space: normal;
@@ -1289,18 +1292,18 @@ main {
     grid-template-columns: 1fr;
   }
 
-  .support-buttons {
-    display: flex;
-    flex-wrap: nowrap;
+  .support-spot .support-shop-buttons {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.35rem;
   }
 
-  .support-btn {
+  .support-spot .support-shop-button {
     padding-inline: 0.42rem;
     font-size: 0.68rem;
   }
 
-  .support-btn i {
+  .support-spot .support-shop-button i {
     display: none;
   }
 }
