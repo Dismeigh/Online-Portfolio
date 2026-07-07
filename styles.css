@@ -402,6 +402,8 @@ body::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 0.5rem;
   width: auto;
   max-width: 100%;
@@ -432,6 +434,7 @@ body::before {
   min-width: 0;
   line-height: 1.1;
   text-align: left;
+  white-space: nowrap;
 }
 
 .sponsor-logo {
@@ -1166,8 +1169,8 @@ main {
 @media (max-width: 600px) {
   .sponsor-spot #sponsor-heading {
     white-space: nowrap;
-    font-size: clamp(0.56rem, 2.1vw, 0.74rem);
-    letter-spacing: 0.08em;
+    font-size: clamp(0.68rem, 3vw, 0.85rem);
+    letter-spacing: 0.12em;
     line-height: 1.2;
   }
 }
@@ -1328,8 +1331,8 @@ main {
     gap: 0;
     min-height: 2.45rem;
     padding: 0.62rem 0.5rem;
-    font-size: 0.74rem;
-    white-space: normal;
+    font-size: clamp(0.68rem, 2.9vw, 0.74rem);
+    white-space: nowrap;
   }
 
   .support-spot .support-shop-button i,
@@ -1349,7 +1352,8 @@ main {
   }
 
   .support-spot .support-shop-label {
-    max-width: 10.5ch;
+    max-width: none;
+    white-space: nowrap;
   }
 }
 
@@ -1368,7 +1372,7 @@ main {
   .support-spot .support-shop-button {
     gap: 0;
     padding-inline: 0.42rem;
-    font-size: 0.68rem;
+    font-size: clamp(0.6rem, 3vw, 0.68rem);
   }
 
   .support-spot .support-shop-button-inner {
