@@ -42,7 +42,7 @@
   <meta name="supported-color-schemes" content="dark">
 
   <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -> v=4 -> v=5 -->
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 
   <!-- Font Awesome icons -->
   <link
@@ -191,6 +191,14 @@
               <span>Stream Status</span>
               <strong id="stream-status-copy">Checking the signal...</strong>
             </div>
+            <div class="status-row next-stream" id="next-stream" hidden>
+              <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+              <span id="next-stream-label">Next Stream</span>
+              <strong>
+                <span id="next-stream-title"></span>
+                <small id="next-stream-time"></small>
+              </strong>
+            </div>
             <div class="status-row">
               <i class="fa-brands fa-discord" aria-hidden="true"></i>
               <span>Discord</span>
@@ -200,6 +208,10 @@
               <i class="fa-solid fa-gauge-high" aria-hidden="true"></i>
               <span>Current Energy</span>
               <strong>Full send, mostly</strong>
+            </div>
+            <div class="upcoming-streams" id="upcoming-streams" hidden>
+              <p class="upcoming-title">Coming up</p>
+              <ol id="upcoming-list"></ol>
             </div>
           </div>
         </div>
@@ -406,6 +418,63 @@
 
     refreshStreamStatus();
     window.setInterval(refreshStreamStatus, 120000);
+
+    // Stream schedule from the calendar (served by functions/api/schedule.js on Cloudflare Pages).
+    // If the endpoint isn't there or fails, the schedule rows stay hidden.
+    const nextStreamRow = document.getElementById('next-stream');
+    const upcomingBox = document.getElementById('upcoming-streams');
+    const upcomingList = document.getElementById('upcoming-list');
+    const zone = 'America/New_York';
+
+    function dayKey(date) {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+    }
+
+    function streamWhen(event) {
+      const start = new Date(event.start);
+      const today = new Date();
+      const tomorrow = new Date(today.getTime() + 86400000);
+      let day = new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short', month: 'short', day: 'numeric' }).format(start);
+      if (dayKey(start) === dayKey(today)) day = 'Today';
+      else if (dayKey(start) === dayKey(tomorrow)) day = 'Tomorrow';
+      if (event.allDay) return day;
+      const time = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(start);
+      return `${day} · ${time}`;
+    }
+
+    async function refreshSchedule() {
+      try {
+        const response = await fetch('/api/schedule', { cache: 'no-store' });
+        if (!response.ok) throw new Error('schedule unavailable');
+        const data = await response.json();
+        const events = Array.isArray(data.upcoming) ? data.upcoming : [];
+        const next = events[0];
+
+        document.getElementById('next-stream-label').textContent = next?.live ? 'On Now' : 'Next Stream';
+        document.getElementById('next-stream-title').textContent = next ? next.title : 'Nothing on the calendar yet';
+        document.getElementById('next-stream-time').textContent = next
+          ? (next.live ? 'Happening right now' : streamWhen(next))
+          : 'Follow on Twitch for go-live alerts';
+        nextStreamRow.hidden = false;
+
+        upcomingList.replaceChildren(...events.slice(1, 5).map((event) => {
+          const item = document.createElement('li');
+          const when = document.createElement('span');
+          const title = document.createElement('strong');
+          when.textContent = streamWhen(event);
+          title.textContent = event.title;
+          item.append(when, title);
+          return item;
+        }));
+        upcomingBox.hidden = upcomingList.children.length === 0;
+      } catch {
+        nextStreamRow.hidden = true;
+        upcomingBox.hidden = true;
+      }
+    }
+
+    refreshSchedule();
+    window.setInterval(refreshSchedule, 300000);
 
     // Scroll-triggered glow sweep (re-triggers every time)
     const sweepTargets = document.querySelectorAll('.sweep');

@@ -1127,6 +1127,65 @@ main {
   font-size: 0.82rem;
 }
 
+.next-stream strong {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.next-stream small {
+  color: #37e4ff;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.next-stream > i {
+  color: #37e4ff;
+}
+
+.upcoming-streams {
+  padding: 0.3rem 0.2rem 0.1rem;
+}
+
+.upcoming-title {
+  margin: 0 0 0.45rem 0.5rem;
+  color: #37e4ff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.upcoming-streams ol {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upcoming-streams li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 2px solid rgba(255, 42, 127, 0.55);
+  border-radius: 0 8px 8px 0;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.upcoming-streams li span {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+}
+
+.upcoming-streams li strong {
+  color: var(--text-main);
+  font-size: 0.82rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
 /* =========================================
    RESPONSIVE
    ========================================= */
