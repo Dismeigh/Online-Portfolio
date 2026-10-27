@@ -1071,6 +1071,43 @@ main {
   letter-spacing: 0.03em;
 }
 
+.sponsor-contact {
+  margin: 0.9rem auto 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.sponsor-contact a,
+.footer-contact a {
+  color: var(--text-main);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 42, 127, 0.6);
+  text-underline-offset: 3px;
+  word-break: break-word;
+}
+
+.sponsor-contact a:hover,
+.footer-contact a:hover {
+  text-decoration-color: #ff2a7f;
+}
+
+.garage-copy .garage-ride {
+  margin: 1.1rem 0 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.garage-ride strong {
+  color: #ff2a7f;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-contact {
+  font-size: 0.82rem;
+}
+
 /* =========================================
    RESPONSIVE
    ========================================= */
