@@ -1,0 +1,39 @@
+name: Refresh 757 case-file screenshot
+
+on:
+  schedule:
+    - cron: '17 9 * * 1'   # Mondays, ~4:17 AM Eastern
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright@1.48.2
+          npx playwright install --with-deps chromium
+
+      - name: Take screenshot
+        run: node scripts/refresh-case-shot.mjs
+
+      - name: Commit if it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add dist/assets/work/case-757-meetup.jpg
+          if git diff --cached --quiet; then
+            echo "Screenshot unchanged."
+          else
+            git commit -m "Refresh 757 Anime Club case-file screenshot"
+            git push
+          fi
