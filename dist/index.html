@@ -99,27 +99,27 @@
         <!-- SOCIAL BUTTONS -->
         <div class="social-buttons">
           <a href="https://x.com/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Follow Dismeigh on X">
-            <i class="fa-brands fa-x-twitter" aria-hidden="true"></i><span>Follow</span>
+            <i class="fa-brands fa-x-twitter" aria-hidden="true"></i><span>X</span>
           </a>
 
           <a href="https://discord.gg/ttKfZbHnsj" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Join the Dismeigh Discord server">
-            <i class="fa-brands fa-discord" aria-hidden="true"></i><span>Join</span>
+            <i class="fa-brands fa-discord" aria-hidden="true"></i><span>Discord</span>
           </a>
 
           <a href="https://twitch.tv/dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Follow Dismeigh on Twitch">
-            <i class="fa-brands fa-twitch" aria-hidden="true"></i><span>Follow</span>
+            <i class="fa-brands fa-twitch" aria-hidden="true"></i><span>Twitch</span>
           </a>
 
           <a href="https://tiktok.com/@denizen.dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Follow Dismeigh on TikTok">
-            <i class="fa-brands fa-tiktok" aria-hidden="true"></i><span>Follow</span>
+            <i class="fa-brands fa-tiktok" aria-hidden="true"></i><span>TikTok</span>
           </a>
 
           <a href="https://instagram.com/_dismeigh_" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Follow Dismeigh on Instagram">
-            <i class="fa-brands fa-instagram" aria-hidden="true"></i><span>Follow</span>
+            <i class="fa-brands fa-instagram" aria-hidden="true"></i><span>Instagram</span>
           </a>
 
           <a href="https://youtube.com/@dismeigh" class="social-btn" target="_blank" rel="noopener noreferrer" aria-label="Subscribe to Dismeigh on YouTube">
-            <i class="fa-brands fa-youtube" aria-hidden="true"></i><span>Subscribe</span>
+            <i class="fa-brands fa-youtube" aria-hidden="true"></i><span>YouTube</span>
           </a>
         </div>
 
@@ -553,17 +553,14 @@
     refreshSchedule();
     window.setInterval(refreshSchedule, 300000);
 
-    // Scroll-triggered glow sweep (re-triggers every time)
+    // Title-card wipe: plays once per section, the first time it scrolls into view
     const sweepTargets = document.querySelectorAll('.sweep');
 
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          entry.target.classList.remove('in-view');
-          void entry.target.offsetWidth; // restart animation
           entry.target.classList.add('in-view');
-        } else {
-          entry.target.classList.remove('in-view');
+          io.unobserve(entry.target);
         }
       }
     }, { threshold: 0.25 });

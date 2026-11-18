@@ -236,10 +236,11 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--mustard); outli
 
 /* ---------- BUTTONS ---------- */
 .social-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .social-btn, .sponsor-btn {
@@ -259,7 +260,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--mustard); outli
   box-shadow: 4px 4px 0 var(--red);
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, color 0.12s ease;
 }
-.social-btn { min-width: 112px; }
+.social-btn { min-width: 0; }
 .social-btn:hover, .sponsor-btn:hover {
   background: var(--paper);
   color: var(--ink);
@@ -297,7 +298,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--mustard); outli
   width: min(100%, 440px);
   margin: 0 auto;
 }
-.support-spot .support-shop-button { width: 100%; min-width: 0; white-space: nowrap; box-shadow: 4px 4px 0 var(--mustard); }
+.support-spot .support-shop-button { width: 100%; min-width: 0; text-align: center; line-height: 1.2; box-shadow: 4px 4px 0 var(--mustard); }
 .support-spot .support-shop-button:hover { box-shadow: 6px 6px 0 var(--mustard); }
 .support-shop-button-inner { display: inline-flex; align-items: center; gap: 0.5rem; }
 
@@ -875,11 +876,13 @@ main { flex: 1; padding: 1rem max(4vw, 1rem) 4rem; }
   .social-buttons, .sponsor-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
   .social-btn, .sponsor-btn { width: 100%; min-width: 0; padding-inline: 0.5rem; }
   .support-spot .support-shop-buttons { gap: 0.6rem; width: 100%; }
-  .support-spot .support-shop-button { font-size: 0.75rem; padding-inline: 0.3rem; }
+  .support-spot .support-shop-button { font-size: 0.8rem; padding-inline: 0.5rem; }
 }
 
-@media (max-width: 360px) {
-  .social-buttons, .sponsor-buttons { grid-template-columns: 1fr; }
+
+@media (max-width: 400px) {
+  .site-nav { padding-inline: 0.5rem; }
+  .site-nav a { font-size: 0.74rem; padding-inline: 0.28rem; letter-spacing: 0.04em; }
 }
 
 @media (prefers-reduced-motion: reduce) {
