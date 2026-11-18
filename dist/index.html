@@ -1000,9 +1000,12 @@
     // #5 Discord online count
     (async () => {
       try {
-        const r = await fetch('/api/discord');
+        // Public invite info; Discord allows this request from browsers (it blocks Cloudflare servers)
+        const r = await fetch('https://discord.com/api/v10/invites/ttKfZbHnsj?with_counts=true');
         if (!r.ok) return;
-        const { online, members } = await r.json();
+        const data = await r.json();
+        const online = Number(data.approximate_presence_count), members = Number(data.approximate_member_count);
+        if (!Number.isFinite(online) || !Number.isFinite(members)) return;
         const el = document.getElementById('discord-count');
         el.textContent = `${online.toLocaleString()} online · ${members.toLocaleString()} members`;
         el.hidden = false;
