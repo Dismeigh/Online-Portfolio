@@ -11,8 +11,9 @@
   >
   <meta name="author" content="Dismeigh">
   <link rel="canonical" href="https://www.denizen-dismeigh.com/">
-  <link rel="icon" type="image/png" href="avatar.png">
-  <link rel="apple-touch-icon" href="avatar.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.denizen-dismeigh.com/">
@@ -21,7 +22,7 @@
     property="og:description"
     content="Streams, cars, voice work, community links, sponsors, and creative tech from Dismeigh."
   >
-  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card.jpg">
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
@@ -33,7 +34,7 @@
     name="twitter:description"
     content="Streams, cars, voice work, community links, sponsors, and creative tech from Dismeigh."
   >
-  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/share-card.jpg">
+  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
   <meta name="twitter:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
 
   <!-- Dark UI hints for iOS / Discord / Chrome -->
@@ -45,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
 
   <!-- Font Awesome icons -->
   <link
@@ -75,11 +76,11 @@
       <div class="hero-banner">
         <span class="hero-slab hero-slab-a" aria-hidden="true"></span>
         <span class="hero-slab hero-slab-b" aria-hidden="true"></span>
-        <img src="banner.png" alt="Dismeigh banner" class="hero-banner-img">
+        <img src="banner.webp" width="1200" height="300" fetchpriority="high" alt="Dismeigh banner" class="hero-banner-img">
       </div>
 
       <section class="profile-card">
-        <img src="avatar.png" alt="Dismeigh avatar" class="avatar">
+        <img src="avatar-280.jpg" width="280" height="280" alt="Dismeigh avatar" class="avatar">
 
         <p class="hero-kicker">Now showing</p>
         <h1 class="name">Dismeigh</h1>
@@ -204,6 +205,7 @@
               <strong>
                 <span id="next-stream-title"></span>
                 <small id="next-stream-time"></small>
+                <em class="countdown" id="next-stream-countdown" hidden></em>
               </strong>
             </div>
             <div class="status-row">
@@ -235,6 +237,21 @@
           <a href="https://x.com/dismeigh" target="_blank" rel="noopener noreferrer">X</a> for this week&rsquo;s times.
         </p>
         <p class="schedule-note" id="schedule-note">All times Eastern. This board updates itself from the stream calendar.</p>
+
+        <div class="calendar-subscribe" aria-label="Add the stream schedule to your calendar">
+          <p class="subscribe-title">Never miss a session: put the schedule in your own calendar. It stays in sync when times change.</p>
+          <div class="subscribe-buttons">
+            <a class="subscribe-btn" href="https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fwww.denizen-dismeigh.com%2Fcalendar.ics" target="_blank" rel="noopener noreferrer">
+              <i class="fa-brands fa-google" aria-hidden="true"></i><span>Google Calendar</span>
+            </a>
+            <a class="subscribe-btn" href="webcal://www.denizen-dismeigh.com/calendar.ics">
+              <i class="fa-brands fa-apple" aria-hidden="true"></i><span>Apple / Outlook</span>
+            </a>
+            <button class="subscribe-btn" type="button" id="copy-calendar-link" data-link="https://www.denizen-dismeigh.com/calendar.ics">
+              <i class="fa-solid fa-link" aria-hidden="true"></i><span>Copy link</span>
+            </button>
+          </div>
+        </div>
       </section>
 
       <section id="dismeigh-mode" class="content-section stat-section sweep">
@@ -288,18 +305,18 @@
           </div>
         </div>
 
-        <div class="garage-gallery" aria-label="Car photo gallery">
+        <div class="garage-gallery" id="garage-gallery" aria-label="Car photo gallery. Select a photo to view it full screen.">
           <figure class="garage-photo garage-photo-tall">
             <img src="assets/cars/car-01.jpg" loading="lazy" decoding="async" alt="Sojourn ST, a blue hatchback, parked at night in a city garage">
           </figure>
           <figure class="garage-photo garage-photo-wide">
-            <img src="assets/cars/car-02.jpg" loading="lazy" decoding="async" alt="Sojourn ST under a dramatic cloudy sunset sky">
+            <img src="assets/cars/car-02-800.jpg" srcset="assets/cars/car-02-800.jpg 600w, assets/cars/car-02.jpg 1200w" sizes="(max-width: 480px) 92vw, 60vw" data-full="assets/cars/car-02.jpg" loading="lazy" decoding="async" alt="Sojourn ST under a dramatic cloudy sunset sky">
           </figure>
           <figure class="garage-photo">
-            <img src="assets/cars/car-03.jpg" loading="lazy" decoding="async" alt="Two cars facing each other at sunset">
+            <img src="assets/cars/car-03-800.jpg" srcset="assets/cars/car-03-800.jpg 800w, assets/cars/car-03.jpg 1600w" sizes="(max-width: 480px) 92vw, 30vw" data-full="assets/cars/car-03.jpg" loading="lazy" decoding="async" alt="Two cars facing each other at sunset">
           </figure>
           <figure class="garage-photo">
-            <img src="assets/cars/car-04.jpg" loading="lazy" decoding="async" alt="Two cars silhouetted at sunset">
+            <img src="assets/cars/car-04-800.jpg" srcset="assets/cars/car-04-800.jpg 800w, assets/cars/car-04.jpg 1600w" sizes="(max-width: 480px) 92vw, 30vw" data-full="assets/cars/car-04.jpg" loading="lazy" decoding="async" alt="Two cars silhouetted at sunset">
           </figure>
         </div>
       </section>
@@ -397,6 +414,17 @@
         </div>
       </section>
     </main>
+
+    <dialog class="lightbox" id="lightbox" aria-label="Car photo viewer">
+      <figure class="lightbox-figure">
+        <img id="lightbox-img" alt="">
+        <figcaption id="lightbox-caption"></figcaption>
+      </figure>
+      <button class="lightbox-btn lightbox-close" type="button" id="lightbox-close" aria-label="Close photo viewer"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <button class="lightbox-btn lightbox-prev" type="button" id="lightbox-prev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+      <button class="lightbox-btn lightbox-next" type="button" id="lightbox-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+      <p class="lightbox-count" id="lightbox-count"></p>
+    </dialog>
 
     <footer class="footer">
       <p class="footer-signoff">See you next session.</p>
@@ -527,6 +555,8 @@
         ? (next.live ? 'Happening right now' : streamWhen(next))
         : 'Follow on Twitch for go-live alerts';
       nextStreamRow.hidden = false;
+      nextStreamEvent = next || null;
+      updateCountdown();
 
       if (data.week && Array.isArray(data.week.events)) {
         renderBoard(data.week);
@@ -535,6 +565,31 @@
       }
       if (isSample) scheduleNote.textContent = 'Sample week shown for this preview. On the live site this board reads your calendar.';
     }
+
+    // Countdown to the next stream ("in 2d 4h"), ticking every 30 seconds
+    let nextStreamEvent = null;
+    const countdown = document.getElementById('next-stream-countdown');
+
+    function updateCountdown() {
+      if (!countdown) return;
+      const event = nextStreamEvent;
+      if (!event || event.allDay) { countdown.hidden = true; return; }
+      const now = Date.now();
+      const start = Date.parse(event.start);
+      const end = Date.parse(event.end);
+      let text;
+      if (now >= start && now < end) text = 'On air now';
+      else if (now >= end) { countdown.hidden = true; return; }
+      else {
+        const mins = Math.max(1, Math.round((start - now) / 60000));
+        const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
+        text = d ? `in ${d}d ${h}h` : h ? `in ${h}h ${m}m` : `in ${m}m`;
+      }
+      countdown.textContent = text;
+      countdown.classList.toggle('is-live', text === 'On air now');
+      countdown.hidden = false;
+    }
+    window.setInterval(updateCountdown, 30000);
 
     async function refreshSchedule() {
       try {
@@ -552,6 +607,64 @@
 
     refreshSchedule();
     window.setInterval(refreshSchedule, 300000);
+
+    // Copy calendar link
+    const copyCalendar = document.getElementById('copy-calendar-link');
+    copyCalendar?.addEventListener('click', async () => {
+      const label = copyCalendar.querySelector('span');
+      try {
+        await navigator.clipboard.writeText(copyCalendar.dataset.link);
+        label.textContent = 'Link copied';
+      } catch {
+        label.textContent = copyCalendar.dataset.link;
+      }
+      window.setTimeout(() => { label.textContent = 'Copy link'; }, 2500);
+    });
+
+    // Garage photo viewer
+    const galleryImages = [...document.querySelectorAll('#garage-gallery img')];
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxCount = document.getElementById('lightbox-count');
+    let photoIndex = 0;
+
+    function showPhoto(index) {
+      photoIndex = (index + galleryImages.length) % galleryImages.length;
+      const source = galleryImages[photoIndex];
+      lightboxImg.src = source.dataset.full || source.currentSrc || source.src;
+      lightboxImg.alt = source.alt;
+      lightboxCaption.textContent = source.alt;
+      lightboxCount.textContent = `${photoIndex + 1} / ${galleryImages.length}`;
+    }
+
+    if (lightbox && typeof lightbox.showModal === 'function') {
+      galleryImages.forEach((img, index) => {
+        const figure = img.closest('figure');
+        figure.tabIndex = 0;
+        figure.setAttribute('role', 'button');
+        figure.setAttribute('aria-label', `View photo ${index + 1} full screen: ${img.alt}`);
+        const open = () => { showPhoto(index); lightbox.showModal(); };
+        figure.addEventListener('click', open);
+        figure.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
+      document.getElementById('lightbox-close').addEventListener('click', () => lightbox.close());
+      document.getElementById('lightbox-prev').addEventListener('click', () => showPhoto(photoIndex - 1));
+      document.getElementById('lightbox-next').addEventListener('click', () => showPhoto(photoIndex + 1));
+      lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.close(); });
+      lightbox.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') showPhoto(photoIndex - 1);
+        if (e.key === 'ArrowRight') showPhoto(photoIndex + 1);
+      });
+      let touchX = null;
+      lightbox.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+      lightbox.addEventListener('touchend', e => {
+        if (touchX === null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 50) showPhoto(photoIndex + (dx < 0 ? 1 : -1));
+        touchX = null;
+      });
+    }
 
     // Title-card wipe: plays once per section, the first time it scrolls into view
     const sweepTargets = document.querySelectorAll('.sweep');
