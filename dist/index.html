@@ -37,12 +37,15 @@
   <meta name="twitter:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
 
   <!-- Dark UI hints for iOS / Discord / Chrome -->
-  <meta name="theme-color" content="#050509">
+  <meta name="theme-color" content="#14110f">
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
 
   <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -> v=4 -> v=5 -->
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="styles.css?v=9">
 
   <!-- Font Awesome icons -->
   <link
@@ -59,22 +62,26 @@
 
   <div class="site-wrapper">
     <nav class="site-nav" aria-label="Primary navigation">
-      <a href="#top">Home</a>
-      <a href="#sponsor-heading">Sponsors</a>
-      <a href="#live">Status</a>
+      <a href="#top" class="nav-brand">Dismeigh</a>
+      <a href="#live">Live</a>
+      <a href="#schedule">Schedule</a>
       <a href="#garage">Garage</a>
       <a href="#highlights">Clips</a>
+      <a href="#support-heading">Support</a>
     </nav>
 
     <!-- HERO -->
     <header class="hero" id="top">
       <div class="hero-banner">
+        <span class="hero-slab hero-slab-a" aria-hidden="true"></span>
+        <span class="hero-slab hero-slab-b" aria-hidden="true"></span>
         <img src="banner.png" alt="Dismeigh banner" class="hero-banner-img">
       </div>
 
       <section class="profile-card">
         <img src="avatar.png" alt="Dismeigh avatar" class="avatar">
 
+        <p class="hero-kicker">Now showing</p>
         <h1 class="name">Dismeigh</h1>
 
         <p class="role-line">
@@ -164,10 +171,10 @@
     <!-- MAIN -->
     <main>
       <section id="live" class="content-section command-center sweep">
-        <div class="section-kicker">Signal Check</div>
+        <div class="section-kicker"><span>Session 01</span> Signal Check</div>
         <div class="command-layout">
           <div>
-            <h2>Creator Dashboard</h2>
+            <h2>Ship&rsquo;s Console</h2>
             <p>
               A quick pulse check on whatever lane I’m drifting through today: stream plans, car brain, voice work,
               and whatever side quest stole my attention.
@@ -209,16 +216,29 @@
               <span>Current Energy</span>
               <strong>Full send, mostly</strong>
             </div>
-            <div class="upcoming-streams" id="upcoming-streams" hidden>
-              <p class="upcoming-title">Coming up</p>
-              <ol id="upcoming-list"></ol>
-            </div>
           </div>
         </div>
       </section>
 
+      <section id="schedule" class="content-section schedule-section sweep" aria-labelledby="schedule-heading">
+        <div class="section-kicker"><span>Session 02</span> Episode Guide</div>
+        <div class="schedule-head">
+          <h2 id="schedule-heading">This Week&rsquo;s Streams</h2>
+          <p class="schedule-week" id="schedule-week">Week of &hellip;</p>
+        </div>
+
+        <ol class="schedule-board" id="schedule-board" aria-live="polite"></ol>
+
+        <p class="schedule-fallback" id="schedule-fallback" hidden>
+          The schedule board is taking a break. Follow on
+          <a href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Twitch</a> or
+          <a href="https://x.com/dismeigh" target="_blank" rel="noopener noreferrer">X</a> for this week&rsquo;s times.
+        </p>
+        <p class="schedule-note" id="schedule-note">All times Eastern. This board updates itself from the stream calendar.</p>
+      </section>
+
       <section id="dismeigh-mode" class="content-section stat-section sweep">
-        <div class="section-kicker">Dismeigh Mode</div>
+        <div class="section-kicker"><span>Session 03</span> Dismeigh Mode</div>
         <h2>Personality Loadout</h2>
         <div class="stat-grid">
           <div class="stat-chip">
@@ -241,7 +261,7 @@
       </section>
 
       <section id="garage" class="content-section garage-section sweep">
-        <div class="section-kicker">The Garage</div>
+        <div class="section-kicker"><span>Session 04</span> The Garage</div>
         <div class="garage-layout">
           <div class="garage-copy">
             <h2>Cars Are Part Of The Lore</h2>
@@ -259,6 +279,7 @@
           </div>
 
           <div class="garage-meter" aria-label="Garage style meter">
+            <div class="bounty-tag">Bounty: one more mod</div>
             <div class="meter-face">
               <span>RPM</span>
               <strong>7.2k</strong>
@@ -284,14 +305,14 @@
       </section>
 
       <section id="highlights" class="content-section highlight-section sweep">
-        <div class="section-kicker">Highlights</div>
+        <div class="section-kicker"><span>Session 05</span> Highlights</div>
         <h2>Gaming Clip Chaos</h2>
         <p>
           Gaming clips, stream moments, and the best little bursts of chaos, playing right here without leaving the site.
         </p>
         <div class="featured-clip-label">
           <i class="fa-solid fa-star" aria-hidden="true"></i>
-          <span>Featured Moment</span>
+          <span>Now playing</span> <span class="clip-count" id="clip-count">Clip 1 of 5</span>
         </div>
         <div class="clip-carousel" aria-label="Featured gaming clips">
           <div class="clip-frame">
@@ -346,6 +367,7 @@
       </section>
 
       <section id="work" class="content-section sweep">
+        <div class="section-kicker"><span>Session 06</span> Off the Clock</div>
         <h2>The Usual Chaos</h2>
         <div class="cards">
           <article class="card sweep">
@@ -365,7 +387,7 @@
           </article>
 
           <article class="card side-quest-card sweep">
-            <div class="section-kicker">Side Quest</div>
+            <div class="card-tag">Side quest</div>
             <h3>Denizen Technologies</h3>
             <p>
               My company side quest, where I take the same creative brain and use it to build sites
@@ -377,6 +399,7 @@
     </main>
 
     <footer class="footer">
+      <p class="footer-signoff">See you next session.</p>
       <p class="footer-brand">Dismeigh</p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
@@ -420,14 +443,24 @@
     window.setInterval(refreshStreamStatus, 120000);
 
     // Stream schedule from the calendar (served by functions/api/schedule.js on Cloudflare Pages).
-    // If the endpoint isn't there or fails, the schedule rows stay hidden.
+    // Fills the "Next Stream" console row and the weekly Episode Guide board.
     const nextStreamRow = document.getElementById('next-stream');
-    const upcomingBox = document.getElementById('upcoming-streams');
-    const upcomingList = document.getElementById('upcoming-list');
+    const board = document.getElementById('schedule-board');
+    const weekLabel = document.getElementById('schedule-week');
+    const scheduleFallback = document.getElementById('schedule-fallback');
+    const scheduleNote = document.getElementById('schedule-note');
     const zone = 'America/New_York';
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     function dayKey(date) {
       return new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+    }
+
+    function clockTime(date) {
+      const parts = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).formatToParts(date);
+      const get = type => parts.find(p => p.type === type)?.value || '';
+      const minutes = get('minute') === '00' ? '' : `:${get('minute')}`;
+      return `${get('hour')}${minutes} ${get('dayPeriod')} ${get('timeZoneName')}`.trim();
     }
 
     function streamWhen(event) {
@@ -437,39 +470,83 @@
       let day = new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short', month: 'short', day: 'numeric' }).format(start);
       if (dayKey(start) === dayKey(today)) day = 'Today';
       else if (dayKey(start) === dayKey(tomorrow)) day = 'Tomorrow';
-      if (event.allDay) return day;
-      const time = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(start);
-      return `${day} · ${time}`;
+      return event.allDay ? day : `${day} · ${clockTime(start)}`;
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function weekDays(startLabel) {
+      const [y, m, d] = startLabel.split('-').map(Number);
+      return dayNames.map((name, i) => {
+        const date = new Date(Date.UTC(y, m - 1, d + i));
+        return {
+          name,
+          key: date.toISOString().slice(0, 10),
+          short: `${date.getUTCMonth() + 1}/${date.getUTCDate()}`,
+        };
+      });
+    }
+
+    function renderBoard(week) {
+      const days = weekDays(week.start);
+      const todayKey = dayKey(new Date());
+      weekLabel.textContent = `Week of ${days[0].short} to ${days[6].short}`;
+
+      board.innerHTML = days.map(day => {
+        const events = week.events.filter(e => dayKey(new Date(e.start)) === day.key);
+        const state = events.some(e => e.live) ? 'is-live'
+          : events.length && events.every(e => e.done) ? 'is-done'
+          : events.length ? 'is-on' : 'is-off';
+        const isToday = day.key === todayKey ? ' is-today' : '';
+        const shows = events.length
+          ? events.map(e => `
+              <span class="show">
+                <span class="show-title">${escapeHtml(e.title)}</span>
+                <span class="show-time">${e.live ? 'On air now' : e.allDay ? 'All day' : clockTime(new Date(e.start))}</span>
+              </span>`).join('')
+          : '<span class="show show-off"><span class="show-title">Off night / rest day</span></span>';
+        const badge = state === 'is-live' ? '<span class="day-badge">Live</span>'
+          : isToday ? '<span class="day-badge">Today</span>' : '';
+        return `
+          <li class="day-row ${state}${isToday}">
+            <span class="day-name">${day.name}<small>${day.short}</small>${badge}</span>
+            <span class="day-shows">${shows}</span>
+          </li>`;
+      }).join('');
+    }
+
+    function showSchedule(data, isSample = false) {
+      const events = Array.isArray(data.upcoming) ? data.upcoming : [];
+      const next = events[0];
+
+      document.getElementById('next-stream-label').textContent = next?.live ? 'On Now' : 'Next Stream';
+      document.getElementById('next-stream-title').textContent = next ? next.title : 'Nothing on the calendar yet';
+      document.getElementById('next-stream-time').textContent = next
+        ? (next.live ? 'Happening right now' : streamWhen(next))
+        : 'Follow on Twitch for go-live alerts';
+      nextStreamRow.hidden = false;
+
+      if (data.week && Array.isArray(data.week.events)) {
+        renderBoard(data.week);
+        board.hidden = false;
+        scheduleFallback.hidden = true;
+      }
+      if (isSample) scheduleNote.textContent = 'Sample week shown for this preview. On the live site this board reads your calendar.';
     }
 
     async function refreshSchedule() {
       try {
         const response = await fetch('/api/schedule', { cache: 'no-store' });
         if (!response.ok) throw new Error('schedule unavailable');
-        const data = await response.json();
-        const events = Array.isArray(data.upcoming) ? data.upcoming : [];
-        const next = events[0];
-
-        document.getElementById('next-stream-label').textContent = next?.live ? 'On Now' : 'Next Stream';
-        document.getElementById('next-stream-title').textContent = next ? next.title : 'Nothing on the calendar yet';
-        document.getElementById('next-stream-time').textContent = next
-          ? (next.live ? 'Happening right now' : streamWhen(next))
-          : 'Follow on Twitch for go-live alerts';
-        nextStreamRow.hidden = false;
-
-        upcomingList.replaceChildren(...events.slice(1, 5).map((event) => {
-          const item = document.createElement('li');
-          const when = document.createElement('span');
-          const title = document.createElement('strong');
-          when.textContent = streamWhen(event);
-          title.textContent = event.title;
-          item.append(when, title);
-          return item;
-        }));
-        upcomingBox.hidden = upcomingList.children.length === 0;
+        showSchedule(await response.json());
       } catch {
+        if (window.SCHEDULE_SAMPLE) return showSchedule(window.SCHEDULE_SAMPLE(), true);
         nextStreamRow.hidden = true;
-        upcomingBox.hidden = true;
+        board.hidden = true;
+        weekLabel.textContent = '';
+        scheduleFallback.hidden = false;
       }
     }
 
@@ -563,6 +640,9 @@
       clipDots.forEach((dot, dotIndex) => {
         dot.classList.toggle('is-active', dotIndex === activeClip);
       });
+
+      const clipCount = document.getElementById('clip-count');
+      if (clipCount) clipCount.textContent = `Clip ${activeClip + 1} of ${clipPanels.length}`;
 
       playActiveClip();
     }
