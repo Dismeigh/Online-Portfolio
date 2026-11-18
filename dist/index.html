@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
 
   <!-- Font Awesome icons -->
   <link
@@ -57,6 +57,15 @@
 </head>
 
 <body>
+  <div class="title-intro" id="title-intro" hidden aria-hidden="true">
+    <span class="slab slab-a"></span><span class="slab slab-b"></span>
+    <div class="words"><p class="kick">Now showing</p><h2>DISMEIGH</h2><span class="sub">Session start</span></div>
+  </div>
+  <div class="onair-bar" id="onair-bar" role="status" hidden>
+    <span class="onair-badge">On air</span>
+    <span class="onair-long">Dismeigh is live on Twitch right now.</span><span class="onair-short">Streaming now</span>
+    <a class="onair-link" href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Watch now &rarr;</a>
+  </div>
   <!-- Fixed background for iOS/Discord overscroll -->
   <div class="fixed-bg" aria-hidden="true"></div>
   <div class="cursor-glow" aria-hidden="true"></div>
@@ -410,6 +419,34 @@
               My company side quest, where I take the same creative brain and use it to build sites
               and tools for creators, brands, and small teams.
             </p>
+          </article>
+        </div>
+
+        <div class="case-files">
+          <h3>Case files</h3>
+          <article class="case-card">
+            <div class="case-shot">
+              <figure class="shot-back">
+                <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <img src="assets/work/case-757-about.jpg" width="1120" height="630" loading="lazy" decoding="async" alt="757 Anime Club website: the Who We Are section with Inclusivity, Community First and Passion cards">
+              </figure>
+              <figure class="shot-front">
+                <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <img src="assets/work/case-757-meetup.jpg" width="1120" height="705" loading="lazy" decoding="async" alt="757 Anime Club website: the Next Meetup card with date, location, RSVP, add to calendar and share buttons">
+              </figure>
+              <span class="case-stamp">Live</span>
+            </div>
+            <div class="case-body">
+              <p class="case-tag">Denizen Technologies &middot; Hampton Roads</p>
+              <h4>757 Anime Club</h4>
+              <p>The home base for a local anime community: meetups, memories and everything the club has coming up.</p>
+              <ul>
+                <li>Event listings that update straight from the club&rsquo;s calendar</li>
+                <li>RSVP, add-to-calendar and share on every event</li>
+                <li>Meetups, memories, age policy, connect and donate pages</li>
+              </ul>
+              <a class="case-link" href="https://757animeclub.com" target="_blank" rel="noopener noreferrer">Visit 757animeclub.com <span aria-hidden="true">&rarr;</span></a>
+            </div>
           </article>
         </div>
       </section>
@@ -872,6 +909,36 @@
         spark.addEventListener('animationend', () => spark.remove());
       }
     });
+  </script>
+  <script>
+  {
+    // #1 On-air banner: shown whenever the Twitch check says live
+    const bar = document.getElementById('onair-bar');
+    const setOnAir = on => {
+      bar.hidden = !on;
+      document.body.classList.toggle('is-onair', on);
+      document.documentElement.style.setProperty('--onair-h', on ? bar.offsetHeight + 'px' : '0px');
+    };
+    window.setOnAir = setOnAir;
+    const status = document.getElementById('stream-status');
+    new MutationObserver(() => setOnAir(status.classList.contains('is-live'))).observe(status, { attributes: true, attributeFilter: ['class'] });
+
+    // #10 Title-card intro: once per visit, click or any key skips it
+    const intro = document.getElementById('title-intro');
+    const playIntro = () => {
+      intro.hidden = false;
+      intro.style.animation = 'none'; void intro.offsetWidth; intro.style.animation = '';
+      intro.querySelectorAll('*').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
+    };
+    const hideIntro = () => { intro.hidden = true; };
+    intro.addEventListener('click', hideIntro);
+    intro.addEventListener('animationend', e => { if (e.target === intro) hideIntro(); });
+    window.addEventListener('keydown', hideIntro);
+    let seen = false;
+    try { seen = sessionStorage.getItem('dismeigh-intro') === '1'; sessionStorage.setItem('dismeigh-intro', '1'); } catch {}
+    if (!seen && !matchMedia('(prefers-reduced-motion: reduce)').matches) playIntro(); else hideIntro();
+
+  }
   </script>
 </body>
 </html>
