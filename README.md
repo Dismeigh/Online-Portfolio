@@ -33,9 +33,7 @@ Redeploy once after adding the variable. Every push to `main` deploys automatica
 
 ### Custom domain
 
-In the Pages project's **Custom domains** tab, add `www.denizen-dismeigh.com` (and `denizen-dismeigh.com` if you want the bare domain too) and follow Cloudflare's DNS prompts. Once the site loads from Cloudflare, turn off GitHub Pages (repo Settings → Pages) and delete `.github/workflows/deploy.yml`.
-
-Until then, GitHub Pages keeps serving `dist/`. The schedule section stays hidden there because GitHub Pages can't run the calendar function.
+`www.denizen-dismeigh.com` and `denizen-dismeigh.com` are connected as custom domains on the Pages project (project name `online-portfolio`). The site moved off GitHub Pages in November 2026.
 
 ## Stream schedule
 
