@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
 
   <!-- Font Awesome icons -->
   <link
@@ -54,6 +54,44 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   />
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://www.denizen-dismeigh.com/#website",
+        "url": "https://www.denizen-dismeigh.com/",
+        "name": "Dismeigh",
+        "publisher": { "@id": "https://www.denizen-dismeigh.com/#dismeigh" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.denizen-dismeigh.com/#dismeigh",
+        "name": "Dismeigh",
+        "url": "https://www.denizen-dismeigh.com/",
+        "image": "https://www.denizen-dismeigh.com/avatar.png",
+        "description": "VTuber, car enthusiast, voice actor and creative developer.",
+        "jobTitle": "VTuber and creative developer",
+        "sameAs": [
+          "https://twitch.tv/dismeigh",
+          "https://youtube.com/@dismeigh",
+          "https://x.com/dismeigh",
+          "https://tiktok.com/@denizen.dismeigh",
+          "https://instagram.com/_dismeigh_"
+        ],
+        "founder": { "@id": "https://www.denizen-dismeigh.com/#denizen-technologies" }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.denizen-dismeigh.com/#denizen-technologies",
+        "name": "Denizen Technologies",
+        "url": "https://www.denizen-dismeigh.com/#work",
+        "founder": { "@id": "https://www.denizen-dismeigh.com/#dismeigh" }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -182,6 +220,10 @@
     <main>
       <section id="live" class="content-section command-center sweep">
         <div class="section-kicker"><span>Session 01</span> Signal Check</div>
+        <div class="live-player" id="live-player" hidden>
+          <div class="live-player-frame" id="live-player-frame"></div>
+          <p class="live-player-note">Live right now. Chat and follow on <a href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Twitch</a>.</p>
+        </div>
         <div class="command-layout">
           <div>
             <h2>Ship&rsquo;s Console</h2>
@@ -220,7 +262,7 @@
             <div class="status-row">
               <i class="fa-brands fa-discord" aria-hidden="true"></i>
               <span>Discord</span>
-              <strong>Join the server and say hey!</strong>
+              <strong>Join the server and say hey!<small class="discord-count" id="discord-count" hidden></small></strong>
             </div>
             <div class="status-row">
               <i class="fa-solid fa-gauge-high" aria-hidden="true"></i>
@@ -390,6 +432,14 @@
           </div>
           <p class="clip-swipe-hint">Swipe clips</p>
         </div>
+
+        <div class="yt-latest" id="yt-latest" hidden>
+          <div class="yt-head">
+            <h3>Fresh off YouTube</h3>
+            <a class="yt-more" href="https://youtube.com/@dismeigh" target="_blank" rel="noopener noreferrer">More on YouTube <span aria-hidden="true">&rarr;</span></a>
+          </div>
+          <div class="yt-row" id="yt-row"></div>
+        </div>
       </section>
 
       <section id="work" class="content-section sweep">
@@ -462,6 +512,14 @@
       <button class="lightbox-btn lightbox-next" type="button" id="lightbox-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
       <p class="lightbox-count" id="lightbox-count"></p>
     </dialog>
+
+    <div class="bang" id="bang" hidden aria-hidden="true">
+      <span class="bang-slab"></span>
+      <div class="bang-words">
+        <p class="bang-big">BANG!</p>
+        <p class="bang-small">You found the secret session.</p>
+      </div>
+    </div>
 
     <footer class="footer">
       <p class="footer-signoff">See you next session.</p>
@@ -914,14 +972,114 @@
   {
     // #1 On-air banner: shown whenever the Twitch check says live
     const bar = document.getElementById('onair-bar');
+    const player = document.getElementById('live-player');
+    const playerFrame = document.getElementById('live-player-frame');
     const setOnAir = on => {
       bar.hidden = !on;
+      // #6 Twitch player: only loaded while live, removed when the stream ends
+      player.hidden = !on;
+      if (on && !playerFrame.firstChild) {
+        const parents = ['www.denizen-dismeigh.com', 'denizen-dismeigh.com', location.hostname]
+          .filter((h, i, all) => h && all.indexOf(h) === i).map(h => `parent=${encodeURIComponent(h)}`).join('&');
+        const frame = document.createElement('iframe');
+        frame.src = `https://player.twitch.tv/?channel=dismeigh&${parents}&muted=true`;
+        frame.title = 'Dismeigh live on Twitch';
+        frame.allowFullscreen = true;
+        frame.setAttribute('allow', 'autoplay; fullscreen');
+        playerFrame.appendChild(frame);
+      } else if (!on) {
+        playerFrame.replaceChildren();
+      }
       document.body.classList.toggle('is-onair', on);
       document.documentElement.style.setProperty('--onair-h', on ? bar.offsetHeight + 'px' : '0px');
     };
     window.setOnAir = setOnAir;
     const status = document.getElementById('stream-status');
     new MutationObserver(() => setOnAir(status.classList.contains('is-live'))).observe(status, { attributes: true, attributeFilter: ['class'] });
+
+    // #5 Discord online count
+    (async () => {
+      try {
+        const r = await fetch('/api/discord');
+        if (!r.ok) return;
+        const { online, members } = await r.json();
+        const el = document.getElementById('discord-count');
+        el.textContent = `${online.toLocaleString()} online · ${members.toLocaleString()} members`;
+        el.hidden = false;
+      } catch {}
+    })();
+
+    // #4 Fresh off YouTube: newest uploads, played in place on click
+    (async () => {
+      try {
+        const r = await fetch('/api/youtube');
+        if (!r.ok) return;
+        const { videos } = await r.json();
+        if (!videos?.length) return;
+        const row = document.getElementById('yt-row');
+        const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+        videos.forEach((v, i) => {
+          const card = document.createElement('article');
+          card.className = 'yt-card' + (v.short ? ' is-short' : '');
+          const play = document.createElement('button');
+          play.type = 'button';
+          play.className = 'yt-thumb';
+          play.setAttribute('aria-label', `Play: ${v.title}`);
+          const img = document.createElement('img');
+          img.src = v.thumb; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+          play.append(img);
+          const badge = document.createElement('span');
+          badge.className = 'yt-badge';
+          badge.textContent = i === 0 ? 'Latest' : (v.short ? 'Short' : 'Video');
+          play.append(badge);
+          const title = document.createElement('h4');
+          const link = document.createElement('a');
+          link.href = v.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = v.title;
+          title.append(link);
+          const date = document.createElement('p');
+          date.className = 'yt-date';
+          date.textContent = fmt.format(new Date(v.published));
+          play.addEventListener('click', () => {
+            const frame = document.createElement('iframe');
+            frame.src = `https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`;
+            frame.title = v.title;
+            frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+            frame.allowFullscreen = true;
+            const holder = document.createElement('div');
+            holder.className = 'yt-thumb is-playing';
+            holder.append(frame);
+            play.replaceWith(holder);
+          });
+          card.append(play, title, date);
+          row.append(card);
+        });
+        document.getElementById('yt-latest').hidden = false;
+      } catch {}
+    })();
+
+    // #10 Easter egg: up up down down left right left right B A, or tap the avatar 5 times
+    const bang = document.getElementById('bang');
+    let bangTimer;
+    const fireBang = () => {
+      bang.hidden = false;
+      bang.classList.remove('is-firing'); void bang.offsetWidth; bang.classList.add('is-firing');
+      clearTimeout(bangTimer);
+      bangTimer = setTimeout(() => { bang.hidden = true; }, 2600);
+    };
+    bang.addEventListener('click', () => { bang.hidden = true; });
+    const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let pos = 0;
+    window.addEventListener('keydown', e => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      pos = key === code[pos] ? pos + 1 : (key === code[0] ? 1 : 0);
+      if (pos === code.length) { pos = 0; fireBang(); }
+    });
+    let taps = [];
+    document.querySelector('.avatar')?.addEventListener('click', () => {
+      const now = Date.now();
+      taps = taps.filter(t => now - t < 2000).concat(now);
+      if (taps.length >= 5) { taps = []; fireBang(); }
+    });
 
     // #10 Title-card intro: once per visit, click or any key skips it
     const intro = document.getElementById('title-intro');
