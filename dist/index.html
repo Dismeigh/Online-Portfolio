@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=27">
 
   <!-- Font Awesome icons -->
   <link
@@ -476,7 +476,7 @@
             <p class="build-kicker">Build sheet</p>
             <h3 id="build-sheet-title">Sojourn ST</h3>
             <p class="build-car">2014 Ford Focus ST</p>
-            <p class="build-score"><strong>9</strong> done <span aria-hidden="true">&middot;</span> <strong>12</strong> on the list</p>
+            <p class="build-score"><strong id="build-done-count">9</strong> done <span aria-hidden="true">&middot;</span> <strong id="build-planned-count">12</strong> on the list</p>
           </header>
           <div class="build-progress">
             <div class="build-progress-track" role="progressbar" aria-label="Build progress" aria-valuemin="0" aria-valuemax="100" id="build-progress-bar">
@@ -517,6 +517,11 @@
               </ul>
             </section>
           </div>
+          <section class="build-log" aria-labelledby="build-log-title">
+            <h4 id="build-log-title">Garage log</h4>
+            <ol class="build-log-list" id="build-log-list"></ol>
+            <p class="build-log-empty" id="build-log-empty">The log starts with the next finished mod. Everything above was done before the log began.</p>
+          </section>
         </article>
       </section>
 
@@ -1381,6 +1386,24 @@
     (() => {
       const done = document.querySelectorAll('.build-done li').length;
       const planned = document.querySelectorAll('.build-planned li').length;
+      document.getElementById('build-done-count').textContent = done;
+      document.getElementById('build-planned-count').textContent = planned;
+
+      // Garage log: mods with a completion date (stamped automatically when a mod moves to Done)
+      const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+      const dated = [...document.querySelectorAll('.build-done li[data-done]')]
+        .map(li => ({ li, name: li.textContent.trim(), date: li.dataset.done }))
+        .filter(m => /^\d{4}-\d{2}-\d{2}$/.test(m.date))
+        .sort((a, b) => b.date.localeCompare(a.date));
+      for (const m of dated) {
+        const tag = document.createElement('span');
+        tag.className = 'done-date';
+        tag.textContent = fmt.format(new Date(`${m.date}T12:00:00Z`));
+        m.li.appendChild(tag);
+      }
+      const list = document.getElementById('build-log-list');
+      list.innerHTML = dated.map(m => `<li><time datetime="${m.date}">${fmt.format(new Date(`${m.date}T12:00:00Z`))}</time><span>${m.name.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))}</span></li>`).join('');
+      document.getElementById('build-log-empty').hidden = dated.length > 0;
       const total = done + planned;
       if (!total) return;
       const pct = Math.round((done / total) * 100);

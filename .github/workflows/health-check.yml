@@ -1,0 +1,53 @@
+name: Monthly site health check
+
+on:
+  schedule:
+    - cron: '41 14 3 * *'   # the 3rd of each month, ~9:41 AM Eastern
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Lighthouse
+        run: npm install -g lighthouse@12
+
+      - name: Run the check
+        run: node scripts/health-check.mjs
+
+      - name: Save a new or improved baseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add .github/health/baseline.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Baseline unchanged."
+          else
+            git commit -m "Health check: update baseline scores"
+            git push
+          fi
+
+      - name: Open an issue if something got worse
+        if: hashFiles('health-problems.md') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('health-problems.md', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Site health check: something needs a look (${new Date().toISOString().slice(0, 7)})`,
+              body,
+            });
+            core.setFailed('Health check found problems; see the new issue.');
