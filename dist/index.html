@@ -146,7 +146,7 @@
         const override = new URLSearchParams(location.search).get('season');
         if (override) season = override === 'off' ? '' : override;
       } catch {}
-      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = '1';
+      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = String(Math.max(1, Y - Number((STREAM_START || String(Y - 1)).slice(0, 4))));
       if (season) document.documentElement.dataset.season = season;
     })();
   </script>
