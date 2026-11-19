@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=15">
 
   <!-- Font Awesome icons -->
   <link
@@ -270,6 +270,16 @@
               <strong>Full send, mostly</strong>
             </div>
           </div>
+        </div>
+        <div class="follow-goal" id="follow-goal" hidden>
+          <div class="follow-goal-head">
+            <p class="follow-goal-title">Road to <span id="follow-goal-target">200</span> followers</p>
+            <p class="follow-goal-count"><strong id="follow-goal-count">0</strong> on Twitch <span aria-hidden="true">&middot;</span> <span id="follow-goal-left"></span></p>
+          </div>
+          <div class="follow-goal-track" role="progressbar" aria-label="Twitch follower goal" aria-valuemin="0" id="follow-goal-bar">
+            <span class="follow-goal-fill" id="follow-goal-fill"></span>
+          </div>
+          <a class="follow-goal-link" href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Help me get there: follow on Twitch <span aria-hidden="true">&rarr;</span></a>
         </div>
       </section>
 
@@ -1038,6 +1048,29 @@
     window.setOnAir = setOnAir;
     const status = document.getElementById('stream-status');
     new MutationObserver(() => setOnAir(status.classList.contains('is-live'))).observe(status, { attributes: true, attributeFilter: ['class'] });
+
+    // Twitch follower goal: fills toward the next milestone, then moves the goal up
+    const milestones = [50, 100, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 5000, 7500, 10000, 25000, 50000, 100000];
+    async function refreshFollowGoal() {
+      try {
+        const r = await fetch('https://decapi.me/twitch/followcount/dismeigh', { cache: 'no-store' });
+        if (!r.ok) return;
+        const count = parseInt((await r.text()).trim(), 10);
+        if (!Number.isFinite(count) || count < 0) return;
+        const target = milestones.find(m => m > count) || Math.ceil((count + 1) / 100000) * 100000;
+        const pct = Math.min(100, (count / target) * 100);
+        document.getElementById('follow-goal-target').textContent = target.toLocaleString();
+        document.getElementById('follow-goal-count').textContent = count.toLocaleString();
+        document.getElementById('follow-goal-left').textContent = `${(target - count).toLocaleString()} to go`;
+        const bar = document.getElementById('follow-goal-bar');
+        bar.setAttribute('aria-valuemax', String(target));
+        bar.setAttribute('aria-valuenow', String(count));
+        document.getElementById('follow-goal').hidden = false;
+        requestAnimationFrame(() => { document.getElementById('follow-goal-fill').style.width = `${pct}%`; });
+      } catch {}
+    }
+    refreshFollowGoal();
+    window.setInterval(refreshFollowGoal, 600000);
 
     // #5 Discord online count
     (async () => {
