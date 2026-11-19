@@ -10,6 +10,25 @@
   const ui = { score: $('g-score'), best: $('g-best'), overlay: $('g-overlay'), title: $('g-title'), sub: $('g-sub'), btn: $('g-start'),
     form: $('g-form'), name: $('g-name'), msg: $('g-msg'), post: $('g-post'), skip: $('g-skip') };
   const C = { ink: '#14110f', ink2: '#1e1a17', paper: '#efe6d2', mustard: '#e3a92b', red: '#b73b2c' };
+  // Holiday skins: the game follows the site's holiday look (looks only; hitboxes and scoring don't change)
+  const SKINS = {
+    holiday: { sky: ['#0b1224', '#1a2238'], star: '239,246,255', starSize: 2.2, rock: '#d9e4ee', rockHi: 'rgba(255,255,255,0.55)', chip: '#c8322a', chipText: '#fff6e6', chipCap: '#e3a92b', sparks: ['#efe6d2', '#c8322a', '#3fa35a'] },
+    thanksgiving: { sky: ['#1a100a', '#2c1b10'], star: '232,150,70', rock: '#7a4a26', chip: '#e8762b', sparks: ['#e8762b', '#b73b2c', '#e3a92b'], leaves: true },
+    spooky: { sky: ['#11081a', '#1f1026'], star: '200,170,255', rock: '#e8762b', rockHi: 'rgba(255,220,150,0.25)', face: true, chip: '#8fd36a', sparks: ['#e8762b', '#9b6bd6', '#8fd36a'] },
+    valentines: { sky: ['#19090f', '#2a0f1d'], star: '255,190,215', rock: '#6e4a5a', chip: '#f28ab2', chipShape: 'heart', sparks: ['#f28ab2', '#b73b2c', '#f7c6d9'] },
+    stpatricks: { sky: ['#07130b', '#0f2418'], star: '180,240,190', rock: '#3f5a43', chip: '#f0c63a', chipText: '#1f6633', sparks: ['#5fbf6a', '#f0c63a', '#9bd88f'] },
+    easter: { sky: ['#13102a', '#221a3a'], star: '230,215,255', rock: '#6b6080', chipShape: 'egg', chipColors: ['#f7b3c9', '#b3d9f7', '#c9f0b3', '#f7e7a3', '#d9b3f7'], sparks: ['#f7b3c9', '#b3d9f7', '#f7e7a3'] },
+    mothers: { sky: ['#170c14', '#261422'], star: '255,205,225', chip: '#f28ab2', sparks: ['#f28ab2', '#f7c6d9', '#efe6d2'] },
+    july4: { sky: ['#08102a', '#141c3c'], star: '255,255,255', rock: '#5a5f70', chip: '#efe6d2', chipText: '#b73b2c', sparks: ['#b73b2c', '#efe6d2', '#7fb3e8'], burst: true },
+    newyear: { chip: '#e3a92b', sparks: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'], burst: true },
+    birthday: { chip: '#e3a92b', sparks: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'], burst: true },
+    anniversary: { chip: '#e3a92b', sparks: ['#e3a92b', '#efe6d2', '#b73b2c'], burst: true },
+  };
+  const BASE = { sky: ['#0f0d12', '#1e1a17'], star: '239,230,210', starSize: 1.6, rock: '#5a4c41', rockHi: 'rgba(239,230,210,0.12)', face: false,
+    chip: '#e3a92b', chipText: '#14110f', chipCap: null, chipShape: 'coin', chipColors: null, sparks: ['#e3a92b'], leaves: false, burst: false };
+  const T = { ...BASE, ...(SKINS[document.documentElement.dataset.season] || {}) };
+  box.dataset.skin = SKINS[document.documentElement.dataset.season] ? document.documentElement.dataset.season : 'base';
+
   const buzz = p => { try { navigator.vibrate?.(p); } catch {} };
   const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
@@ -27,7 +46,7 @@
     if (ship) ship.y = H - Math.max(70, H * 0.14);
   }
 
-  const stars = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() * 1.6 + 0.3, v: Math.random() * 0.6 + 0.2 }));
+  const stars = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() * T.starSize + 0.3, v: Math.random() * 0.6 + 0.2, c: T.leaves ? T.sparks[Math.floor(Math.random() * T.sparks.length)] : null }));
   let state = 'ready', ship, rocks, chips, sparks, t, speed, score, chipCount, target, keys = {}, last = 0, shake = 0;
   let run = null, finalScore = 0, finalSeconds = 0;
 
@@ -112,9 +131,31 @@
     if (state !== 'play') return;
     for (const c of chips) { c.y += c.vy * dt; c.spin += dt * 5;
       if (!c.got && Math.hypot(c.x - ship.x, c.y - ship.y) < 26) { c.got = true; chipCount++; score += 50;
-        for (let i = 0; i < 10; i++) sparks.push({ x: c.x, y: c.y, vx: (Math.random() - 0.5) * 220, vy: (Math.random() - 0.5) * 220, life: 0.45, c: C.mustard });
+        for (let i = 0, n = T.burst ? 22 : 10; i < n; i++) { const a = (i / n) * Math.PI * 2, sp = T.burst ? 160 + Math.random() * 120 : Math.random() * 160;
+          sparks.push({ x: c.x, y: c.y, vx: T.burst ? Math.cos(a) * sp : (Math.random() - 0.5) * 220, vy: T.burst ? Math.sin(a) * sp : (Math.random() - 0.5) * 220, life: T.burst ? 0.7 : 0.45, c: T.sparks[i % T.sparks.length] }); }
         buzz(15); } }
     rocks = rocks.filter(r => r.y < H + 60); chips = chips.filter(c => !c.got && c.y < H + 30);
+  }
+
+  function drawChip(c) {
+    ctx.save(); ctx.translate(c.x, c.y); ctx.scale(Math.cos(c.spin), 1);
+    ctx.fillStyle = T.chipColors ? T.chipColors[c.tint ?? (c.tint = Math.floor(Math.random() * T.chipColors.length))] : T.chip;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.beginPath();
+    if (T.chipShape === 'heart') {
+      ctx.moveTo(0, 10); ctx.bezierCurveTo(-14, 0, -11, -12, 0, -5); ctx.bezierCurveTo(11, -12, 14, 0, 0, 10);
+    } else if (T.chipShape === 'egg') {
+      ctx.ellipse(0, 0, 9, 12, 0, 0, Math.PI * 2);
+    } else ctx.arc(0, 0, 10, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    if (T.chipCap) { ctx.fillStyle = T.chipCap; ctx.fillRect(-3.5, -14, 7, 5); ctx.strokeRect(-3.5, -14, 7, 5); }
+    ctx.fillStyle = T.chipText; ctx.font = 'bold 11px Anton, Impact, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('B', 0, 1);
+    ctx.restore();
+  }
+  function drawFace(r) {
+    ctx.fillStyle = '#14110f';
+    const e = r * 0.22;
+    for (const sx of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sx * r * 0.32 - e, -r * 0.05); ctx.lineTo(sx * r * 0.32 + e, -r * 0.05); ctx.lineTo(sx * r * 0.32, -r * 0.05 - e * 1.4); ctx.closePath(); ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(-r * 0.4, r * 0.2); ctx.lineTo(-r * 0.2, r * 0.38); ctx.lineTo(0, r * 0.24); ctx.lineTo(r * 0.2, r * 0.38); ctx.lineTo(r * 0.4, r * 0.2); ctx.lineTo(0, r * 0.5); ctx.closePath(); ctx.fill();
   }
 
   function drawShip(x, y) {
@@ -130,18 +171,20 @@
   function draw(dt) {
     ctx.save();
     if (shake > 0) { ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake); shake = Math.max(0, shake - dt * 30); }
-    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0f0d12'); g.addColorStop(1, C.ink2);
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, T.sky[0]); g.addColorStop(1, T.sky[1]);
     ctx.fillStyle = g; ctx.fillRect(-20, -20, W + 40, H + 40);
     for (const s of stars) { s.y += s.v * dt * 0.25 * (state === 'play' ? speed : 0.4); if (s.y > 1) { s.y = 0; s.x = Math.random(); }
-      ctx.fillStyle = `rgba(239,230,210,${0.25 + s.s * 0.3})`; ctx.fillRect(s.x * W, s.y * H, s.s, s.s * 2.4); }
-    for (const c of chips) { ctx.save(); ctx.translate(c.x, c.y); ctx.scale(Math.cos(c.spin), 1);
-      ctx.fillStyle = C.mustard; ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = C.ink; ctx.font = 'bold 11px Anton, Impact, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('B', 0, 1); ctx.restore(); }
+      if (s.c) { ctx.save(); ctx.globalAlpha = 0.55; ctx.fillStyle = s.c; ctx.translate(s.x * W, s.y * H); ctx.rotate(s.y * 12); ctx.beginPath(); ctx.ellipse(0, 0, s.s * 2.2, s.s * 1.1, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+      else if (T.starSize > 2) { ctx.fillStyle = `rgba(${T.star},${0.35 + s.s * 0.2})`; ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.s, 0, Math.PI * 2); ctx.fill(); }
+      else { ctx.fillStyle = `rgba(${T.star},${0.25 + s.s * 0.3})`; ctx.fillRect(s.x * W, s.y * H, s.s, s.s * 2.4); } }
+    for (const c of chips) drawChip(c);
     for (const r of rocks) { ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.rot);
-      ctx.fillStyle = '#5a4c41'; ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath();
+      ctx.fillStyle = T.rock; ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath();
       r.pts.forEach((p, i) => { const px = Math.cos(p.a) * r.r * p.d, py = Math.sin(p.a) * r.r * p.d; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
       ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = 'rgba(239,230,210,0.12)'; ctx.beginPath(); ctx.arc(-r.r * 0.25, -r.r * 0.25, r.r * 0.3, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+      ctx.fillStyle = T.rockHi; ctx.beginPath(); ctx.arc(-r.r * 0.25, -r.r * 0.25, r.r * 0.3, 0, Math.PI * 2); ctx.fill();
+      if (T.face && r.r > 14) drawFace(r.r);
+      ctx.restore(); }
     if (state !== 'over') drawShip(ship.x, ship.y);
     sparks.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; ctx.globalAlpha = Math.max(0, p.life * 1.5); ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 3, 3); });
     ctx.globalAlpha = 1; sparks = sparks.filter(p => p.life > 0);

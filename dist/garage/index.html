@@ -50,13 +50,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=32">
-
-  <!-- Font Awesome icons -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="/styles.css?v=35">
+  <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 </head>
 
 <body class="page-split page-garage">
@@ -160,7 +155,7 @@
             <p class="garage-ride">
               The ride:
               <a href="https://instagram.com/sojourn_st" target="_blank" rel="noopener noreferrer" aria-label="Sojourn ST on Instagram">
-                <strong>Sojourn ST</strong> <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+                <strong>Sojourn ST</strong> <svg class="icon icon-instagram" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path d="M224.3 141a115 115 0 1 0-.6 230 115 115 0 1 0 .6-230m-.6 40.4a74.6 74.6 0 1 1 .6 149.2 74.6 74.6 0 1 1-.6-149.2m93.4-45.1a26.8 26.8 0 1 1 53.6 0 26.8 26.8 0 1 1-53.6 0m129.7 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8M399 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1"/></svg>
               </a>
             </p>
           </div>
@@ -177,7 +172,7 @@
 
         <div class="garage-gallery" id="garage-gallery" aria-label="Car photo gallery. Select a photo to view it full screen.">
           <figure class="garage-photo garage-photo-tall">
-            <img src="/assets/cars/car-01.jpg" loading="lazy" decoding="async" alt="Sojourn ST, a blue hatchback, parked at night in a city garage">
+            <img src="/assets/cars/car-01.jpg" width="539" height="719" fetchpriority="high" decoding="async" alt="Sojourn ST, a blue hatchback, parked at night in a city garage">
           </figure>
           <figure class="garage-photo garage-photo-wide">
             <img src="/assets/cars/car-02-800.jpg" srcset="/assets/cars/car-02-800.jpg 600w, /assets/cars/car-02.jpg 1200w" sizes="(max-width: 480px) 92vw, 60vw" data-full="/assets/cars/car-02.jpg" loading="lazy" decoding="async" alt="Sojourn ST under a dramatic cloudy sunset sky">
@@ -239,6 +234,69 @@
         </article>
       </section>
 
+      <section id="launch-control" class="content-section launch-section sweep" aria-labelledby="launch-heading">
+        <div class="section-kicker"><span>Side game</span> Launch Control</div>
+        <div class="run-head">
+          <h2 id="launch-heading">Launch Control</h2>
+          <p>Stage the Sojourn ST, watch the tree, and launch on green. Fastest reaction times make the board. Jump the light and it&rsquo;s a red light.</p>
+        </div>
+        <div class="run-layout">
+          <div class="lc-panel" id="lc-panel">
+            <div class="lc-top">
+              <div class="lc-tree" aria-hidden="true">
+                <span class="lc-bulb lc-pre" data-bulb="pre"></span><span class="lc-bulb lc-pre" data-bulb="pre"></span>
+                <span class="lc-bulb lc-stg" data-bulb="stage"></span><span class="lc-bulb lc-stg" data-bulb="stage"></span>
+                <span class="lc-bulb lc-amb" data-bulb="a1"></span><span class="lc-bulb lc-amb" data-bulb="a1"></span>
+                <span class="lc-bulb lc-amb" data-bulb="a2"></span><span class="lc-bulb lc-amb" data-bulb="a2"></span>
+                <span class="lc-bulb lc-amb" data-bulb="a3"></span><span class="lc-bulb lc-amb" data-bulb="a3"></span>
+                <span class="lc-bulb lc-grn" data-bulb="go"></span><span class="lc-bulb lc-grn" data-bulb="go"></span>
+                <span class="lc-bulb lc-red" data-bulb="red"></span><span class="lc-bulb lc-red" data-bulb="red"></span>
+              </div>
+              <div class="lc-readout">
+                <p class="lc-label">Reaction</p>
+                <p class="lc-time" id="lc-time">0.000</p>
+                <p class="lc-verdict" id="lc-verdict" aria-live="polite">Hit Stage to roll up to the line.</p>
+                <p class="lc-best">Your best: <b id="lc-best">&mdash;</b></p>
+              </div>
+            </div>
+            <div class="lc-strip" aria-hidden="true">
+              <span class="lc-line"></span>
+              <svg class="lc-car" id="lc-car" viewBox="0 0 220 80" width="150" height="55">
+                <path d="M8 56 L10 42 Q14 34 30 32 L62 30 Q78 14 104 12 L150 12 Q168 13 182 26 L204 34 Q214 38 214 48 L214 56 Z" fill="#2242a8" stroke="#14110f" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M74 30 Q88 18 106 17 L128 17 L128 30 Z" fill="#9fc0e8" stroke="#14110f" stroke-width="2"/>
+                <path d="M134 17 L150 17 Q164 18 174 30 L134 30 Z" fill="#9fc0e8" stroke="#14110f" stroke-width="2"/>
+                <rect x="8" y="40" width="9" height="7" fill="#e85a3c" stroke="#14110f" stroke-width="1.5"/>
+                <rect x="203" y="40" width="10" height="6" fill="#f3ead2" stroke="#14110f" stroke-width="1.5"/>
+                <path d="M60 50 L170 50" stroke="#14110f" stroke-width="2" opacity="0.5"/>
+                <circle cx="52" cy="58" r="15" fill="#14110f"/><circle cx="52" cy="58" r="7" fill="#5a4c41"/>
+                <circle cx="174" cy="58" r="15" fill="#14110f"/><circle cx="174" cy="58" r="7" fill="#5a4c41"/>
+              </svg>
+              <span class="lc-smoke" id="lc-smoke"></span>
+            </div>
+            <div class="lc-controls">
+              <button type="button" class="game-start lc-btn" id="lc-btn">Stage</button>
+              <form class="game-form" id="lc-form" hidden>
+                <label for="lc-name">Name for the scoreboard</label>
+                <input id="lc-name" name="name" maxlength="10" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Up to 10 characters">
+                <p class="game-msg" id="lc-msg" role="alert"></p>
+                <div class="game-form-btns"><button type="submit" id="lc-post">Post time</button><button type="button" id="lc-skip" class="game-skip">Skip</button></div>
+              </form>
+              <p class="lc-hint">Tap the button, click, or press the space bar to launch.</p>
+            </div>
+          </div>
+          <section class="scoreboard" aria-labelledby="lc-board-heading">
+            <h3 id="lc-board-heading">Fastest launches</h3>
+            <div class="board-tabs" role="tablist" aria-label="Launch Control scoreboard">
+              <button type="button" role="tab" data-lc-board="all" aria-selected="true">All-time</button>
+              <button type="button" role="tab" data-lc-board="week" aria-selected="false">This week</button>
+            </div>
+            <ol class="board-list" id="lc-board-list" aria-live="polite"></ol>
+            <p class="board-msg" id="lc-board-msg">Loading the board&hellip;</p>
+            <p class="board-note">Lower is better. This week&rsquo;s board resets every Monday.</p>
+          </section>
+        </div>
+      </section>
+
     </main>
 
     <dialog class="lightbox" id="lightbox" aria-label="Car photo viewer">
@@ -246,9 +304,9 @@
         <img id="lightbox-img" alt="">
         <figcaption id="lightbox-caption"></figcaption>
       </figure>
-      <button class="lightbox-btn lightbox-close" type="button" id="lightbox-close" aria-label="Close photo viewer"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-      <button class="lightbox-btn lightbox-prev" type="button" id="lightbox-prev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
-      <button class="lightbox-btn lightbox-next" type="button" id="lightbox-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+      <button class="lightbox-btn lightbox-close" type="button" id="lightbox-close" aria-label="Close photo viewer"><svg class="icon icon-xmark" viewBox="0 0 384 512" aria-hidden="true" focusable="false"><path d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l137.3-137.4 137.4 137.3c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256l137.3-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7z"/></svg></button>
+      <button class="lightbox-btn lightbox-prev" type="button" id="lightbox-prev" aria-label="Previous photo"><svg class="icon icon-chevron-left" viewBox="0 0 320 512" aria-hidden="true" focusable="false"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/></svg></button>
+      <button class="lightbox-btn lightbox-next" type="button" id="lightbox-next" aria-label="Next photo"><svg class="icon icon-chevron-right" viewBox="0 0 320 512" aria-hidden="true" focusable="false"><path d="M311.1 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L243.2 256 73.9 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></button>
       <p class="lightbox-count" id="lightbox-count"></p>
     </dialog>
 
@@ -355,6 +413,7 @@
 
   }
   </script>
-  <script src="/app.js?v=33" defer></script>
+  <script src="/drag-race.js?v=35" defer></script>
+  <script src="/app.js?v=35" defer></script>
 </body>
 </html>

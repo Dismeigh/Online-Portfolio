@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event | Dismeigh</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta
+    name="description"
+    content="Special streams from Dismeigh: subathons, charity streams and big events, with a live countdown, goal tracker and schedule."
+  >
+  <meta name="author" content="Dismeigh">
+  <link rel="canonical" href="https://www.denizen-dismeigh.com/event/">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dismeigh">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.denizen-dismeigh.com/event/">
+  <meta property="og:title" content="Event | Dismeigh">
+  <meta
+    property="og:description"
+    content="Special streams from Dismeigh: subathons, charity streams and big events."
+  >
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
+  <meta property="og:site_name" content="Dismeigh">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Event | Dismeigh">
+  <meta
+    name="twitter:description"
+    content="Special streams from Dismeigh: subathons, charity streams and big events."
+  >
+  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta name="twitter:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
+
+  <!-- Dark UI hints for iOS / Discord / Chrome -->
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+
+  <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -> v=4 -> v=5 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=35">
+  <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
+</head>
+
+<body class="page-split page-event">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <script>
+    // Seasonal and holiday looks, by Eastern date. Preview any with ?season=<key> (or ?season=off).
+    // Keys: newyear, mlk, valentines, presidents, stpatricks, easter, mothers, memorial, fathers,
+    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December), birthday, anniversary
+    (() => {
+      const now = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' })
+        .formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, Number(p.value)]));
+      const Y = now.year, M = now.month, D = now.day;
+      const dow = (m, d) => new Date(Date.UTC(Y, m - 1, d)).getUTCDay();
+      const nth = (m, weekday, n) => { const first = (7 + weekday - dow(m, 1)) % 7 + 1; return first + (n - 1) * 7; };
+      const last = (m, weekday) => { const days = new Date(Date.UTC(Y, m, 0)).getUTCDate(); return days - (7 + dow(m, days) - weekday) % 7; };
+      // Easter (Anonymous Gregorian algorithm)
+      const a = Y % 19, b = Math.floor(Y / 100), c = Y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+        g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+        l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const easterM = Math.floor((h + l - 7 * m + 114) / 31), easterD = ((h + l - 7 * m + 114) % 31) + 1;
+      const dayNum = (mm, dd) => Date.UTC(Y, mm - 1, dd) / 86400000;
+      const today = dayNum(M, D);
+      const within = (mm, dd, before = 0, after = 0) => today >= dayNum(mm, dd) - before && today <= dayNum(mm, dd) + after;
+      const thanksgiving = nth(11, 4, 4);
+
+      // Personal days. Fill these in as 'MM-DD' (birthday) and 'YYYY-MM-DD' (first stream); they beat holidays.
+      const BIRTHDAY = '04-12';
+      const STREAM_START = '2021-06-10';
+      const mmdd = `${String(M).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
+      let season = '';
+      if (STREAM_START && STREAM_START.slice(5) === mmdd && Y > Number(STREAM_START.slice(0, 4))) {
+        season = 'anniversary';
+        document.documentElement.dataset.streamYears = String(Y - Number(STREAM_START.slice(0, 4)));
+      } else if (BIRTHDAY && BIRTHDAY === mmdd) season = 'birthday';
+      else if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
+      else if (M === 1 && D === nth(1, 1, 3)) season = 'mlk';
+      else if (M === 2 && (D === 13 || D === 14)) season = 'valentines';
+      else if (M === 2 && D === nth(2, 1, 3)) season = 'presidents';
+      else if (M === 3 && D === 17) season = 'stpatricks';
+      else if (within(easterM, easterD, 2, 0)) season = 'easter';
+      else if (M === 5 && D === nth(5, 0, 2)) season = 'mothers';
+      else if (M === 5 && D === last(5, 1)) season = 'memorial';
+      else if (M === 6 && D === nth(6, 0, 3)) season = 'fathers';
+      else if (M === 6 && D === 19) season = 'juneteenth';
+      else if (M === 7 && (D === 3 || D === 4)) season = 'july4';
+      else if (M === 9 && D === nth(9, 1, 1)) season = 'labor';
+      else if (M === 10) season = 'spooky';
+      else if (M === 11 && D === 11) season = 'veterans';
+      else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
+      else if (M === 12) season = 'holiday';
+      try {
+        const override = new URLSearchParams(location.search).get('season');
+        if (override) season = override === 'off' ? '' : override;
+      } catch {}
+      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = String(Math.max(1, Y - Number((STREAM_START || String(Y - 1)).slice(0, 4))));
+      if (season) document.documentElement.dataset.season = season;
+
+      // Late-night mode: midnight to 5 AM Eastern. Preview with ?latenight=1 (or 0 to turn off)
+      const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));
+      let late = hour >= 0 && hour < 5;
+      try {
+        const lp = new URLSearchParams(location.search).get('latenight');
+        if (lp !== null) late = lp === '1';
+      } catch {}
+      if (late) document.documentElement.dataset.latenight = '';
+    })();
+  </script>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <div class="site-wrapper">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/" class="nav-brand">Dismeigh</a>
+      <a href="/#live">Live</a>
+      <a href="/#schedule">Schedule</a>
+      <a href="/#bounties">Bounties</a>
+      <a href="/#highlights">Clips</a>
+      <a href="/garage/">Garage</a>
+      <a href="/work/">Work</a>
+      <button class="nav-more" type="button" aria-expanded="false" aria-controls="nav-menu">More</button>
+      <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
+    </nav>
+    <div class="nav-menu" id="nav-menu" hidden>
+      <a href="/#support-heading">Support &amp; Shop</a>
+      <a href="/lore/">Channel Lore</a>
+      <a href="/rewind/">Dismeigh Rewind</a>
+      <a href="/install/" data-install>Get the app</a>
+    </div>
+
+    <main id="main-content" class="split-main" tabindex="-1">
+      <section id="event" class="content-section event-section sweep" aria-labelledby="ev-title">
+        <div class="section-kicker"><span>Special</span> <span id="ev-type">Event</span></div>
+        <div class="ev-loading" id="ev-loading"><p>Loading the event&hellip;</p></div>
+
+        <div class="ev-empty" id="ev-empty" hidden>
+          <h1 class="split-title">No event right now</h1>
+          <p>Big streams like subathons and charity streams get their own page here, with a countdown, goal tracker and schedule. Nothing&rsquo;s planned at the moment.</p>
+          <p class="ev-actions"><a class="social-btn" href="/#schedule">See the regular schedule</a></p>
+        </div>
+
+        <div class="ev-body" id="ev-body" hidden>
+          <p class="ev-status"><span class="ev-badge" id="ev-badge">Coming up</span></p>
+          <h1 class="split-title" id="ev-title">Event</h1>
+          <p class="ev-when" id="ev-when"></p>
+          <div class="ev-clock" id="ev-clock" role="timer" aria-live="off">
+            <p class="ev-clock-label" id="ev-clock-label">Starts in</p>
+            <div class="ev-clock-digits">
+              <span><b id="ev-d">0</b><small>days</small></span>
+              <span><b id="ev-h">00</b><small>hours</small></span>
+              <span><b id="ev-m">00</b><small>min</small></span>
+              <span><b id="ev-s">00</b><small>sec</small></span>
+            </div>
+          </div>
+          <p class="ev-desc" id="ev-desc" hidden></p>
+          <div class="ev-goal" id="ev-goal" hidden>
+            <div class="ev-goal-top"><p class="ev-goal-label" id="ev-goal-label">Goal</p><p class="ev-goal-nums" id="ev-goal-nums"></p></div>
+            <div class="ev-goal-bar" role="progressbar" id="ev-goal-bar" aria-valuemin="0"><span id="ev-goal-fill"></span></div>
+            <a class="social-btn ev-goal-link" id="ev-goal-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Chip in</a>
+          </div>
+          <p class="ev-actions">
+            <a class="social-btn ev-watch" id="ev-watch" href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+            <a class="social-btn" href="/#schedule">Regular schedule</a>
+          </p>
+          <div class="ev-schedule-wrap" id="ev-schedule-wrap" hidden>
+            <h2>Run of show</h2>
+            <ol class="ev-schedule" id="ev-schedule"></ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="footer-signoff">See you next session.</p>
+      <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
+      <p class="footer-brand">Dismeigh</p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
+      <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
+      <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+  {
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const io = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.sweep').forEach(el => io.observe(el));
+
+    const $ = id => document.getElementById(id);
+    const TYPES = { subathon: 'Subathon', charity: 'Charity stream', special: 'Special stream' };
+    const tz = { timeZone: 'America/New_York' };
+    const dayFmt = new Intl.DateTimeFormat('en-US', { ...tz, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const timeFmt = new Intl.DateTimeFormat('en-US', { ...tz, weekday: 'short', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    const fullFmt = new Intl.DateTimeFormat('en-US', { ...tz, weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+
+    // Preview with ?preview=upcoming | live | ended (sample event, not real data)
+    const sample = phase => {
+      const now = Date.now(), H = 3600000;
+      const start = phase === 'upcoming' ? now + 50 * H + 754000 : phase === 'live' ? now - 5 * H : now - 30 * H;
+      return { title: '24-Hour Subathon', type: 'subathon', start: new Date(start).toISOString(), end: new Date(start + 24 * H).toISOString(),
+        description: 'Every sub adds time to the clock. Garage talk, horror games at midnight, and Bounty Run challenges with chat.',
+        goal: { label: 'Subs toward the new emotes', current: phase === 'upcoming' ? 0 : phase === 'live' ? 37 : 81, target: 75, unit: 'subs' },
+        schedule: [0, 3, 7, 12, 16, 21].map((h, i) => ({ time: new Date(start + h * H).toISOString(),
+          title: ['Kickoff and garage talk', 'Bounty Run with chat', 'Co-op chaos', 'Midnight horror', 'Sleepy stream', 'Final push'][i] })) };
+    };
+
+    let ev = null, tick = null;
+    const pad = n => String(n).padStart(2, '0');
+    function render() {
+      const now = Date.now();
+      const start = Date.parse(ev.start), end = Date.parse(ev.end);
+      const phase = now < start ? 'upcoming' : now < end ? 'live' : 'ended';
+      document.body.dataset.eventPhase = phase;
+      $('ev-badge').textContent = phase === 'upcoming' ? 'Coming up' : phase === 'live' ? 'Live now' : 'That’s a wrap';
+      const target = phase === 'upcoming' ? start : end;
+      $('ev-clock').hidden = phase === 'ended';
+      $('ev-clock-label').textContent = phase === 'upcoming' ? 'Starts in' : 'Time left on the clock';
+      let s = Math.max(0, Math.floor((target - now) / 1000));
+      $('ev-d').textContent = Math.floor(s / 86400); s %= 86400;
+      $('ev-h').textContent = pad(Math.floor(s / 3600)); $('ev-m').textContent = pad(Math.floor(s % 3600 / 60)); $('ev-s').textContent = pad(s % 60);
+      $('ev-watch').textContent = phase === 'live' ? 'Watch live on Twitch' : phase === 'upcoming' ? 'Follow on Twitch' : 'Catch the VODs on Twitch';
+      $('ev-schedule').querySelectorAll('li').forEach(li => {
+        const t = Number(li.dataset.t), next = Number(li.dataset.next);
+        li.classList.toggle('is-now', phase === 'live' && now >= t && now < next);
+        li.classList.toggle('is-past', now >= next);
+      });
+    }
+
+    function show(e) {
+      ev = e;
+      $('ev-loading').hidden = true;
+      const valid = ev && ev.title && !isNaN(Date.parse(ev.start)) && !isNaN(Date.parse(ev.end));
+      if (!valid) { $('ev-empty').hidden = false; document.title = 'Event | Dismeigh'; return; }
+      $('ev-body').hidden = false;
+      $('ev-type').textContent = TYPES[ev.type] || 'Event';
+      $('ev-title').textContent = ev.title;
+      document.title = `${ev.title} | Dismeigh`;
+      $('ev-when').textContent = `${fullFmt.format(new Date(ev.start))} to ${dayFmt.format(new Date(ev.end))}`;
+      if (ev.description) { $('ev-desc').textContent = ev.description; $('ev-desc').hidden = false; }
+      if (ev.link) $('ev-watch').href = ev.link;
+      const g = ev.goal;
+      if (g && Number(g.target) > 0) {
+        const cur = Math.max(0, Number(g.current) || 0), tgt = Number(g.target);
+        const money = g.unit === '$';
+        const fmt = n => money ? `$${n.toLocaleString()}` : `${n.toLocaleString()}${g.unit ? ` ${g.unit}` : ''}`;
+        $('ev-goal').hidden = false;
+        $('ev-goal-label').textContent = g.label || 'Goal';
+        $('ev-goal-nums').textContent = `${money ? fmt(cur) : cur.toLocaleString()} of ${fmt(tgt)}${cur >= tgt ? ' · Goal smashed!' : ''}`;
+        $('ev-goal-fill').style.width = `${Math.min(100, (cur / tgt) * 100)}%`;
+        const bar = $('ev-goal-bar');
+        bar.setAttribute('aria-valuemax', String(tgt)); bar.setAttribute('aria-valuenow', String(cur)); bar.setAttribute('aria-label', g.label || 'Goal');
+        if (cur >= tgt) $('ev-goal').classList.add('is-done');
+        if (g.url) { const a = $('ev-goal-link'); a.href = g.url; a.hidden = false; a.textContent = money ? 'Donate' : 'Chip in'; }
+      }
+      const items = (ev.schedule || []).filter(x => x && x.title && !isNaN(Date.parse(x.time))).sort((a, b) => Date.parse(a.time) - Date.parse(b.time));
+      if (items.length) {
+        $('ev-schedule-wrap').hidden = false;
+        $('ev-schedule').replaceChildren(...items.map((x, i) => {
+          const li = document.createElement('li');
+          li.dataset.t = Date.parse(x.time);
+          li.dataset.next = i + 1 < items.length ? Date.parse(items[i + 1].time) : Date.parse(ev.end);
+          const t = document.createElement('span'); t.className = 'ev-sched-time'; t.textContent = timeFmt.format(new Date(x.time));
+          const n = document.createElement('span'); n.className = 'ev-sched-title'; n.textContent = x.title;
+          li.append(t, n);
+          return li;
+        }));
+      }
+      render();
+      tick = setInterval(render, 1000);
+    }
+
+    const preview = new URLSearchParams(location.search).get('preview');
+    if (preview) show(sample(preview));
+    else fetch('/events.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => show(d?.event || null)).catch(() => show(null));
+  }
+  </script>
+  <script src="/app.js?v=35" defer></script>
+</body>
+</html>

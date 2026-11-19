@@ -1,0 +1,4 @@
+{
+  "note": "Event page (/event/). Set \"event\" to null when nothing is planned. Fields: title, type (subathon | charity | special), start and end (ISO with offset, e.g. 2026-12-12T12:00:00-05:00), description (optional), link (optional, defaults to Twitch), goal (optional: label, current, target, unit like \"$\" or \"subs\", url for a donate page), schedule (optional list of { time, title }). The home page shows a callout from 7 days before the start until 3 days after the end.",
+  "event": null
+}

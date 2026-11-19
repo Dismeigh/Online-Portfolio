@@ -1,0 +1,20 @@
+# Browser caching. Pages and data keep Cloudflare's default (always re-check), so updates show right away.
+# Styles and scripts are loaded with ?v= version numbers, so browsers can keep them for 30 days.
+/styles.css
+  Cache-Control: public, max-age=2592000
+/app.js
+  Cache-Control: public, max-age=2592000
+/bounty-run.js
+  Cache-Control: public, max-age=2592000
+/drag-race.js
+  Cache-Control: public, max-age=2592000
+/assets/*
+  Cache-Control: public, max-age=604800
+/banner.webp
+  Cache-Control: public, max-age=604800
+/banner-800.webp
+  Cache-Control: public, max-age=604800
+/avatar-280.jpg
+  Cache-Control: public, max-age=604800
+/sw.js
+  Cache-Control: no-cache
