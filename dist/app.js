@@ -107,7 +107,7 @@
         b.addEventListener('click', signIn);
         const note = document.createElement('p');
         note.className = 'account-note';
-        note.textContent = 'Save your secrets across devices and join the Hall of Fame.';
+        note.textContent = 'Save your secrets across devices.';
         box.append(b, note);
         return;
       }
@@ -129,18 +129,6 @@
       });
       actions.append(out, document.createTextNode(' · '), del);
       box.append(who);
-      const total = Object.keys(SECRETS).length;
-      if (me.secrets.filter(x => SECRETS[x]).length >= total) {
-        const label = document.createElement('label');
-        label.className = 'hall-optin';
-        const cb = document.createElement('input');
-        cb.type = 'checkbox'; cb.checked = me.showInHall;
-        cb.addEventListener('change', async () => { const r = await post('/api/me/hall', { show: cb.checked }).catch(() => null); if (r?.ok) me.showInHall = cb.checked; else cb.checked = !cb.checked; });
-        label.append(cb, document.createTextNode(' Show me in the '));
-        const a = document.createElement('a'); a.href = '/hall/'; a.textContent = 'Hall of Fame';
-        label.append(a);
-        box.append(label);
-      }
       box.append(actions);
     }
 
