@@ -1766,3 +1766,92 @@ body.subpage { overflow-x: clip; }
   .rw-grid, .lore-grid { grid-template-columns: 1fr; }
   .lore-card, .rw-tile { transform: none !important; }
 }
+
+/* Bonus Features */
+.extras-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; margin-top: 1.2rem; }
+.extra-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.2rem 1.2rem 1.3rem;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.extra-card[hidden] { display: none; }
+a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shadow: 10px 10px 0 var(--red); }
+.extra-tag { font-family: var(--typed); font-size: 0.85rem; color: var(--red); }
+.extra-title { font-family: var(--display); font-size: 1.9rem; line-height: 1; text-transform: uppercase; }
+.extra-copy { color: #2a241f; font-size: 0.95rem; line-height: 1.5; }
+.extra-go { margin-top: auto; padding-top: 0.5rem; font-weight: 800; text-decoration: underline; text-decoration-color: var(--red); text-underline-offset: 3px; }
+.extra-install { background: var(--ink-3); color: var(--paper); border: 2px dashed var(--mustard); box-shadow: none; }
+.extra-install .extra-tag { color: var(--mustard); }
+.extra-install .extra-copy { color: var(--paper-dim); }
+.extra-btn { margin-top: auto; align-self: flex-start; }
+.extra-btn[hidden] { display: none; }
+.install-help { margin: 0.4rem 0 0 !important; padding: 0.6rem 0.7rem; background: var(--ink); border-left: 4px solid var(--mustard); color: var(--paper) !important; font-size: 0.9rem; }
+.install-help[hidden] { display: none; }
+.footer-install {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mustard);
+  font: 600 0.9rem var(--body);
+  cursor: pointer;
+}
+.footer-install:hover { text-decoration: underline; }
+.footer-install[hidden], [data-install-sep][hidden] { display: none; }
+
+/* Fuel gauge: scroll progress under the nav on touch devices */
+.fuel-gauge { display: none; }
+@media (pointer: coarse), (max-width: 760px) {
+  .fuel-gauge {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    pointer-events: none;
+  }
+  .fuel-gauge span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--paper) 60%, var(--red));
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+}
+
+/* Tap shockwave on touchscreens */
+.tap-wave {
+  position: fixed;
+  z-index: 1250;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(20, 17, 15, 0.6);
+  animation: tapWave 0.6s ease-out forwards;
+}
+.tap-wave::before, .tap-wave::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px rgba(20, 17, 15, 0.5);
+}
+.tap-wave::before { width: 2px; height: 64px; margin: -32px 0 0 -1px; clip-path: polygon(0 0, 100% 0, 100% 22%, 0 22%, 0 78%, 100% 78%, 100% 100%, 0 100%); }
+.tap-wave::after { width: 64px; height: 2px; margin: -1px 0 0 -32px; clip-path: polygon(0 0, 22% 0, 22% 100%, 0 100%, 0 0, 78% 0, 100% 0, 100% 100%, 78% 100%); }
+@keyframes tapWave {
+  0% { transform: scale(0.3) rotate(0deg); opacity: 1; border-color: var(--mustard); }
+  100% { transform: scale(1.5) rotate(45deg); opacity: 0; }
+}
+
+@media (max-width: 760px) { .extras-grid { grid-template-columns: 1fr; } }
+@media (max-width: 400px) { .site-nav a { font-size: 0.68rem; padding-inline: 0.22rem; } }

@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=22">
+  <link rel="stylesheet" href="styles.css?v=23">
 
   <!-- Font Awesome icons -->
   <link
@@ -180,6 +180,8 @@
       <a href="#garage">Garage</a>
       <a href="#highlights">Clips</a>
       <a href="#support-heading">Support</a>
+      <a href="#extras">Extras</a>
+      <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
     </nav>
 
     <!-- HERO -->
@@ -637,6 +639,33 @@
           </article>
         </div>
       </section>
+
+      <section id="extras" class="content-section extras-section sweep" aria-labelledby="extras-heading">
+        <div class="section-kicker"><span>Session 07</span> Bonus Features</div>
+        <h2 id="extras-heading">Bonus Features</h2>
+        <p>The deleted scenes and director&rsquo;s cut: deep lore, the year in streams, and the whole ship in your pocket.</p>
+        <div class="extras-grid">
+          <a class="extra-card" href="/lore/">
+            <span class="extra-tag">Case files</span>
+            <span class="extra-title">Channel Lore</span>
+            <span class="extra-copy">New here? The running jokes and legendary moments chat keeps bringing up, explained.</span>
+            <span class="extra-go">Open the files <span aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="extra-card" href="/rewind/">
+            <span class="extra-tag">Year in review</span>
+            <span class="extra-title">Dismeigh Rewind</span>
+            <span class="extra-copy">Hours streamed, most-played games and the busiest nights, pulled straight from the schedule.</span>
+            <span class="extra-go">Roll the tape <span aria-hidden="true">&rarr;</span></span>
+          </a>
+          <div class="extra-card extra-install" data-install-card>
+            <span class="extra-tag">Take it with you</span>
+            <span class="extra-title">Get the app</span>
+            <span class="extra-copy">Add the site to your home screen. It opens full screen, like an app, with the schedule one tap away.</span>
+            <button type="button" class="social-btn extra-btn" data-install>Install the app</button>
+            <p class="install-help" data-install-help hidden></p>
+          </div>
+        </div>
+      </section>
     </main>
 
     <dialog class="lightbox" id="lightbox" aria-label="Car photo viewer">
@@ -661,7 +690,7 @@
     <footer class="footer">
       <p class="footer-signoff">See you next session.</p>
       <p class="footer-brand">Dismeigh</p>
-      <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a></p>
+      <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <button type="button" class="footer-install" data-install>Get the app</button></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -1110,6 +1139,7 @@
     });
 
     window.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'mouse') return; // touchscreens get the crosshair shockwave (app.js)
       for (let index = 0; index < 6; index += 1) {
         const spark = document.createElement('span');
         spark.className = 'click-spark';
@@ -1335,6 +1365,7 @@
       }
       document.body.append(burst);
       setTimeout(() => burst.remove(), 6000);
+      window.dismeighBuzz?.([60, 80, 60, 80, 200]);
     })();
 
     // Build progress meter, counted from the build sheet lists
