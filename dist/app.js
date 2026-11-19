@@ -124,48 +124,28 @@
 
   // Install as an app
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-  const ua = navigator.userAgent;
-  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const isAndroid = /Android/i.test(ua);
   let deferredPrompt = null;
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
-  window.addEventListener('appinstalled', () => { deferredPrompt = null; hideInstall(); });
+  window.addEventListener('appinstalled', () => { deferredPrompt = null; hideInstall(); if (quick) quick.hidden = true; });
 
   function hideInstall() {
     document.querySelectorAll('[data-install-card], [data-install], [data-install-sep]').forEach(el => { el.hidden = true; });
   }
   if (standalone) hideInstall();
 
-  function showHelp(text) {
-    const help = document.querySelector('[data-install-help]');
-    if (help) {
-      help.textContent = text;
-      help.hidden = false;
-      document.querySelector('[data-install-card]')?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
-    } else {
-      toast('Get the app', text);
-    }
-  }
-
-  document.querySelectorAll('[data-install]').forEach(btn => btn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice.catch(() => null);
-      deferredPrompt = null;
-      if (choice?.outcome === 'accepted') hideInstall();
-      return;
-    }
-    if (isIOS) {
-      const safari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
-      showHelp(safari
-        ? 'Tap the Share button at the bottom of Safari, then choose \u201cAdd to Home Screen.\u201d'
-        : 'Open this page in Safari, tap Share, then choose \u201cAdd to Home Screen.\u201d');
-    } else if (isAndroid) {
-      showHelp('Open your browser menu (\u22ee) and choose \u201cInstall app\u201d or \u201cAdd to Home screen.\u201d');
-    } else {
-      showHelp('Look for the install icon at the right end of your address bar, or use your browser menu and choose \u201cInstall\u201d. Chrome and Edge support it.');
-    }
-  }));
+  // On the install page: offer the one-tap install where the browser supports it
+  const quick = document.getElementById('ins-quick');
+  const showQuick = () => { if (quick && deferredPrompt && !standalone) quick.hidden = false; };
+  window.addEventListener('beforeinstallprompt', showQuick);
+  showQuick();
+  document.getElementById('ins-now')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice.catch(() => null);
+    deferredPrompt = null;
+    quick.hidden = true;
+    if (choice?.outcome === 'accepted') document.getElementById('ins-installed').hidden = false;
+  });
 })();
 
 // Clean up the language setting from the removed Spanish toggle
