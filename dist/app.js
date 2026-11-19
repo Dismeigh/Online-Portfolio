@@ -14,7 +14,7 @@
       let last = 0;
       window.addEventListener('pointermove', e => {
         const now = performance.now();
-        if (now - last < 35 || e.pointerType !== 'mouse') return;
+        if (now - last < 45 || e.pointerType !== 'mouse') return;
         last = now;
         const dot = document.createElement('span');
         dot.className = 'ship-trail';
