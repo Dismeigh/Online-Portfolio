@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Garage | Dismeigh</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta
+    name="description"
+    content="Sojourn ST, a 2014 Ford Focus ST: the build sheet, the mods done and planned, and photos from the garage."
+  >
+  <meta name="author" content="Dismeigh">
+  <link rel="canonical" href="https://www.denizen-dismeigh.com/garage/">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dismeigh">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.denizen-dismeigh.com/garage/">
+  <meta property="og:title" content="The Garage | Dismeigh">
+  <meta
+    property="og:description"
+    content="Sojourn ST, a 2014 Ford Focus ST: the build sheet, the mods done and planned, and photos from the garage."
+  >
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
+  <meta property="og:site_name" content="Dismeigh">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Garage | Dismeigh">
+  <meta
+    name="twitter:description"
+    content="Sojourn ST, a 2014 Ford Focus ST: the build sheet, the mods done and planned, and photos from the garage."
+  >
+  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta name="twitter:image:alt" content="Dismeigh: VTuber, car enthusiast, voice actor and creative developer">
+
+  <!-- Dark UI hints for iOS / Discord / Chrome -->
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+
+  <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -> v=4 -> v=5 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=31">
+
+  <!-- Font Awesome icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+</head>
+
+<body class="page-split page-garage">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <script>
+    // Seasonal and holiday looks, by Eastern date. Preview any with ?season=<key> (or ?season=off).
+    // Keys: newyear, mlk, valentines, presidents, stpatricks, easter, mothers, memorial, fathers,
+    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December), birthday, anniversary
+    (() => {
+      const now = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' })
+        .formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, Number(p.value)]));
+      const Y = now.year, M = now.month, D = now.day;
+      const dow = (m, d) => new Date(Date.UTC(Y, m - 1, d)).getUTCDay();
+      const nth = (m, weekday, n) => { const first = (7 + weekday - dow(m, 1)) % 7 + 1; return first + (n - 1) * 7; };
+      const last = (m, weekday) => { const days = new Date(Date.UTC(Y, m, 0)).getUTCDate(); return days - (7 + dow(m, days) - weekday) % 7; };
+      // Easter (Anonymous Gregorian algorithm)
+      const a = Y % 19, b = Math.floor(Y / 100), c = Y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+        g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+        l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const easterM = Math.floor((h + l - 7 * m + 114) / 31), easterD = ((h + l - 7 * m + 114) % 31) + 1;
+      const dayNum = (mm, dd) => Date.UTC(Y, mm - 1, dd) / 86400000;
+      const today = dayNum(M, D);
+      const within = (mm, dd, before = 0, after = 0) => today >= dayNum(mm, dd) - before && today <= dayNum(mm, dd) + after;
+      const thanksgiving = nth(11, 4, 4);
+
+      // Personal days. Fill these in as 'MM-DD' (birthday) and 'YYYY-MM-DD' (first stream); they beat holidays.
+      const BIRTHDAY = '04-12';
+      const STREAM_START = '2021-06-10';
+      const mmdd = `${String(M).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
+      let season = '';
+      if (STREAM_START && STREAM_START.slice(5) === mmdd && Y > Number(STREAM_START.slice(0, 4))) {
+        season = 'anniversary';
+        document.documentElement.dataset.streamYears = String(Y - Number(STREAM_START.slice(0, 4)));
+      } else if (BIRTHDAY && BIRTHDAY === mmdd) season = 'birthday';
+      else if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
+      else if (M === 1 && D === nth(1, 1, 3)) season = 'mlk';
+      else if (M === 2 && (D === 13 || D === 14)) season = 'valentines';
+      else if (M === 2 && D === nth(2, 1, 3)) season = 'presidents';
+      else if (M === 3 && D === 17) season = 'stpatricks';
+      else if (within(easterM, easterD, 2, 0)) season = 'easter';
+      else if (M === 5 && D === nth(5, 0, 2)) season = 'mothers';
+      else if (M === 5 && D === last(5, 1)) season = 'memorial';
+      else if (M === 6 && D === nth(6, 0, 3)) season = 'fathers';
+      else if (M === 6 && D === 19) season = 'juneteenth';
+      else if (M === 7 && (D === 3 || D === 4)) season = 'july4';
+      else if (M === 9 && D === nth(9, 1, 1)) season = 'labor';
+      else if (M === 10) season = 'spooky';
+      else if (M === 11 && D === 11) season = 'veterans';
+      else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
+      else if (M === 12) season = 'holiday';
+      try {
+        const override = new URLSearchParams(location.search).get('season');
+        if (override) season = override === 'off' ? '' : override;
+      } catch {}
+      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = String(Math.max(1, Y - Number((STREAM_START || String(Y - 1)).slice(0, 4))));
+      if (season) document.documentElement.dataset.season = season;
+
+      // Late-night mode: midnight to 5 AM Eastern. Preview with ?latenight=1 (or 0 to turn off)
+      const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));
+      let late = hour >= 0 && hour < 5;
+      try {
+        const lp = new URLSearchParams(location.search).get('latenight');
+        if (lp !== null) late = lp === '1';
+      } catch {}
+      if (late) document.documentElement.dataset.latenight = '';
+    })();
+  </script>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <div class="site-wrapper">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#top" class="nav-brand">Dismeigh</a>
+      <a href="#live">Live</a>
+      <a href="#schedule">Schedule</a>
+      <a href="#bounties">Bounties</a>
+      <a href="#highlights">Clips</a>
+      <a href="/garage/" aria-current="page">Garage</a>
+      <a href="/work/">Work</a>
+      <button class="nav-more" type="button" aria-expanded="false" aria-controls="nav-menu">More</button>
+      <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
+    </nav>
+    <div class="nav-menu" id="nav-menu" hidden>
+      <a href="#support-heading">Support &amp; Shop</a>
+      <a href="/lore/">Channel Lore</a>
+      <a href="/rewind/">Dismeigh Rewind</a>
+      <a href="/install/" data-install>Get the app</a>
+    </div>
+
+    <main id="main-content" class="split-main" tabindex="-1">
+      <section id="garage" class="content-section garage-section sweep">
+        <div class="section-kicker"><span>Side B</span> The Garage</div>
+        <div class="garage-layout">
+          <div class="garage-copy">
+            <h1 class="split-title">Cars Are Part Of The Lore</h1>
+            <p>
+              I’m not here to pretend cars are just a side interest. The garage brain is real:
+              dream builds, meets, mods I probably should not price-check, and the kind of car talk
+              that turns a normal stream into a whole hangout.
+            </p>
+            <p class="garage-ride">
+              The ride:
+              <a href="https://instagram.com/sojourn_st" target="_blank" rel="noopener noreferrer" aria-label="Sojourn ST on Instagram">
+                <strong>Sojourn ST</strong> <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+              </a>
+            </p>
+          </div>
+
+          <div class="garage-meter" aria-label="Garage style meter">
+            <div class="bounty-tag">Bounty: one more mod</div>
+            <div class="meter-face">
+              <span>RPM</span>
+              <strong>7.2k</strong>
+            </div>
+            <div class="meter-needle"></div>
+          </div>
+        </div>
+
+        <div class="garage-gallery" id="garage-gallery" aria-label="Car photo gallery. Select a photo to view it full screen.">
+          <figure class="garage-photo garage-photo-tall">
+            <img src="/assets/cars/car-01.jpg" loading="lazy" decoding="async" alt="Sojourn ST, a blue hatchback, parked at night in a city garage">
+          </figure>
+          <figure class="garage-photo garage-photo-wide">
+            <img src="/assets/cars/car-02-800.jpg" srcset="/assets/cars/car-02-800.jpg 600w, /assets/cars/car-02.jpg 1200w" sizes="(max-width: 480px) 92vw, 60vw" data-full="/assets/cars/car-02.jpg" loading="lazy" decoding="async" alt="Sojourn ST under a dramatic cloudy sunset sky">
+          </figure>
+          <figure class="garage-photo">
+            <img src="/assets/cars/car-03-800.jpg" srcset="/assets/cars/car-03-800.jpg 800w, /assets/cars/car-03.jpg 1600w" sizes="(max-width: 480px) 92vw, 30vw" data-full="/assets/cars/car-03.jpg" loading="lazy" decoding="async" alt="Two cars facing each other at sunset">
+          </figure>
+          <figure class="garage-photo">
+            <img src="/assets/cars/car-04-800.jpg" srcset="/assets/cars/car-04-800.jpg 800w, /assets/cars/car-04.jpg 1600w" sizes="(max-width: 480px) 92vw, 30vw" data-full="/assets/cars/car-04.jpg" loading="lazy" decoding="async" alt="Two cars silhouetted at sunset">
+          </figure>
+        </div>
+
+        <article class="build-sheet" aria-labelledby="build-sheet-title">
+          <header class="build-head">
+            <p class="build-kicker">Build sheet</p>
+            <h3 id="build-sheet-title">Sojourn ST</h3>
+            <p class="build-car">2014 Ford Focus ST</p>
+            <p class="build-score"><strong id="build-done-count">9</strong> done <span aria-hidden="true">&middot;</span> <strong id="build-planned-count">12</strong> on the list</p>
+          </header>
+          <div class="build-progress">
+            <div class="build-progress-track" role="progressbar" aria-label="Build progress" aria-valuemin="0" aria-valuemax="100" id="build-progress-bar">
+              <span class="build-progress-fill" id="build-progress-fill"></span>
+            </div>
+            <p class="build-progress-label" id="build-progress-label"></p>
+          </div>
+          <div class="build-cols">
+            <section class="build-col build-done" aria-label="Mods done">
+              <h4>Done</h4>
+              <ul>
+                <li>Turbosmart BOV</li>
+                <li>Borla catback exhaust</li>
+                <li>Whoosh catless DP with J-style defouler</li>
+                <li>Levels Performance intercooler</li>
+                <li>Aluminum CVF cold side charge pipe</li>
+                <li>Radium PCV oil catch can</li>
+                <li>ACANII headlights</li>
+                <li>Black sequential mirror signals</li>
+                <li>93 tune by Stratified</li>
+              </ul>
+            </section>
+            <section class="build-col build-planned" aria-label="Mods planned">
+              <h4>Planned</h4>
+              <ul>
+                <li>Quarterpanel repair and repaint</li>
+                <li>Boomba BOV</li>
+                <li>Tune by Alan at Edge Auto Sports</li>
+                <li>Kansei KNP Hyper Silver wheels</li>
+                <li>H&amp;R Sport lowering springs</li>
+                <li>Bilstein B8 performance struts/shocks</li>
+                <li>Ikon Motorsports front lip</li>
+                <li>Vega Motorsports side skirts</li>
+                <li>Vega V3 rear diffuser</li>
+                <li>Hatch-mounted rear wing</li>
+                <li>Blue HPS silicone radiator hoses</li>
+                <li>Mishimoto hot side charge pipe</li>
+              </ul>
+            </section>
+          </div>
+        </article>
+      </section>
+
+    </main>
+
+    <dialog class="lightbox" id="lightbox" aria-label="Car photo viewer">
+      <figure class="lightbox-figure">
+        <img id="lightbox-img" alt="">
+        <figcaption id="lightbox-caption"></figcaption>
+      </figure>
+      <button class="lightbox-btn lightbox-close" type="button" id="lightbox-close" aria-label="Close photo viewer"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <button class="lightbox-btn lightbox-prev" type="button" id="lightbox-prev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+      <button class="lightbox-btn lightbox-next" type="button" id="lightbox-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+      <p class="lightbox-count" id="lightbox-count"></p>
+    </dialog>
+
+
+    <footer class="footer">
+      <p class="footer-signoff">See you next session.</p>
+      <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
+      <p class="footer-brand">Dismeigh</p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
+      <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
+      <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+  {
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Title-card wipe: plays once per section, the first time it scrolls into view
+    const io = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.sweep').forEach(el => io.observe(el));
+
+    // Garage photo viewer
+    const galleryImages = [...document.querySelectorAll('#garage-gallery img')];
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxCount = document.getElementById('lightbox-count');
+    let photoIndex = 0;
+
+    function showPhoto(index) {
+      photoIndex = (index + galleryImages.length) % galleryImages.length;
+      const source = galleryImages[photoIndex];
+      lightboxImg.src = source.dataset.full || source.currentSrc || source.src;
+      lightboxImg.alt = source.alt;
+      lightboxCaption.textContent = source.alt;
+      lightboxCount.textContent = `${photoIndex + 1} / ${galleryImages.length}`;
+    }
+
+    if (lightbox && typeof lightbox.showModal === 'function') {
+      galleryImages.forEach((img, index) => {
+        const figure = img.closest('figure');
+        figure.tabIndex = 0;
+        figure.setAttribute('role', 'button');
+        figure.setAttribute('aria-label', `View photo ${index + 1} full screen: ${img.alt}`);
+        const open = () => { showPhoto(index); lightbox.showModal(); };
+        figure.addEventListener('click', open);
+        figure.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
+      document.getElementById('lightbox-close').addEventListener('click', () => lightbox.close());
+      document.getElementById('lightbox-prev').addEventListener('click', () => showPhoto(photoIndex - 1));
+      document.getElementById('lightbox-next').addEventListener('click', () => showPhoto(photoIndex + 1));
+      lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.close(); });
+      lightbox.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') showPhoto(photoIndex - 1);
+        if (e.key === 'ArrowRight') showPhoto(photoIndex + 1);
+      });
+      let touchX = null;
+      lightbox.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+      lightbox.addEventListener('touchend', e => {
+        if (touchX === null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 50) showPhoto(photoIndex + (dx < 0 ? 1 : -1));
+        touchX = null;
+      });
+    }
+
+    // Build progress meter, counted from the build sheet lists
+    (() => {
+      const done = document.querySelectorAll('.build-done li').length;
+      const planned = document.querySelectorAll('.build-planned li').length;
+      document.getElementById('build-done-count').textContent = done;
+      document.getElementById('build-planned-count').textContent = planned;
+
+      const total = done + planned;
+      if (!total) return;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('build-progress-label').textContent = `${done} of ${total} mods · ${pct}% built`;
+      const bar = document.getElementById('build-progress-bar');
+      bar.setAttribute('aria-valuenow', String(pct));
+      const fill = document.getElementById('build-progress-fill');
+      const io = new IntersectionObserver(entries => {
+        if (entries.some(e => e.isIntersecting)) { fill.style.width = `${pct}%`; io.disconnect(); }
+      }, { threshold: 0.3 });
+      io.observe(bar);
+    })();
+
+    // Secret 2: rev the garage gauge (3 quick clicks/taps) to hit the redline
+    const gauge = document.querySelector('.garage-meter');
+    let revs = [];
+    gauge?.addEventListener('click', () => {
+      const now = Date.now();
+      revs = revs.filter(t => now - t < 1500).concat(now);
+      gauge.classList.remove('is-revving'); void gauge.offsetWidth; gauge.classList.add('is-revving');
+      if (revs.length >= 3) {
+        revs = [];
+        gauge.classList.add('is-redline');
+        setTimeout(() => gauge.classList.remove('is-redline'), 2400);
+        window.dismeighUnlock?.('redline');
+      }
+    });
+
+  }
+  </script>
+  <script src="/app.js" defer></script>
+</body>
+</html>

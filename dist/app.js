@@ -205,6 +205,28 @@
     update();
   }
 
+  // "More" menu in the top nav
+  const moreBtn = document.querySelector('.nav-more');
+  const menu = document.getElementById('nav-menu');
+  if (moreBtn && menu) {
+    const place = () => {
+      const nav = moreBtn.closest('.site-nav').getBoundingClientRect();
+      const b = moreBtn.getBoundingClientRect();
+      menu.style.top = `${Math.round(nav.bottom)}px`;
+      menu.style.right = `${Math.max(8, Math.round(innerWidth - b.right))}px`;
+    };
+    const setOpen = open => {
+      menu.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open));
+      if (open) { place(); menu.querySelector('a:not([hidden])')?.focus({ preventScroll: true }); }
+    };
+    moreBtn.addEventListener('click', e => { e.stopPropagation(); setOpen(menu.hidden); });
+    document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target)) setOpen(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { setOpen(false); moreBtn.focus(); } });
+    menu.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+    window.addEventListener('resize', () => { if (!menu.hidden) place(); });
+    window.addEventListener('scroll', () => { if (!menu.hidden) place(); }, { passive: true });
+  }
+
   // Install as an app
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   let deferredPrompt = null;

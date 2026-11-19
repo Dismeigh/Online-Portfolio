@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=30">
+  <link rel="stylesheet" href="styles.css?v=31">
 
   <!-- Font Awesome icons -->
   <link
@@ -90,7 +90,7 @@
         "@type": "Organization",
         "@id": "https://www.denizen-dismeigh.com/#denizen-technologies",
         "name": "Denizen Technologies",
-        "url": "https://www.denizen-dismeigh.com/#work",
+        "url": "https://www.denizen-dismeigh.com/work/",
         "founder": { "@id": "https://www.denizen-dismeigh.com/#dismeigh" }
       }
     ]
@@ -191,12 +191,19 @@
       <a href="#top" class="nav-brand">Dismeigh</a>
       <a href="#live">Live</a>
       <a href="#schedule">Schedule</a>
-      <a href="#garage">Garage</a>
+      <a href="#bounties">Bounties</a>
       <a href="#highlights">Clips</a>
-      <a href="#support-heading">Support</a>
-      <a href="#extras">Extras</a>
+      <a href="/garage/">Garage</a>
+      <a href="/work/">Work</a>
+      <button class="nav-more" type="button" aria-expanded="false" aria-controls="nav-menu">More</button>
       <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
     </nav>
+    <div class="nav-menu" id="nav-menu" hidden>
+      <a href="#support-heading">Support &amp; Shop</a>
+      <a href="/lore/">Channel Lore</a>
+      <a href="/rewind/">Dismeigh Rewind</a>
+      <a href="/install/" data-install>Get the app</a>
+    </div>
 
     <!-- HERO -->
     <header class="hero" id="top" tabindex="-1">
@@ -413,105 +420,47 @@
       <section id="bounties" class="content-section bounty-section sweep" aria-labelledby="bounties-heading">
         <div class="section-kicker"><span>Side job</span> Bounty Board</div>
         <h2 id="bounties-heading">Bounty Board</h2>
-        <p>Challenges up for grabs on stream. When a bounty gets claimed, it gets stamped.</p>
+        <p>Challenges up for grabs on stream. When a bounty gets claimed, it gets stamped. Waiting for the next one? Take a Bounty Run below.</p>
         <div class="bounty-grid" id="bounty-grid" aria-live="polite"></div>
         <p class="bounty-empty" id="bounty-empty" hidden>The board&rsquo;s clear right now. New bounties get posted here, so check back.</p>
-      </section>
 
-      <section id="garage" class="content-section garage-section sweep">
-        <div class="section-kicker"><span>Session 03</span> The Garage</div>
-        <div class="garage-layout">
-          <div class="garage-copy">
-            <h2>Cars Are Part Of The Lore</h2>
-            <p>
-              I’m not here to pretend cars are just a side interest. The garage brain is real:
-              dream builds, meets, mods I probably should not price-check, and the kind of car talk
-              that turns a normal stream into a whole hangout.
-            </p>
-            <p class="garage-ride">
-              The ride:
-              <a href="https://instagram.com/sojourn_st" target="_blank" rel="noopener noreferrer" aria-label="Sojourn ST on Instagram">
-                <strong>Sojourn ST</strong> <i class="fa-brands fa-instagram" aria-hidden="true"></i>
-              </a>
-            </p>
+        <div class="bounty-run" id="bounty-run">
+          <div class="run-head">
+            <h3 id="bounty-run-heading">Bounty Run</h3>
+            <p>Dodge the rocks, grab the <b>B</b> chips for +50, and get your name on the board.</p>
           </div>
-
-          <div class="garage-meter" aria-label="Garage style meter">
-            <div class="bounty-tag">Bounty: one more mod</div>
-            <div class="meter-face">
-              <span>RPM</span>
-              <strong>7.2k</strong>
+          <div class="run-layout">
+            <div class="game-box" id="game-box">
+              <canvas id="game" role="img" aria-label="Bounty Run game. Drag inside the game, use the mouse, or the arrow keys to steer."></canvas>
+              <div class="game-hud" aria-hidden="true"><span>Score <b id="g-score">0</b></span><span>Best <b id="g-best">0</b></span></div>
+              <div class="game-overlay" id="g-overlay">
+                <p class="game-title" id="g-title">Bounty Run</p>
+                <p class="game-sub" id="g-sub" aria-live="polite">Phone: drag inside this box to steer. Computer: mouse, arrow keys or A and D.</p>
+                <form class="game-form" id="g-form" hidden>
+                  <label for="g-name">Name for the scoreboard</label>
+                  <input id="g-name" name="name" maxlength="10" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Up to 10 characters">
+                  <p class="game-msg" id="g-msg" role="alert"></p>
+                  <div class="game-form-btns"><button type="submit" id="g-post">Post score</button><button type="button" id="g-skip" class="game-skip">Skip</button></div>
+                </form>
+                <button type="button" class="game-start" id="g-start">Launch</button>
+              </div>
             </div>
-            <div class="meter-needle"></div>
-          </div>
-        </div>
-
-        <div class="garage-gallery" id="garage-gallery" aria-label="Car photo gallery. Select a photo to view it full screen.">
-          <figure class="garage-photo garage-photo-tall">
-            <img src="assets/cars/car-01.jpg" loading="lazy" decoding="async" alt="Sojourn ST, a blue hatchback, parked at night in a city garage">
-          </figure>
-          <figure class="garage-photo garage-photo-wide">
-            <img src="assets/cars/car-02-800.jpg" srcset="assets/cars/car-02-800.jpg 600w, assets/cars/car-02.jpg 1200w" sizes="(max-width: 480px) 92vw, 60vw" data-full="assets/cars/car-02.jpg" loading="lazy" decoding="async" alt="Sojourn ST under a dramatic cloudy sunset sky">
-          </figure>
-          <figure class="garage-photo">
-            <img src="assets/cars/car-03-800.jpg" srcset="assets/cars/car-03-800.jpg 800w, assets/cars/car-03.jpg 1600w" sizes="(max-width: 480px) 92vw, 30vw" data-full="assets/cars/car-03.jpg" loading="lazy" decoding="async" alt="Two cars facing each other at sunset">
-          </figure>
-          <figure class="garage-photo">
-            <img src="assets/cars/car-04-800.jpg" srcset="assets/cars/car-04-800.jpg 800w, assets/cars/car-04.jpg 1600w" sizes="(max-width: 480px) 92vw, 30vw" data-full="assets/cars/car-04.jpg" loading="lazy" decoding="async" alt="Two cars silhouetted at sunset">
-          </figure>
-        </div>
-
-        <article class="build-sheet" aria-labelledby="build-sheet-title">
-          <header class="build-head">
-            <p class="build-kicker">Build sheet</p>
-            <h3 id="build-sheet-title">Sojourn ST</h3>
-            <p class="build-car">2014 Ford Focus ST</p>
-            <p class="build-score"><strong id="build-done-count">9</strong> done <span aria-hidden="true">&middot;</span> <strong id="build-planned-count">12</strong> on the list</p>
-          </header>
-          <div class="build-progress">
-            <div class="build-progress-track" role="progressbar" aria-label="Build progress" aria-valuemin="0" aria-valuemax="100" id="build-progress-bar">
-              <span class="build-progress-fill" id="build-progress-fill"></span>
-            </div>
-            <p class="build-progress-label" id="build-progress-label"></p>
-          </div>
-          <div class="build-cols">
-            <section class="build-col build-done" aria-label="Mods done">
-              <h4>Done</h4>
-              <ul>
-                <li>Turbosmart BOV</li>
-                <li>Borla catback exhaust</li>
-                <li>Whoosh catless DP with J-style defouler</li>
-                <li>Levels Performance intercooler</li>
-                <li>Aluminum CVF cold side charge pipe</li>
-                <li>Radium PCV oil catch can</li>
-                <li>ACANII headlights</li>
-                <li>Black sequential mirror signals</li>
-                <li>93 tune by Stratified</li>
-              </ul>
-            </section>
-            <section class="build-col build-planned" aria-label="Mods planned">
-              <h4>Planned</h4>
-              <ul>
-                <li>Quarterpanel repair and repaint</li>
-                <li>Boomba BOV</li>
-                <li>Tune by Alan at Edge Auto Sports</li>
-                <li>Kansei KNP Hyper Silver wheels</li>
-                <li>H&amp;R Sport lowering springs</li>
-                <li>Bilstein B8 performance struts/shocks</li>
-                <li>Ikon Motorsports front lip</li>
-                <li>Vega Motorsports side skirts</li>
-                <li>Vega V3 rear diffuser</li>
-                <li>Hatch-mounted rear wing</li>
-                <li>Blue HPS silicone radiator hoses</li>
-                <li>Mishimoto hot side charge pipe</li>
-              </ul>
+            <section class="scoreboard" aria-labelledby="scoreboard-heading">
+              <h4 id="scoreboard-heading">Scoreboard</h4>
+              <div class="board-tabs" role="tablist" aria-label="Scoreboard">
+                <button type="button" role="tab" data-board="all" aria-selected="true">All-time</button>
+                <button type="button" role="tab" data-board="week" aria-selected="false">This week</button>
+              </div>
+              <ol class="board-list" id="board-list" aria-live="polite"></ol>
+              <p class="board-msg" id="board-msg">Loading the board&hellip;</p>
+              <p class="board-note">This week&rsquo;s board resets every Monday. Your personal best also saves on this device.</p>
             </section>
           </div>
-        </article>
+        </div>
       </section>
 
       <section id="highlights" class="content-section highlight-section sweep">
-        <div class="section-kicker"><span>Session 04</span> Highlights</div>
+        <div class="section-kicker"><span>Session 03</span> Highlights</div>
         <h2>Gaming Clip Chaos</h2>
         <p>
           Gaming clips, stream moments, and the best little bursts of chaos, playing right here without leaving the site.
@@ -580,102 +529,7 @@
         </div>
       </section>
 
-      <section id="work" class="content-section sweep">
-        <div class="section-kicker"><span>Session 05</span> Off the Clock</div>
-        <h2>The Usual Chaos</h2>
-        <div class="cards">
-          <article class="card sweep">
-            <h3>VTubing &amp; Content</h3>
-            <p>
-              Streams, clips, games, bits, and whatever turns into a memory because chat decided
-              to make it funnier than planned.
-            </p>
-          </article>
-
-          <article class="card sweep">
-            <h3>Creative Tech</h3>
-            <p>
-              I like building things that feel personal: websites, tools, experiments, and little digital
-              touches that make a project feel less cookie-cutter.
-            </p>
-          </article>
-
-          <article class="card side-quest-card sweep">
-            <div class="card-tag">Side quest</div>
-            <h3>Denizen Technologies</h3>
-            <p>
-              My company side quest, where I take the same creative brain and use it to build sites
-              and tools for creators, brands, and small teams.
-            </p>
-          </article>
-        </div>
-
-        <div class="case-files">
-          <h3>Case files</h3>
-          <article class="case-card">
-            <div class="case-shot">
-              <figure class="shot-back">
-                <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
-                <img src="assets/work/case-757-about.jpg" width="1120" height="630" loading="lazy" decoding="async" alt="757 Anime Club website: the Who We Are section with Inclusivity, Community First and Passion cards">
-              </figure>
-              <figure class="shot-front">
-                <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
-                <img src="assets/work/case-757-meetup.jpg" width="1120" loading="lazy" decoding="async" alt="757 Anime Club website: the Next Meetup card with the club's upcoming event, RSVP, add to calendar and share buttons">
-              </figure>
-              <span class="case-stamp">Live</span>
-            </div>
-            <div class="case-body">
-              <p class="case-tag">Denizen Technologies &middot; Hampton Roads</p>
-              <h4>757 Anime Club</h4>
-              <p>The home base for a local anime community: meetups, memories and everything the club has coming up.</p>
-              <ul>
-                <li>Event listings that update straight from the club&rsquo;s calendar</li>
-                <li>RSVP, add-to-calendar and share on every event</li>
-                <li>Meetups, memories, age policy, connect and donate pages</li>
-              </ul>
-              <a class="case-link" href="https://757animeclub.com" target="_blank" rel="noopener noreferrer">Visit 757animeclub.com <span aria-hidden="true">&rarr;</span></a>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="extras" class="content-section extras-section sweep" aria-labelledby="extras-heading">
-        <div class="section-kicker"><span>Session 06</span> Bonus Features</div>
-        <h2 id="extras-heading">Bonus Features</h2>
-        <p>The deleted scenes and director&rsquo;s cut: deep lore, the year in streams, and the whole ship in your pocket.</p>
-        <div class="extras-grid">
-          <a class="extra-card" href="/lore/">
-            <span class="extra-tag">Case files</span>
-            <span class="extra-title">Channel Lore</span>
-            <span class="extra-copy">New here? The running jokes and legendary moments chat keeps bringing up, explained.</span>
-            <span class="extra-go">Open the files <span aria-hidden="true">&rarr;</span></span>
-          </a>
-          <a class="extra-card" href="/rewind/">
-            <span class="extra-tag">Year in review</span>
-            <span class="extra-title">Dismeigh Rewind</span>
-            <span class="extra-copy">Hours streamed, most-played games and the busiest nights, pulled straight from the schedule.</span>
-            <span class="extra-go">Roll the tape <span aria-hidden="true">&rarr;</span></span>
-          </a>
-          <div class="extra-card extra-install" data-install-card>
-            <span class="extra-tag">Take it with you</span>
-            <span class="extra-title">Get the app</span>
-            <span class="extra-copy">Add the site to your home screen. It opens full screen, like an app, with the schedule one tap away.</span>
-            <a class="social-btn extra-btn" href="/install/" data-install>How to install</a>
-          </div>
-        </div>
-      </section>
     </main>
-
-    <dialog class="lightbox" id="lightbox" aria-label="Car photo viewer">
-      <figure class="lightbox-figure">
-        <img id="lightbox-img" alt="">
-        <figcaption id="lightbox-caption"></figcaption>
-      </figure>
-      <button class="lightbox-btn lightbox-close" type="button" id="lightbox-close" aria-label="Close photo viewer"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-      <button class="lightbox-btn lightbox-prev" type="button" id="lightbox-prev" aria-label="Previous photo"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
-      <button class="lightbox-btn lightbox-next" type="button" id="lightbox-next" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
-      <p class="lightbox-count" id="lightbox-count"></p>
-    </dialog>
 
     <div class="bang" id="bang" hidden aria-hidden="true">
       <span class="bang-slab"></span>
@@ -689,7 +543,7 @@
       <p class="footer-signoff">See you next session.</p>
       <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
-      <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -924,51 +778,6 @@
       }
       window.setTimeout(() => { label.textContent = 'Copy link'; }, 2500);
     });
-
-    // Garage photo viewer
-    const galleryImages = [...document.querySelectorAll('#garage-gallery img')];
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCaption = document.getElementById('lightbox-caption');
-    const lightboxCount = document.getElementById('lightbox-count');
-    let photoIndex = 0;
-
-    function showPhoto(index) {
-      photoIndex = (index + galleryImages.length) % galleryImages.length;
-      const source = galleryImages[photoIndex];
-      lightboxImg.src = source.dataset.full || source.currentSrc || source.src;
-      lightboxImg.alt = source.alt;
-      lightboxCaption.textContent = source.alt;
-      lightboxCount.textContent = `${photoIndex + 1} / ${galleryImages.length}`;
-    }
-
-    if (lightbox && typeof lightbox.showModal === 'function') {
-      galleryImages.forEach((img, index) => {
-        const figure = img.closest('figure');
-        figure.tabIndex = 0;
-        figure.setAttribute('role', 'button');
-        figure.setAttribute('aria-label', `View photo ${index + 1} full screen: ${img.alt}`);
-        const open = () => { showPhoto(index); lightbox.showModal(); };
-        figure.addEventListener('click', open);
-        figure.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
-      });
-      document.getElementById('lightbox-close').addEventListener('click', () => lightbox.close());
-      document.getElementById('lightbox-prev').addEventListener('click', () => showPhoto(photoIndex - 1));
-      document.getElementById('lightbox-next').addEventListener('click', () => showPhoto(photoIndex + 1));
-      lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.close(); });
-      lightbox.addEventListener('keydown', e => {
-        if (e.key === 'ArrowLeft') showPhoto(photoIndex - 1);
-        if (e.key === 'ArrowRight') showPhoto(photoIndex + 1);
-      });
-      let touchX = null;
-      lightbox.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
-      lightbox.addEventListener('touchend', e => {
-        if (touchX === null) return;
-        const dx = e.changedTouches[0].clientX - touchX;
-        if (Math.abs(dx) > 50) showPhoto(photoIndex + (dx < 0 ? 1 : -1));
-        touchX = null;
-      });
-    }
 
     // Title-card wipe: plays once per section, the first time it scrolls into view
     const sweepTargets = document.querySelectorAll('.sweep');
@@ -1395,26 +1204,6 @@
       window.dismeighBuzz?.([60, 80, 60, 80, 200]);
     })();
 
-    // Build progress meter, counted from the build sheet lists
-    (() => {
-      const done = document.querySelectorAll('.build-done li').length;
-      const planned = document.querySelectorAll('.build-planned li').length;
-      document.getElementById('build-done-count').textContent = done;
-      document.getElementById('build-planned-count').textContent = planned;
-
-      const total = done + planned;
-      if (!total) return;
-      const pct = Math.round((done / total) * 100);
-      document.getElementById('build-progress-label').textContent = `${done} of ${total} mods · ${pct}% built`;
-      const bar = document.getElementById('build-progress-bar');
-      bar.setAttribute('aria-valuenow', String(pct));
-      const fill = document.getElementById('build-progress-fill');
-      const io = new IntersectionObserver(entries => {
-        if (entries.some(e => e.isIntersecting)) { fill.style.width = `${pct}%`; io.disconnect(); }
-      }, { threshold: 0.3 });
-      io.observe(bar);
-    })();
-
     // Bounty board, read from bounties.json
     (async () => {
       const grid = document.getElementById('bounty-grid');
@@ -1485,21 +1274,6 @@
       document.body.append(fx);
     }
 
-    // Secret 2: rev the garage gauge (3 quick clicks/taps) to hit the redline
-    const gauge = document.querySelector('.garage-meter');
-    let revs = [];
-    gauge?.addEventListener('click', () => {
-      const now = Date.now();
-      revs = revs.filter(t => now - t < 1500).concat(now);
-      gauge.classList.remove('is-revving'); void gauge.offsetWidth; gauge.classList.add('is-revving');
-      if (revs.length >= 3) {
-        revs = [];
-        gauge.classList.add('is-redline');
-        setTimeout(() => gauge.classList.remove('is-redline'), 2400);
-        window.dismeighUnlock?.('redline');
-      }
-    });
-
     // Secret 3: tap the Wanted poster 3 times to claim the bounty
     const poster = document.querySelector('.wanted-poster');
     let taps3 = [];
@@ -1531,6 +1305,7 @@
 
   }
   </script>
+  <script src="/bounty-run.js" defer></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
