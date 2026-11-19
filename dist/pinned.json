@@ -1,0 +1,4 @@
+{
+  "note": "Pinned clip at the top of Clips on the home page. Set \"pinned\" to null to hide it. Fields: url (Twitch clip, YouTube or TikTok link), by (who clipped it), title (optional), reason (optional, e.g. the bounty it won), until (YYYY-MM-DD, it hides itself after this date).",
+  "pinned": null
+}

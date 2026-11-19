@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=45">
+  <link rel="stylesheet" href="styles.css?v=46">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -209,6 +209,7 @@
       <a href="/guide/">New Viewer Guide</a>
       <a href="/crew/">The Crew</a>
       <a href="/shelf/">Dismeigh&rsquo;s Shelf</a>
+      <a href="/log/">Ship&rsquo;s Log</a>
       <a href="/lore/">Channel Lore</a>
       <a href="/rewind/">Dismeigh Rewind</a>
       <a href="/install/" data-install>Get the app</a>
@@ -464,6 +465,20 @@
         <p>
           Gaming clips, stream moments, and the best little bursts of chaos, playing right here without leaving the site.
         </p>
+        <div class="pinned-clip" id="pinned-clip" hidden>
+          <div class="pinned-head">
+            <span class="pinned-tag">Pinned</span>
+            <span class="pinned-reason" id="pinned-reason">Bounty winner</span>
+          </div>
+          <div class="pinned-body">
+            <div class="pinned-player" id="pinned-player"></div>
+            <div class="pinned-info">
+              <h3 id="pinned-title">Pinned clip</h3>
+              <p class="pinned-by">Clipped by <strong id="pinned-by"></strong></p>
+              <p class="pinned-until" id="pinned-until"></p>
+            </div>
+          </div>
+        </div>
         <div class="featured-clip-label">
           <svg class="icon icon-star" viewBox="0 0 576 512" aria-hidden="true" focusable="false"><path d="M309.5-18.9c-4.1-8-12.4-13.1-21.4-13.1s-17.3 5.1-21.4 13.1l-73.6 144.2-159.9 25.4c-8.9 1.4-16.3 7.7-19.1 16.3s-.5 18 5.8 24.4l114.4 114.5-25.2 159.9c-1.4 8.9 2.3 17.9 9.6 23.2s16.9 6.1 25 2l144.4-73.4L432.4 491c8 4.1 17.7 3.3 25-2s11-14.2 9.6-23.2l-25.3-159.9 114.4-114.5c6.4-6.4 8.6-15.8 5.8-24.4s-10.1-14.9-19.1-16.3L383 125.3z"/></svg>
           <span>Now playing</span> <span class="clip-count" id="clip-count">Clip 1 of 5</span>
@@ -583,6 +598,15 @@
         </div>
       </section>
 
+      <section id="log-strip" class="content-section log-strip sweep" aria-labelledby="log-strip-heading">
+        <div class="section-kicker"><span>Side B</span> Guestbook</div>
+        <h2 id="log-strip-heading">Ship&rsquo;s Log</h2>
+        <p class="log-lede">Latest notes from the crew. Leave yours on the way out.</p>
+        <ol class="log-list log-list-mini" id="log-mini" aria-live="polite"></ol>
+        <p class="log-empty" id="log-mini-empty">Loading the log&hellip;</p>
+        <a class="social-btn log-sign" href="/log/"><svg class="icon icon-book-open" viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M256 141.3v309.3l.5-.2A449 449 0 0 1 428.8 416H448V96h-19.2c-42.2 0-84.1 8.4-123.1 24.6-16.8 7-33.4 13.9-49.7 20.7m-25.1-79.8L256 72l25.1-10.5C327.9 42 378.1 32 428.8 32H464c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48h-35.2c-50.7 0-100.9 10-147.7 29.5l-12.8 5.3c-7.9 3.3-16.7 3.3-24.6 0l-12.8-5.3C184.1 490 133.9 480 83.2 480H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h35.2c50.7 0 100.9 10 147.7 29.5"/></svg><span>Sign the log</span></a>
+      </section>
+
 
     </main>
 
@@ -598,7 +622,7 @@
       <p class="footer-signoff">See you next session.</p>
       <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
-      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -1326,6 +1350,49 @@
       } else vids.forEach(show);
     }
 
+    // Pinned clip (from pinned.json). Preview with ?pinned=demo
+    (async () => {
+      const box = document.getElementById('pinned-clip');
+      if (!box) return;
+      let pin = null;
+      if (new URLSearchParams(location.search).get('pinned') === 'demo') {
+        pin = { url: 'https://clips.twitch.tv/DemoClipSlug', by: 'ChatLegend', title: 'The scream heard round the Discord', reason: 'Jump scare bounty winner',
+          until: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) };
+      } else {
+        try { const r = await fetch('/pinned.json', { cache: 'no-store' }); if (r.ok) pin = (await r.json()).pinned; } catch {}
+      }
+      if (!pin || !pin.url) return;
+      if (pin.until) { const end = Date.parse(`${pin.until}T23:59:59-05:00`); if (!isNaN(end) && Date.now() > end) return; }
+      let u; try { u = new URL(pin.url); } catch { return; }
+      const parents = ['www.denizen-dismeigh.com', 'denizen-dismeigh.com', location.hostname].filter((h, i, a) => h && a.indexOf(h) === i).map(h => `parent=${encodeURIComponent(h)}`).join('&');
+      let embed = '', tall = false;
+      const host = u.hostname.replace(/^www\./, '');
+      const twitchSlug = host === 'clips.twitch.tv' ? u.pathname.split('/').filter(Boolean)[0] : (host.endsWith('twitch.tv') && u.pathname.includes('/clip/')) ? u.pathname.split('/clip/')[1].split('/')[0] : '';
+      if (twitchSlug) embed = `https://clips.twitch.tv/embed?clip=${encodeURIComponent(twitchSlug)}&${parents}&autoplay=true`;
+      else if (host === 'youtu.be') embed = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(u.pathname.slice(1))}?autoplay=1&rel=0`;
+      else if (host.endsWith('youtube.com')) { const id = u.searchParams.get('v') || u.pathname.split('/shorts/')[1]; if (id) { embed = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id.split('/')[0])}?autoplay=1&rel=0`; tall = u.pathname.includes('/shorts/'); } }
+      else if (host.endsWith('tiktok.com')) { const id = (u.pathname.match(/video\/(\d+)/) || [])[1]; if (id) { embed = `https://www.tiktok.com/embed/v2/${id}`; tall = true; } }
+      const player = document.getElementById('pinned-player');
+      if (tall) player.classList.add('is-tall');
+      const btn = document.createElement(embed ? 'button' : 'a');
+      btn.className = 'pinned-play';
+      if (embed) { btn.type = 'button'; btn.setAttribute('aria-label', `Play the pinned clip${pin.title ? `: ${pin.title}` : ''}`); }
+      else { btn.href = pin.url; btn.target = '_blank'; btn.rel = 'noopener noreferrer'; }
+      btn.innerHTML = '<b aria-hidden="true">&#9654;</b><span></span>';
+      btn.querySelector('span').textContent = embed ? 'Play clip' : 'Watch the clip';
+      if (embed) btn.addEventListener('click', () => {
+        const f = document.createElement('iframe');
+        f.src = embed; f.title = pin.title || 'Pinned clip'; f.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture'; f.allowFullscreen = true;
+        player.replaceChildren(f);
+      });
+      player.replaceChildren(btn);
+      document.getElementById('pinned-title').textContent = pin.title || 'Pinned clip';
+      document.getElementById('pinned-by').textContent = pin.by || 'a viewer';
+      if (pin.reason) document.getElementById('pinned-reason').textContent = pin.reason;
+      if (pin.until) document.getElementById('pinned-until').textContent = `Pinned until ${new Date(`${pin.until}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`;
+      box.hidden = false;
+    })();
+
     // Seasonal touches: intro line and a light falling effect
     const season = document.documentElement.dataset.season;
     const SEASONS = {
@@ -1378,6 +1445,7 @@
 
   }
   </script>
+  <script src="/log.js?v=1" defer></script>
   <script src="/crew.js?v=4" defer></script>
   <script src="/bounty-run.js?v=35" defer></script>
   <script src="/app.js?v=35" defer></script>
