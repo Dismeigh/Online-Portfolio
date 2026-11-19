@@ -11,11 +11,12 @@
   const render = (list, entries, emptyEl, emptyText, limit) => {
     const rows = entries.slice(0, limit);
     list.replaceChildren(...rows.map(e => {
-      const li = document.createElement('li'); li.className = 'log-entry';
+      const li = document.createElement('li'); li.className = `log-entry${e.pinned ? ' is-pinned' : ''}`;
       const head = document.createElement('p'); head.className = 'log-entry-head';
       const name = document.createElement('strong'); name.textContent = e.name;
       const when = document.createElement('time'); when.dateTime = e.at; when.textContent = fmt(e.at);
-      head.append(name, when);
+      if (e.pinned) { const tag = document.createElement('span'); tag.className = 'log-pin'; tag.textContent = 'Pinned'; head.append(name, tag); }
+      else head.append(name, when);
       const msg = document.createElement('p'); msg.className = 'log-entry-msg'; msg.textContent = e.message;
       li.append(head, msg);
       return li;
