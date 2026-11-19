@@ -2252,5 +2252,3 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 @media (max-width: 860px) { .lc-strip { height: 108px; background-position: 0 98px, 0 0; } .lc-line { left: 188px; } .lc-car { width: 170px; height: 85px; } }
 @media (prefers-reduced-motion: reduce) { .lc-burst.go i { animation: none; } }
 
-.launch-section .lc-credit { margin: 0; font-size: 0.75rem; color: var(--paper-dim); text-align: center; }
-.launch-section .lc-credit a { color: var(--paper-dim); }
