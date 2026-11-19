@@ -2056,3 +2056,48 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 .hall-name:hover { text-decoration: underline; }
 .hall-when { font-family: var(--typed); font-size: 0.82rem; color: #3b332c; }
 .hall-how { margin-top: 1.6rem; color: var(--paper-dim); }
+
+/* Watch party page */
+.wp { flex: 1; width: 100%; max-width: 1320px; margin: 0 auto; padding: 1.4rem max(3vw, 0.75rem) 3rem; }
+.wp:focus { outline: none; }
+.wp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin-bottom: 1rem; }
+.wp-head h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; text-transform: uppercase; }
+.wp-live { padding: 0.1rem 0.6rem; background: var(--red); color: var(--paper); font-family: var(--display); letter-spacing: 0.08em; text-transform: uppercase; }
+.wp-live::before { content: "\25CF  "; color: #ffb3a8; }
+.wp-live[hidden] { display: none; }
+.wp-meta { font-family: var(--typed); color: var(--paper-dim); }
+.wp-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 1rem; }
+.wp-player { position: relative; aspect-ratio: 16 / 9; min-height: 300px; overflow: hidden; background: #000; border: 5px solid var(--paper); box-shadow: 10px 10px 0 var(--red); }
+.wp-player iframe, .wp-chat iframe { display: block; width: 100%; height: 100%; border: 0; }
+.wp-player img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.55) saturate(0.9); }
+.wp-ph { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.6rem; padding: 1rem; text-align: center; color: var(--paper); }
+.wp-ph b { display: grid; place-items: center; width: 4.4rem; height: 4.4rem; border-radius: 50%; border: 3px solid var(--paper); background: rgba(20,17,15,0.7); font-size: 1.8rem; }
+.wp-ph span { font-family: var(--typed); font-size: 0.95rem; background: rgba(20,17,15,0.75); padding: 0.15rem 0.5rem; }
+.wp-vod-btn { position: absolute; inset: 0; padding: 0; border: 0; background: none; cursor: pointer; }
+.wp-vod-btn:hover b, .wp-vod-btn:focus-visible b { background: var(--red); }
+.wp-chat { min-height: 0; background: var(--ink-2); border: 2px solid var(--ink-3); }
+.wp-chat-frame { height: 100%; min-height: 420px; }
+.wp-tip { margin: 0.9rem 0 0; font-family: var(--typed); font-size: 0.9rem; color: var(--paper-dim); }
+.wp-under { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.6rem; }
+.wp-card { display: block; padding: 0.9rem 1rem; background: var(--paper); color: var(--ink); text-decoration: none; box-shadow: 6px 6px 0 rgba(0,0,0,0.5); }
+.wp-card span { display: block; font-family: var(--typed); font-size: 0.82rem; color: #9e3326; }
+.wp-card strong { display: block; margin-top: 0.2rem; font-family: var(--display); font-weight: 400; font-size: 1.3rem; line-height: 1.15; text-transform: uppercase; }
+a.wp-card:hover { box-shadow: 6px 6px 0 var(--red); }
+.wp-off { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 1.4rem; align-items: center; padding: 1.6rem; background: var(--ink-2); border-left: 8px solid var(--mustard); }
+.wp-off h2 { margin: 0 0 0.3rem; font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.05; text-transform: uppercase; }
+.wp-off-copy p { margin: 0.3rem 0; }
+.wp-clock { display: inline-block; margin: 0.5rem 0 0.8rem; padding: 0.2rem 0.8rem; background: var(--ink); color: var(--mustard); font-family: var(--display); font-size: clamp(2.2rem, 8vw, 3.6rem); letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
+.wp-clock[hidden] { display: none; }
+.wp-off-btns { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.8rem !important; }
+.wp-off .wp-player { min-height: 0; }
+.watch-page[data-mode="checking"] .wp-online, .watch-page[data-mode="checking"] .wp-offline,
+.watch-page[data-mode="live"] .wp-offline, .watch-page[data-mode="offline"] .wp-online { display: none; }
+@media (max-width: 900px) {
+  .wp-grid { grid-template-columns: 1fr; }
+  .wp-chat-frame { min-height: 0; height: 440px; }
+  .wp-under, .wp-off { grid-template-columns: 1fr; }
+  .wp-off { padding: 1.2rem; }
+  .wp-player { min-height: 0; border-width: 3px; box-shadow: 6px 6px 0 var(--red); }
+  .wp-online .wp-player { aspect-ratio: auto; height: max(306px, 56.25vw); }
+}
+.onair-watch { margin-left: 0.4rem; }
