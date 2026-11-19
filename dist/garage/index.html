@@ -264,67 +264,83 @@
               <svg class="lc-car" id="lc-car" viewBox="0 -16 300 134" width="236" height="105" aria-hidden="true">
   <defs>
     <linearGradient id="stPaint" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4065e6"/><stop offset="0.42" stop-color="#2242c6"/><stop offset="1" stop-color="#132a86"/>
+      <stop offset="0" stop-color="#4a6ff0"/><stop offset="0.38" stop-color="#2445cc"/><stop offset="0.75" stop-color="#1a359e"/><stop offset="1" stop-color="#11256e"/>
     </linearGradient>
     <linearGradient id="stGlass" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2f3f5a"/><stop offset="0.5" stop-color="#151c28"/><stop offset="1" stop-color="#0c1018"/>
+      <stop offset="0" stop-color="#34445f"/><stop offset="0.45" stop-color="#161d2a"/><stop offset="1" stop-color="#0b0f17"/>
     </linearGradient>
+    <radialGradient id="stRim" cx="0.4" cy="0.35" r="0.8"><stop offset="0" stop-color="#3a3c45"/><stop offset="1" stop-color="#16171c"/></radialGradient>
   </defs>
   <!-- wheel wells -->
-  <circle cx="70" cy="91" r="24" fill="#07090f"/><circle cx="232" cy="91" r="24" fill="#07090f"/>
-  <!-- body -->
-  <path d="M18 104 Q10 102 10 92 L9.5 74 Q9.5 66 13 62 L16 52 Q22 38 30 28 Q70 17 116 17 Q142 18 157 23 L201 50 Q241 53 268 60 Q284 64 288 72 L290 92 Q290 104 280 105 L254.7 105 A25 25 0 1 0 209.3 105 L92.7 105 A25 25 0 1 0 47.3 105 L26 105 Q20 105 18 104 Z"
-        fill="url(#stPaint)" stroke="#0b0f1e" stroke-width="2.2" stroke-linejoin="round"/>
-  <!-- roof spoiler over the hatch -->
-  <path d="M19 31 L30 25.5 Q40 22 52 21 L50 25 Q38 26 30 30 Z" fill="#0d1226" stroke="#0b0f1e" stroke-width="1.2" stroke-linejoin="round"/>
-  <!-- side glass with black trim -->
-  <path d="M34 45 Q40 33 54 29 L110 23.5 Q139 22.6 152 26.5 L184 50.5 L60 50.5 Q44 50 34 45 Z" fill="#0b0f1e"/>
-  <path d="M38.5 44 Q44 34.5 56 31.4 L72 29.6 L72 48.5 L60 48.5 Q46 48 38.5 44 Z" fill="url(#stGlass)"/>
-  <path d="M76 29.2 L119 25 L119 48.5 L76 48.5 Z" fill="url(#stGlass)"/>
-  <path d="M124 24.6 Q141 24.4 150.5 28 L179 48.5 L124 48.5 Z" fill="url(#stGlass)"/>
-  <path d="M84 29.5 L101 27.8 L89 46 L80 46 Z M130 25.5 L139 25.5 L127 43 L125 43 Z" fill="#ffffff" opacity="0.09"/>
-  <!-- shoulder highlight and lower crease -->
-  <path d="M30 57 Q120 53.5 198 55 Q238 57 264 62" fill="none" stroke="#7d9cff" stroke-width="1.6" opacity="0.55"/>
-  <path d="M28 74 Q120 71 206 76" fill="none" stroke="#0b0f1e" stroke-width="1" opacity="0.4"/>
+  <circle cx="60" cy="92.3" r="24" fill="#06080d"/><circle cx="230" cy="92.3" r="24" fill="#06080d"/>
+  <!-- body: 171.7in long, 104.3in wheelbase, 58.4in tall -->
+  <path d="M16 105 Q10 103 10 96 L10 70 Q10 63 13 58 L15 52 Q18 42 23 33 L28 27.6
+           Q60 18.5 106 17.6 Q132 17.6 147 21.4 Q177 38 202 51.6 Q236 54 262 60 Q280 64 286 70 Q289.5 74 289.5 80
+           L289.5 96 Q289 105 281 106 L253.8 106 A25 25 0 1 0 206.2 106 L83.8 106 A25 25 0 1 0 36.2 106 L22 106 Q18 106 16 105 Z"
+        fill="url(#stPaint)" stroke="#0a0e1c" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M40 27 Q80 19.5 120 19.6 Q136 19.8 146 22.6" fill="none" stroke="#8fa9ff" stroke-width="1.4" opacity="0.55"/>
+  <!-- rear arch flare and front arch lip -->
+  <path d="M30 86 Q36 63 60 62 Q86 63 92 82" fill="none" stroke="#6f8fff" stroke-width="1.4" opacity="0.5"/>
+  <path d="M203 82 Q210 64 230 63.5 Q250 64 257 80" fill="none" stroke="#0a0e1c" stroke-width="1" opacity="0.45"/>
+  <!-- roof spoiler, sticking out past the hatch -->
+  <path d="M8 31 Q14 26 30 22.5 Q42 20.5 52 20 L50 24.2 Q36 25 26 29 L13 34 Z" fill="#0d1226" stroke="#0a0e1c" stroke-width="1.2" stroke-linejoin="round"/>
+  <!-- window opening (black trim) -->
+  <path d="M33 47.5 Q36 36 46 30.5 Q54 27 62 26.4 L108 22.6 Q131 22.4 145 25.8 L192.5 51.7 Q120 50.5 60 49 Q44 48.5 33 47.5 Z" fill="#0a0e1c"/>
+  <!-- rear quarter glass with black louvers -->
+  <path d="M37 46 Q40 37 48 32.6 Q55 29.5 63 28.8 L67 28.6 L67 47.2 Q50 47 37 46 Z" fill="url(#stGlass)"/>
+  <path d="M41 45.8 L50 31.5 M46 46 L55 30 M51 46.3 L59 29.2 M56 46.5 L63 28.9 M61 46.8 L66.6 29" stroke="#0a0e1c" stroke-width="2.1"/>
+  <!-- rear door glass -->
+  <path d="M71 28.4 L120 25 L120 48.7 Q95 48.2 71 47.6 Z" fill="url(#stGlass)"/>
+  <!-- front door glass -->
+  <path d="M125 24.4 Q136 24.1 144 27 L186 50 Q154 49.4 125 48.9 Z" fill="url(#stGlass)"/>
+  <path d="M80 29 L98 27.7 L86 46.5 L76 46.3 Z M131 25.2 L141 25.3 L128.5 43 L126.5 43 Z" fill="#ffffff" opacity="0.08"/>
+  <!-- sharp shoulder line (headlight to taillight) and rising lower crease -->
+  <path d="M38 55.2 Q120 54.6 200 56.2 Q236 58.5 258 63" fill="none" stroke="#86a4ff" stroke-width="1.7" opacity="0.6"/>
+  <path d="M38 57 Q120 56.6 200 58.4" fill="none" stroke="#0a0e1c" stroke-width="0.9" opacity="0.35"/>
+  <path d="M92 86 Q150 81 204 74" fill="none" stroke="#86a4ff" stroke-width="1.2" opacity="0.4"/>
+  <path d="M92 88 Q150 83 204 76" fill="none" stroke="#0a0e1c" stroke-width="0.9" opacity="0.35"/>
   <!-- door cuts and handles -->
-  <path d="M122 51 L122 101 M193 51 L195 92 M77 51 L77 70 Q78 78 84 84" fill="none" stroke="#0b0f1e" stroke-width="1.2" opacity="0.75"/>
-  <rect x="104" y="57.5" width="11" height="3" rx="1.5" fill="#0b0f1e" opacity="0.7"/>
-  <rect x="166" y="57.5" width="11" height="3" rx="1.5" fill="#0b0f1e" opacity="0.7"/>
-  <!-- black sequential mirror -->
-  <path d="M181 46 L193 44 Q198 45 197 51 L185 53 Z" fill="#0b0f1e"/>
-  <path d="M186 51.5 L196 50" stroke="#f2a51e" stroke-width="1.6"/>
-  <!-- side skirt -->
-  <path d="M93 101 L209 101 L209 105 L93 105 Z" fill="#0b0f1e"/>
-  <!-- ACANII headlight: dark housing, white LED strip -->
-  <path d="M252 59 Q270 61 285 67 L284 72.5 Q268 70.5 254 65.5 Z" fill="#141826" stroke="#0b0f1e" stroke-width="1"/>
-  <path d="M258 62.2 Q271 64.3 282 68.7" stroke="#eef4ff" stroke-width="1.8" stroke-linecap="round"/>
-  <!-- front bumper intake and fog -->
-  <path d="M278 82 L290 82 L290 98 Q286 102 280 102 Z" fill="#0b0f1e"/>
-  <path d="M265 92 L274 92" stroke="#0b0f1e" stroke-width="3" stroke-linecap="round"/>
-  <!-- taillight -->
-  <path d="M11 64 L15.5 51 Q18 44 22 41 Q24 42 23.5 45 L19 66 Z" fill="#d42a2a" stroke="#0b0f1e" stroke-width="1"/>
-  <path d="M14 59 L18.5 48" stroke="#ff8a7a" stroke-width="1.2"/>
-  <!-- rear bumper lower -->
-  <path d="M10 92 Q10 102 18 104 L30 104 L30 98 L12 96 Z" fill="#0b0f1e" opacity="0.85"/>
-  <!-- wheels: gloss black 5-spoke -->
+  <path d="M122.5 50.5 L122.5 102 M193 52 Q194.5 75 199 95 M70 49 L70 63 Q74 70 82 74" fill="none" stroke="#0a0e1c" stroke-width="1.2" opacity="0.75"/>
+  <rect x="103" y="60" width="11" height="3" rx="1.5" fill="#0a0e1c" opacity="0.65"/>
+  <rect x="165" y="60.5" width="11" height="3" rx="1.5" fill="#0a0e1c" opacity="0.65"/>
+  <!-- black mirror on the door, amber sequential signal -->
+  <path d="M184 46 Q192 43.5 197 45 Q199 48 197.5 52 L186.5 53.5 Q183 51 184 46 Z" fill="#0a0e1c"/>
+  <path d="M187.5 52.3 L197 50.8" stroke="#f2a51e" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- ST side skirt -->
+  <path d="M84 100.5 Q145 99.5 206 100.5 L206 106 L84 106 Z" fill="#0a0e1c"/>
+  <!-- tail light: wedge wrapping the rear corner, pointing forward along the shoulder -->
+  <path d="M10.5 52 L36 54.4 Q39.5 55.6 36.5 58 L11 63.5 Z" fill="#d4282a" stroke="#0a0e1c" stroke-width="1.1" stroke-linejoin="round"/>
+  <path d="M14 55.5 L33 56.2" stroke="#ff9a8a" stroke-width="1.1"/>
+  <!-- rear bumper: black lower, red reflector -->
+  <path d="M10 88 L10 96 Q10 103 16 105 L22 106 L36 106 Q34 96 31 90 Z" fill="#0a0e1c" opacity="0.9"/>
+  <path d="M11.5 84.5 L22 85.5" stroke="#b3201e" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- headlight: long, swept back up the fender; dark ACANII housing with white LED strip -->
+  <path d="M244 57.8 Q265 59.8 283 66.2 Q286.5 67.8 286 71 Q270 69.4 252 64.6 Q246.5 62.5 244 57.8 Z" fill="#141826" stroke="#0a0e1c" stroke-width="1"/>
+  <path d="M251 61.4 Q268 63.6 282.5 68.6" stroke="#eef4ff" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- ST front bumper: big trapezoid grille corner and fog pocket -->
+  <path d="M279 80 L289.5 79 L289.5 99 Q287 104 281 104 L276 92 Z" fill="#0a0e1c"/>
+  <path d="M262 94.5 Q268 92.8 274 93.5" stroke="#0a0e1c" stroke-width="3.2" stroke-linecap="round"/>
+  <!-- wheels: gloss black, thick flat 5-spoke -->
   <g id="stWheel">
-    <circle cx="70" cy="91" r="22" fill="#0a0a0c"/>
-    <circle cx="70" cy="91" r="16.5" fill="#17181d" stroke="#30323a" stroke-width="1"/>
-    <g fill="#34363e" stroke="#0a0a0c" stroke-width="0.8">
-      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z"/>
-      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(72 70 91)"/>
-      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(144 70 91)"/>
-      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(216 70 91)"/>
-      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(288 70 91)"/>
+    <circle cx="60" cy="92.3" r="20.7" fill="#0a0a0c"/>
+    <circle cx="60" cy="92.3" r="15.8" fill="#050507"/>
+    
+    <g fill="#24252b" stroke="#3b3d46" stroke-width="0.6" stroke-linejoin="round">
+      <path id="stSpoke" d="M53.4 78.5 Q60 76.4 66.6 78.5 L63.3 88.4 Q60 89.8 56.7 88.4 Z"/>
+      <use href="#stSpoke" transform="rotate(72 60 92.3)"/><use href="#stSpoke" transform="rotate(144 60 92.3)"/>
+      <use href="#stSpoke" transform="rotate(216 60 92.3)"/><use href="#stSpoke" transform="rotate(288 60 92.3)"/>
     </g>
-    <circle cx="70" cy="91" r="3.4" fill="#0a0a0c" stroke="#3a3c44" stroke-width="0.8"/>
+    <circle cx="60" cy="92.3" r="15.8" fill="none" stroke="#2c2d33" stroke-width="1.6"/>
+    <circle cx="60" cy="92.3" r="5" fill="#24252b" stroke="#3b3d46" stroke-width="0.6"/>
+    <circle cx="60" cy="92.3" r="2.2" fill="#0a0a0c"/>
+    <path d="M50 84 Q54 79.5 59 78.6" stroke="#5a5d68" stroke-width="0.9" fill="none" opacity="0.7"/>
   </g>
-  <use href="#stWheel" x="162"/>
+  <use href="#stWheel" x="170"/>
 
   <!-- Holiday decorations (shown by the site's holiday look) -->
   <g class="deco deco-holiday">
-    <path d="M32 27 Q70 13 116 13.5 Q142 14.5 156 20 Q140 15.5 116 16 Q72 16 34 29 Z" fill="#f4f8fc" stroke="#cfd9e6" stroke-width="1"/>
-    <path d="M150 25 C151 13 147 6 140 1 M148.5 15 L141 13 M150 20 L158 13 M158 13 L161 7" fill="none" stroke="#7a4a26" stroke-width="3" stroke-linecap="round"/>
+    <path d="M30 27 Q66 14.5 106 14 Q132 14.2 147 19.4 Q131 16.3 106 16.4 Q68 17 32 28.8 Z" fill="#f4f8fc" stroke="#cfd9e6" stroke-width="1"/>
+    <path d="M146 25 C147 13 143 6 136 1 M144.5 15 L137 13 M146 20 L154 13 M154 13 L157 7" fill="none" stroke="#7a4a26" stroke-width="3" stroke-linecap="round"/>
     <circle cx="291" cy="80" r="5.5" fill="#e8321e" stroke="#0b0f1e" stroke-width="1.2"/>
   </g>
   <g class="deco deco-spooky">
@@ -508,7 +524,7 @@
 
   }
   </script>
-  <script src="/drag-race.js?v=36" defer></script>
+  <script src="/drag-race.js?v=37" defer></script>
   <script src="/app.js?v=35" defer></script>
 </body>
 </html>
