@@ -1,0 +1,7 @@
+{
+  "note": "The Crew page (/crew/). Each friend: name (as shown), twitch (their Twitch username), note (optional one-liner about them). Live status, game and profile picture come from Twitch automatically.",
+  "crew": [
+    { "name": "EmberlitKnight", "twitch": "emberlitknight", "note": "" },
+    { "name": "scooptheavenger", "twitch": "scooptheavenger", "note": "" }
+  ]
+}

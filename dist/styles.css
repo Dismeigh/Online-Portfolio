@@ -2277,3 +2277,25 @@ a.status-row.status-link:hover, a.status-row.status-link:focus-visible { outline
 .voice-section .voice-card .voice-email { margin-top: 0.5rem; font-family: var(--typed); font-size: 0.88rem; color: var(--paper-dim); overflow-wrap: anywhere; }
 .bio a { color: var(--mustard); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .bio a:hover, .bio a:focus-visible { color: var(--paper); }
+
+/* The Crew */
+.crew-section .crew-lede { max-width: 40rem; margin: 0.4rem 0 0.4rem; font-size: 1.1rem; color: var(--paper); }
+.crew-section .crew-summary { margin: 0 0 1.4rem; font-family: var(--typed); color: var(--mustard); }
+.crew-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.4rem; }
+.crew-card { display: flex; flex-direction: column; gap: 0.7rem; padding: 1.1rem; background: var(--ink-2); border-top: 6px solid var(--paper-dim); box-shadow: 8px 8px 0 rgba(0,0,0,0.45); }
+.crew-card.is-live { border-top-color: var(--red); box-shadow: 8px 8px 0 var(--red); }
+.crew-top { display: flex; align-items: center; gap: 0.9rem; }
+.crew-pic { flex: 0 0 72px; width: 72px; height: 72px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--ink); border: 3px solid var(--paper); font-family: var(--display); font-size: 2rem; color: var(--mustard); }
+.crew-card.is-live .crew-pic { border-color: var(--red); }
+.crew-pic img { width: 100%; height: 100%; object-fit: cover; }
+.crew-who { min-width: 0; }
+.crew-card .crew-name { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(1.15rem, 2.2vw, 1.45rem); line-height: 1.05; text-transform: uppercase; letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.crew-section .crew-status { margin: 0.2rem 0 0; font-family: var(--typed); font-size: 0.9rem; color: var(--paper-dim); }
+.crew-section .crew-status.live { display: inline-block; padding: 0 0.5rem; background: var(--red); color: var(--paper); font-family: var(--display); letter-spacing: 0.06em; text-transform: uppercase; }
+.crew-section .crew-status.live::before { content: "\25CF  "; }
+.crew-section .crew-now { margin: 0; display: grid; gap: 0.15rem; color: var(--paper); }
+.crew-now strong { color: var(--mustard); font-family: var(--typed); font-weight: 400; }
+.crew-now span { overflow-wrap: anywhere; }
+.crew-section .crew-note { margin: 0; color: var(--paper-dim); }
+.crew-go { align-self: flex-start; margin-top: auto; }
+.crew-live-row[hidden] { display: none; }
