@@ -72,6 +72,7 @@
     }
     list.push(id);
     save(list);
+    window.dismeighSyncSecret?.(id);
     const count = list.filter(x => SECRETS[x]).length;
     toast(SECRETS[id], count >= total ? `Secret ${count} of ${total}: all found!` : `Secret found: ${count} of ${total}`);
     buzz(count >= total ? [40, 60, 40, 60, 120] : [30, 50, 60]);
@@ -79,6 +80,100 @@
   };
 
   updateFooter();
+
+  // Viewer accounts: Sign in with Twitch so secrets follow you across devices
+  {
+    const CLIENT_ID = '';  // public Twitch app ID, filled in once the Twitch app exists
+    const footer = document.querySelector('.footer');
+    let me = null;
+    const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}), credentials: 'same-origin' });
+
+    function signIn() {
+      const state = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+      try { sessionStorage.setItem('dismeigh-auth-state', state); sessionStorage.setItem('dismeigh-auth-return', location.pathname + location.hash); } catch {}
+      const params = new URLSearchParams({ response_type: 'token', client_id: CLIENT_ID, redirect_uri: `${location.origin}/auth/`, scope: '', state, force_verify: 'false' });
+      location.href = `https://id.twitch.tv/oauth2/authorize?${params}`;
+    }
+
+    function renderAccount() {
+      if (!footer) return;
+      let box = document.getElementById('footer-account');
+      if (!box) { box = document.createElement('div'); box.id = 'footer-account'; box.className = 'footer-account'; footer.appendChild(box); }
+      box.replaceChildren();
+      if (!me) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'twitch-signin';
+        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 2 2.5 6v14h5v3h3l3-3h4l5-5V2zm16 12-3 3h-5l-3 3v-3H5V4h15zM16 7h2v5h-2zm-5 0h2v5h-2z"/></svg><span>Sign in with Twitch</span>';
+        b.addEventListener('click', signIn);
+        const note = document.createElement('p');
+        note.className = 'account-note';
+        note.textContent = 'Save your secrets across devices and join the Hall of Fame.';
+        box.append(b, note);
+        return;
+      }
+      const who = document.createElement('p');
+      who.className = 'account-who';
+      if (me.avatar) { const img = document.createElement('img'); img.src = me.avatar; img.alt = ''; img.width = 28; img.height = 28; who.append(img); }
+      who.append(document.createTextNode(`Signed in as ${me.displayName}`));
+      const actions = document.createElement('p');
+      actions.className = 'account-actions';
+      const out = document.createElement('button');
+      out.type = 'button'; out.textContent = 'Sign out';
+      out.addEventListener('click', async () => { await post('/api/auth/logout').catch(() => {}); me = null; renderAccount(); });
+      const del = document.createElement('button');
+      del.type = 'button'; del.textContent = 'Delete my data';
+      del.addEventListener('click', async () => {
+        if (del.dataset.confirm !== '1') { del.dataset.confirm = '1'; del.textContent = 'Tap again to delete'; setTimeout(() => { del.dataset.confirm = ''; del.textContent = 'Delete my data'; }, 4000); return; }
+        await fetch('/api/me', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin' }).catch(() => {});
+        me = null; renderAccount();
+      });
+      actions.append(out, document.createTextNode(' · '), del);
+      box.append(who);
+      const total = Object.keys(SECRETS).length;
+      if (me.secrets.filter(x => SECRETS[x]).length >= total) {
+        const label = document.createElement('label');
+        label.className = 'hall-optin';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.checked = me.showInHall;
+        cb.addEventListener('change', async () => { const r = await post('/api/me/hall', { show: cb.checked }).catch(() => null); if (r?.ok) me.showInHall = cb.checked; else cb.checked = !cb.checked; });
+        label.append(cb, document.createTextNode(' Show me in the '));
+        const a = document.createElement('a'); a.href = '/hall/'; a.textContent = 'Hall of Fame';
+        label.append(a);
+        box.append(label);
+      }
+      box.append(actions);
+    }
+
+    function adopt(user) {
+      me = user;
+      if (me) {
+        const merged = [...new Set([...load(), ...me.secrets])].filter(x => SECRETS[x]);
+        save(merged);
+        me.secrets = merged;
+        updateFooter();
+      }
+      renderAccount();
+    }
+
+    window.dismeighSyncSecret = id => {
+      if (!me) return;
+      if (!me.secrets.includes(id)) me.secrets.push(id);
+      post('/api/me/secrets', { ids: [id] }).catch(() => {});
+      renderAccount();
+    };
+    window.dismeighAdoptUser = adopt;
+
+    if (CLIENT_ID) {
+      fetch('/api/me', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).then(d => {
+        if (!d) return;
+        adopt(d.user);
+        if (d.user) {
+          const missing = load().filter(x => SECRETS[x] && !d.user.secrets.includes(x));
+          if (missing.length) post('/api/me/secrets', { ids: missing }).catch(() => {});
+        }
+      }).catch(() => {});
+    }
+  }
 
   // Secret 4: visit on Dismeigh's birthday or Twitch anniversary (the real date, not a preview)
   {

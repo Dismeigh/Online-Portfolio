@@ -1,0 +1,4 @@
+{
+  "note": "Bounty board. Each bounty: title, details (optional), reward (optional), status: open | progress | claimed, claimedBy (optional). Newest first. The board shows up to 6.",
+  "bounties": []
+}

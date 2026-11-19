@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=28">
+  <link rel="stylesheet" href="styles.css?v=29">
 
   <!-- Font Awesome icons -->
   <link
@@ -410,6 +410,14 @@
         </div>
       </section>
 
+      <section id="bounties" class="content-section bounty-section sweep" aria-labelledby="bounties-heading">
+        <div class="section-kicker"><span>Side job</span> Bounty Board</div>
+        <h2 id="bounties-heading">Bounty Board</h2>
+        <p>Challenges up for grabs on stream. When a bounty gets claimed, it gets stamped.</p>
+        <div class="bounty-grid" id="bounty-grid" aria-live="polite"></div>
+        <p class="bounty-empty" id="bounty-empty" hidden>The board&rsquo;s clear right now. New bounties get posted here, so check back.</p>
+      </section>
+
       <section id="dismeigh-mode" class="content-section stat-section sweep">
         <div class="section-kicker"><span>Session 03</span> Dismeigh Mode</div>
         <h2>Personality Loadout</h2>
@@ -671,6 +679,12 @@
             <span class="extra-copy">Hours streamed, most-played games and the busiest nights, pulled straight from the schedule.</span>
             <span class="extra-go">Roll the tape <span aria-hidden="true">&rarr;</span></span>
           </a>
+          <a class="extra-card" href="/hall/">
+            <span class="extra-tag">Bounty hunters</span>
+            <span class="extra-title">Hall of Fame</span>
+            <span class="extra-copy">The viewers who tracked down every hidden secret on this site. Think you can join them?</span>
+            <span class="extra-go">See the hunters <span aria-hidden="true">&rarr;</span></span>
+          </a>
           <div class="extra-card extra-install" data-install-card>
             <span class="extra-tag">Take it with you</span>
             <span class="extra-title">Get the app</span>
@@ -704,7 +718,7 @@
       <p class="footer-signoff">See you next session.</p>
       <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
-      <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
+      <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true">&middot;</span> <a href="/hall/">Hall of Fame</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -1428,6 +1442,32 @@
         if (entries.some(e => e.isIntersecting)) { fill.style.width = `${pct}%`; io.disconnect(); }
       }, { threshold: 0.3 });
       io.observe(bar);
+    })();
+
+    // Bounty board, read from bounties.json
+    (async () => {
+      const grid = document.getElementById('bounty-grid');
+      const empty = document.getElementById('bounty-empty');
+      let list = [];
+      try { list = (await (await fetch('/bounties.json', { cache: 'no-store' })).json()).bounties || []; } catch {}
+      if (window.BOUNTY_SAMPLE) list = window.BOUNTY_SAMPLE;
+      const label = { open: 'Open', progress: 'In progress', claimed: 'Claimed' };
+      const valid = list.filter(b => b && b.title && label[b.status]).slice(0, 6);
+      empty.hidden = valid.length > 0;
+      grid.replaceChildren(...valid.map(b => {
+        const card = document.createElement('article');
+        card.className = `bounty-card is-${b.status}`;
+        const top = document.createElement('p'); top.className = 'bounty-top'; top.textContent = 'Wanted';
+        const title = document.createElement('h3'); title.textContent = b.title;
+        card.append(top, title);
+        if (b.details) { const d = document.createElement('p'); d.className = 'bounty-details'; d.textContent = b.details; card.append(d); }
+        if (b.reward) { const r = document.createElement('p'); r.className = 'bounty-reward'; r.textContent = `Reward: ${b.reward}`; card.append(r); }
+        const st = document.createElement('p'); st.className = 'bounty-status';
+        st.textContent = b.status === 'claimed' && b.claimedBy ? `Claimed by ${b.claimedBy}` : label[b.status];
+        card.append(st);
+        if (b.status === 'claimed') { const stamp = document.createElement('span'); stamp.className = 'bounty-stamp'; stamp.setAttribute('aria-hidden', 'true'); stamp.textContent = 'Claimed'; card.append(stamp); }
+        return card;
+      }));
     })();
 
     // Seasonal touches: intro line and a light falling effect

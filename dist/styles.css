@@ -1972,3 +1972,87 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
   .launch-clock { font-size: 1.15rem; }
   .launch-link { padding: 0.2rem 0.5rem; white-space: nowrap; }
 }
+
+/* Bounty board */
+.bounty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.3rem; margin-top: 1.2rem; }
+.bounty-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1rem 1.1rem 1.1rem;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(120, 85, 40, 0.16), transparent 40%),
+    radial-gradient(circle at 90% 95%, rgba(120, 85, 40, 0.2), transparent 45%),
+    var(--paper);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.5);
+}
+.bounty-card:nth-child(odd) { transform: rotate(-1.2deg); }
+.bounty-card:nth-child(even) { transform: rotate(1deg); }
+.bounty-card::before { content: ""; position: absolute; inset: 0.4rem; border: 2px solid rgba(20, 17, 15, 0.5); pointer-events: none; }
+.bounty-card p { color: var(--ink) !important; }
+.bounty-top { margin: 0 !important; font-family: var(--display); font-size: 1.9rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.bounty-card h3 { margin: 0.4rem 0 0.5rem; padding: 0.4rem 0.2rem; border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); font-family: var(--display); font-weight: 400; font-size: 1.3rem; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
+.bounty-details { margin: 0 0 0.6rem !important; font-size: 0.92rem; line-height: 1.45; color: #2a241f !important; }
+.bounty-card .bounty-reward { display: inline-block; margin: 0 0 0.6rem !important; padding: 0.1rem 0.5rem; background: var(--ink); color: var(--mustard) !important; font-family: var(--display); font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.bounty-status { margin: 0 !important; font-family: var(--typed); font-size: 0.88rem; }
+.bounty-card.is-open .bounty-status::before { content: "\25CF  "; color: var(--teal); }
+.bounty-card.is-progress .bounty-status::before { content: "\25D0  "; color: #8a5a00; }
+.bounty-card.is-claimed { opacity: 0.92; }
+.bounty-stamp {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 0.05rem 0.6rem;
+  border: 4px solid var(--red);
+  color: var(--red);
+  background: rgba(239, 230, 210, 0.82);
+  font-family: var(--display);
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  pointer-events: none;
+}
+.bounty-empty { margin-top: 1rem !important; font-family: var(--typed); }
+@media (max-width: 760px) { .bounty-card { transform: none !important; } }
+
+/* Bonus Features: 4 cards */
+.extras-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+/* Accounts: Sign in with Twitch, footer controls */
+.footer-account { display: grid; justify-items: center; gap: 0.4rem; margin-top: 0.8rem; }
+.twitch-signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 1rem;
+  border: 2px solid var(--paper);
+  background: #6441a5;
+  color: #fff;
+  font: 800 0.9rem var(--body);
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--ink-3);
+}
+.twitch-signin:hover { background: #503484; }
+.twitch-signin svg { width: 1.2rem; height: 1.2rem; }
+.account-note { margin: 0; font-size: 0.82rem; color: var(--paper-dim); }
+.account-who { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; color: var(--paper); font-weight: 600; }
+.account-who img { border-radius: 50%; border: 2px solid var(--mustard); }
+.account-actions { margin: 0; font-size: 0.85rem; color: var(--paper-dim); }
+.account-actions button { min-height: 2.75rem; padding: 0 0.3rem; border: 0; background: none; color: var(--mustard); font: 600 0.85rem var(--body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.hall-optin { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2.75rem; font-size: 0.9rem; color: var(--paper); }
+.hall-optin input { width: 1.2rem; height: 1.2rem; accent-color: var(--mustard); }
+.hall-optin a { color: var(--mustard); font-weight: 600; }
+
+/* Hall of Fame page */
+.hall-status { font-family: var(--typed); color: var(--paper-dim); }
+.hall-list { margin: 0.6rem 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.hall-card { display: grid; grid-template-columns: auto 56px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 0 0.8rem; padding: 0.9rem 1rem; background: var(--paper); color: var(--ink); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5); }
+.hall-rank { grid-row: span 2; font-family: var(--display); font-size: 1.6rem; color: var(--red); }
+.hall-card img { grid-row: span 2; border-radius: 50%; border: 3px solid var(--ink); object-fit: cover; }
+.hall-name { font-family: var(--display); font-size: 1.3rem; color: var(--ink); text-decoration: none; text-transform: uppercase; overflow-wrap: anywhere; }
+.hall-name:hover { text-decoration: underline; }
+.hall-when { font-family: var(--typed); font-size: 0.82rem; color: #3b332c; }
+.hall-how { margin-top: 1.6rem; color: var(--paper-dim); }

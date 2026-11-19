@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hall of Fame | Dismeigh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The bounty hunters who found every secret on the Dismeigh site.">
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=29">
+</head>
+<body class="subpage">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a href="/" class="nav-brand">Dismeigh</a>
+    <a href="/">&larr; Back to the ship</a>
+  </nav>
+  <main id="content" class="sub-main" tabindex="-1">
+    <header class="sub-hero">
+      <span class="sub-slab sub-slab-a" aria-hidden="true"></span>
+      <span class="sub-slab sub-slab-b" aria-hidden="true"></span>
+      <p class="sub-kicker">Bounty hunters</p>
+      <h1 class="sub-title">Hall of Fame</h1>
+      <p class="sub-intro">Everyone who tracked down all of the site&rsquo;s hidden secrets. No hints here: you&rsquo;ll have to find them yourself.</p>
+    </header>
+    <p class="hall-status" id="hall-status" role="status">Pulling the records&hellip;</p>
+    <ol class="hall-list" id="hall-list"></ol>
+    <p class="hall-how">Want your name up here? Find every secret, sign in with Twitch at the bottom of any page, then tick &ldquo;Show me in the Hall of Fame.&rdquo;</p>
+  </main>
+  <footer class="footer">
+    <p class="footer-signoff">See you next session.</p>
+    <p class="footer-brand">Dismeigh</p>
+    <p class="footer-links"><a href="/">Home</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Rewind</a> <span aria-hidden="true">&middot;</span> <a href="/hall/">Hall of Fame</a></p>
+  </footer>
+  <script src="/app.js" defer></script>
+  <script>
+  {
+    const status = document.getElementById('hall-status');
+    const list = document.getElementById('hall-list');
+    const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+    fetch('/api/hall').then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+      if (!d.hunters.length) { status.textContent = 'No one has claimed every bounty yet. The first spot is wide open.'; return; }
+      status.hidden = true;
+      list.replaceChildren(...d.hunters.map((h, i) => {
+        const li = document.createElement('li');
+        li.className = 'hall-card';
+        const rank = document.createElement('span'); rank.className = 'hall-rank'; rank.textContent = `#${i + 1}`;
+        const img = document.createElement('img'); img.alt = ''; img.width = 56; img.height = 56; img.loading = 'lazy';
+        if (h.avatar) img.src = h.avatar; else img.src = '/favicon-48.png';
+        const name = document.createElement('a'); name.className = 'hall-name'; name.href = `https://twitch.tv/${encodeURIComponent(h.login)}`; name.target = '_blank'; name.rel = 'noopener noreferrer'; name.textContent = h.displayName;
+        const when = document.createElement('span'); when.className = 'hall-when'; when.textContent = `Claimed ${fmt.format(new Date(h.completed))}`;
+        li.append(rank, img, name, when);
+        return li;
+      }));
+    }).catch(() => { status.textContent = 'The Hall of Fame opens soon.'; });
+  }
+  </script>
+</body>
+</html>
