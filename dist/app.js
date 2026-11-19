@@ -163,6 +163,40 @@
     }
   }
 
+  // Holiday looks: a light falling effect (the colors come from styles.css)
+  {
+    const FX = {
+      newyear: ['confetti', ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2']],
+      valentines: ['heart', ['#f28ab2', '#b73b2c', '#efe6d2']],
+      stpatricks: ['clover', ['#5fbf6a', '#1f6633', '#9bd88f']],
+      easter: ['egg', ['#f7b3c9', '#b3d9f7', '#c9f0b3', '#f7e7a3', '#d9b3f7']],
+      mothers: ['petal', ['#f28ab2', '#f7c6d9', '#efe6d2']],
+      july4: ['star', ['#b73b2c', '#efe6d2', '#7fb3e8']],
+      thanksgiving: ['leaf', ['#e8762b', '#b73b2c', '#e3a92b', '#8a4b2a']],
+      holiday: ['flake', ['#efe6d2']],
+      birthday: ['confetti', ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2']],
+      anniversary: ['confetti', ['#e3a92b', '#efe6d2', '#b73b2c']],
+    };
+    const look = FX[document.documentElement.dataset.season];
+    if (look && !reduceMotion && !document.querySelector('.season-fx')) {
+      const [shape, colors] = look;
+      const fx = document.createElement('div');
+      fx.className = `season-fx fx-${shape}`;
+      fx.setAttribute('aria-hidden', 'true');
+      const sized = { flake: [3, 8], confetti: [5, 10], heart: [10, 18], clover: [12, 18], egg: [9, 14], petal: [8, 14], star: [9, 16], leaf: [12, 20] }[shape] || [4, 8];
+      for (let i = 0, n = innerWidth < 600 ? 16 : 28; i < n; i++) {
+        const piece = document.createElement('i');
+        const size = sized[0] + Math.random() * (sized[1] - sized[0]);
+        const tall = shape === 'confetti' ? 1.6 : shape === 'egg' ? 1.3 : 1;
+        piece.style.cssText = `left:${Math.random() * 100}%;width:${size}px;height:${size * tall}px;` +
+          `background-color:${colors[i % colors.length]};animation-duration:${10 + Math.random() * 10}s;animation-delay:${-Math.random() * 20}s;` +
+          `--drift:${(Math.random() * 80 - 40).toFixed(0)}px;--spin:${(Math.random() * 540 - 270).toFixed(0)}deg;opacity:${(0.3 + Math.random() * 0.35).toFixed(2)}`;
+        fx.append(piece);
+      }
+      document.body.append(fx);
+    }
+  }
+
   // Secret 4: visit on Dismeigh's birthday or Twitch anniversary (the real date, not a preview)
   {
     const special = document.documentElement.dataset.season;
