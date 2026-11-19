@@ -26,7 +26,7 @@ html {
   --paper: #efe6d2;
   --paper-dim: #b9ad97;
   --mustard: #e3a92b;
-  --red: #c4402f;
+  --red: #b73b2c;
   --teal: #3f8f8c;
   --line: rgba(239, 230, 210, 0.14);
   --display: "Anton", "Impact", "Arial Narrow", sans-serif;
@@ -944,7 +944,7 @@ body.is-onair .site-nav { top: var(--onair-h, 0px); }
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.build-done h4 { background: var(--teal); color: var(--paper); }
+.build-done h4 { background: var(--teal); color: var(--teal-ink, var(--ink)); }
 .build-planned h4 { background: var(--mustard); color: var(--ink); }
 .build-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.35rem; }
 .build-col li {
@@ -1258,6 +1258,7 @@ body.is-onair .site-nav { top: var(--onair-h, 0px); }
 .side-quest-card { background: var(--mustard); border-top-color: var(--red); }
 .side-quest-card h3, .side-quest-card p { color: var(--ink) !important; }
 .card-tag { margin-bottom: 0.3rem; font-family: var(--typed); font-size: 0.85rem; color: var(--red); }
+.side-quest-card .card-tag { color: var(--ink); }
 
 /* Scroll-in: a slab wipes across like an episode title card */
 .sweep::after {
@@ -1400,3 +1401,55 @@ body.is-onair .site-nav { top: var(--onair-h, 0px); }
 .lost-copy { margin: 0 auto 1.4rem; max-width: 420px; color: var(--paper-dim); }
 .lost-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
 .lost-links a { min-width: 0; }
+
+/* Now playing in the on-air bar */
+.onair-detail {
+  padding: 0.05rem 0.5rem;
+  border: 1px solid rgba(239, 230, 210, 0.6);
+  font-family: var(--typed);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 22rem;
+}
+.onair-detail[hidden] { display: none; }
+@media (max-width: 600px) {
+  .onair-bar.has-detail .onair-short { display: none; }
+  .onair-detail { max-width: 46vw; font-size: 0.8rem; }
+}
+
+/* Seasonal touches */
+:root[data-season="spooky"] { --mustard: #e8762b; --teal: #7a4bb0; --teal-ink: var(--paper); }
+:root[data-season="spooky"] .title-intro .slab-b { background: #7a4bb0; }
+:root[data-season="holiday"] { --teal: #24603f; --teal-ink: var(--paper); }
+:root[data-season="holiday"] .title-intro .slab-a { background: #24603f; }
+:root[data-season="newyear"] .title-intro .slab-b { background: var(--teal); }
+.season-fx { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+.season-fx i {
+  position: absolute;
+  top: -12px;
+  border-radius: 50%;
+  animation: seasonFall linear infinite;
+}
+:root[data-season="newyear"] .season-fx i { border-radius: 1px; }
+@keyframes seasonFall {
+  to { transform: translate(var(--drift, 0), 105vh) rotate(320deg); }
+}
+@media (prefers-reduced-motion: reduce) { .season-fx { display: none; } }
+
+/* Accessibility */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 2000;
+  padding: 0.6rem 1rem;
+  background: var(--mustard);
+  color: var(--ink);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.skip-link:focus { top: 1rem; }
+.hero:focus { outline: none; }
