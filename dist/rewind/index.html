@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/i18n.js"></script>
   <title>Dismeigh Rewind</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="A year of Dismeigh streams: hours, games, and the busiest nights, straight from the stream calendar.">
@@ -17,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=23">
+  <link rel="stylesheet" href="/styles.css?v=24">
 </head>
 <body class="subpage">
   <a class="skip-link" href="#content">Skip to content</a>
@@ -85,30 +86,34 @@
     document.title = `Dismeigh Rewind ${year}`;
     $('rw-years').innerHTML = Array.from({ length: nowYear - 2021 + 1 }, (_, i) => nowYear - i)
       .map(y => `<a href="?year=${y}"${y === year ? ' aria-current="page"' : ''}>${y}</a>`).join('');
-    const fmtDate = iso => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(iso));
+    const ES = window.DISMEIGH_LANG === 'es';
+    const fmtDate = iso => new Intl.DateTimeFormat(window.DISMEIGH_LOCALE || 'en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(iso));
     const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     function render(d) {
       if (!d.streams) {
-        $('rw-status').textContent = `No streams on the calendar for ${year} yet. Rewind fills in as sessions land on the schedule.`;
+        $('rw-status').textContent = ES ? `Todavía no hay streams en el calendario para ${year}. Rewind se llena a medida que las sesiones llegan al horario.` : `No streams on the calendar for ${year} yet. Rewind fills in as sessions land on the schedule.`;
         return;
       }
       $('rw-status').hidden = true;
       $('rw-streams').textContent = d.streams.toLocaleString();
       $('rw-hours').textContent = d.hours.toLocaleString();
       $('rw-top').textContent = d.games[0]?.title || '–';
-      $('rw-day').textContent = d.favoriteDay ? d.favoriteDay + 's' : '–';
+      const dayEs = { Monday: 'Lunes', Tuesday: 'Martes', Wednesday: 'Miércoles', Thursday: 'Jueves', Friday: 'Viernes', Saturday: 'Sábado', Sunday: 'Domingo' };
+      $('rw-day').textContent = d.favoriteDay ? (ES ? `${dayEs[d.favoriteDay]}` : d.favoriteDay + 's') : '–';
+      const monthName = i => new Intl.DateTimeFormat(window.DISMEIGH_LOCALE || 'en-US', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2000, i, 1)));
       const max = Math.max(1, ...d.months.map(m => m.streams));
-      $('rw-months').innerHTML = d.months.map(m => `<li><span class="rw-m">${m.name.slice(0, 3)}</span><span class="rw-bar"><i style="width:${(m.streams / max) * 100}%"></i></span><span class="rw-n">${m.streams}</span></li>`).join('');
-      $('rw-busiest').textContent = d.busiestMonth ? `Busiest month: ${d.busiestMonth}.` : '';
-      $('rw-games').innerHTML = d.games.slice(0, 8).map((g, i) => `<li><span class="rw-rank">${i + 1}</span><span class="rw-game">${esc(g.title)}</span><span class="rw-gh">${g.hours} hrs &middot; ${g.streams} ${g.streams === 1 ? 'session' : 'sessions'}</span></li>`).join('');
-      $('rw-longest').innerHTML = d.longest ? `<strong>Longest session:</strong> ${esc(d.longest.title)}, ${d.longest.hours} hours on ${fmtDate(d.longest.start)}.` : '';
-      $('rw-first').innerHTML = d.first ? `<strong>First session of ${year}:</strong> ${esc(d.first.title)} on ${fmtDate(d.first.start)}.` : '';
+      $('rw-months').innerHTML = d.months.map(m => `<li><span class="rw-m">${monthName(d.months.indexOf(m)).slice(0, 3)}</span><span class="rw-bar"><i style="width:${(m.streams / max) * 100}%"></i></span><span class="rw-n">${m.streams}</span></li>`).join('');
+      const busiestIdx = d.months.findIndex(m => m.name === d.busiestMonth);
+      $('rw-busiest').textContent = d.busiestMonth ? (ES ? `Mes más activo: ${monthName(busiestIdx)}.` : `Busiest month: ${d.busiestMonth}.`) : '';
+      $('rw-games').innerHTML = d.games.slice(0, 8).map((g, i) => `<li><span class="rw-rank">${i + 1}</span><span class="rw-game">${esc(g.title)}</span><span class="rw-gh">${ES ? `${g.hours} h &middot; ${g.streams} ${g.streams === 1 ? 'sesión' : 'sesiones'}` : `${g.hours} hrs &middot; ${g.streams} ${g.streams === 1 ? 'session' : 'sessions'}`}</span></li>`).join('');
+      $('rw-longest').innerHTML = d.longest ? (ES ? `<strong>Sesión más larga:</strong> ${esc(d.longest.title)}, ${d.longest.hours} horas el ${fmtDate(d.longest.start)}.` : `<strong>Longest session:</strong> ${esc(d.longest.title)}, ${d.longest.hours} hours on ${fmtDate(d.longest.start)}.`) : '';
+      $('rw-first').innerHTML = d.first ? (ES ? `<strong>Primera sesión de ${year}:</strong> ${esc(d.first.title)} el ${fmtDate(d.first.start)}.` : `<strong>First session of ${year}:</strong> ${esc(d.first.title)} on ${fmtDate(d.first.start)}.`) : '';
       $('rw-body').hidden = false;
     }
 
     fetch(`/api/rewind?year=${year}`).then(r => r.ok ? r.json() : Promise.reject()).then(render)
-      .catch(() => { if (window.REWIND_SAMPLE) return render(window.REWIND_SAMPLE); $('rw-status').textContent = 'The tape is stuck. Try again in a bit.'; });
+      .catch(() => { if (window.REWIND_SAMPLE) return render(window.REWIND_SAMPLE); $('rw-status').textContent = ES ? 'La cinta se atascó. Inténtalo de nuevo en un rato.' : 'The tape is stuck. Try again in a bit.'; });
 
     $('rw-copy').addEventListener('click', async () => {
       const link = `https://www.denizen-dismeigh.com/rewind/?year=${year}`;

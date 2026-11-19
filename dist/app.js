@@ -27,7 +27,7 @@
   }
 
   // Secret achievements: three hidden easter eggs, tracked in this browser only
-  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed' };
+  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones' };
   const KEY = 'dismeigh-secrets';
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
@@ -45,7 +45,8 @@
       footer.appendChild(line);
     }
     const total = Object.keys(SECRETS).length;
-    line.textContent = found.length >= total ? `All ${total} secrets found. Certified bounty hunter.` : `Secrets found: ${found.length} of ${total}`;
+    const T = window.T || (x => x);
+    line.textContent = T(found.length >= total ? `All ${total} secrets found. Certified bounty hunter.` : `Secrets found: ${found.length} of ${total}`);
   }
 
   function toast(title, detail) {
@@ -55,8 +56,10 @@
     el.className = 'achievement-toast';
     el.setAttribute('role', 'status');
     el.innerHTML = '<p class="at-kicker"></p><p class="at-title"></p>';
-    el.querySelector('.at-kicker').textContent = detail;
-    el.querySelector('.at-title').textContent = title;
+    const T = window.T || (x => x);
+    el.querySelector('.at-kicker').textContent = T(detail);
+    el.querySelector('.at-title').textContent = T(title);
+    el.querySelector('.at-title').dataset.label = T('Achievement unlocked');
     document.body.appendChild(el);
     setTimeout(() => el.classList.add('is-leaving'), 3600);
     setTimeout(() => el.remove(), 4200);
@@ -79,6 +82,16 @@
   };
 
   updateFooter();
+
+  // Secret 4: visit on Dismeigh's birthday or Twitch anniversary (the real date, not a preview)
+  {
+    const special = document.documentElement.dataset.season;
+    let previewing = false;
+    try { previewing = new URLSearchParams(location.search).has('season'); } catch {}
+    if ((special === 'birthday' || special === 'anniversary') && !previewing) {
+      setTimeout(() => window.dismeighUnlock('realone'), 2600);
+    }
+  }
 
   // Haptic buzz on Android phones (iPhones don't allow websites to vibrate)
   function buzz(pattern) {

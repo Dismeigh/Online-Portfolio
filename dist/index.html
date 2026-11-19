@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="/i18n.js"></script>
   <title>Dismeigh | VTuber, Cars & Creative Tech</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -50,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=24">
 
   <!-- Font Awesome icons -->
   <link
@@ -152,6 +153,15 @@
       } catch {}
       if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = String(Math.max(1, Y - Number((STREAM_START || String(Y - 1)).slice(0, 4))));
       if (season) document.documentElement.dataset.season = season;
+
+      // Late-night mode: midnight to 5 AM Eastern. Preview with ?latenight=1 (or 0 to turn off)
+      const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));
+      let late = hour >= 0 && hour < 5;
+      try {
+        const lp = new URLSearchParams(location.search).get('latenight');
+        if (lp !== null) late = lp === '1';
+      } catch {}
+      if (late) document.documentElement.dataset.latenight = '';
     })();
   </script>
   <div class="title-intro" id="title-intro" hidden aria-hidden="true">
@@ -689,6 +699,7 @@
 
     <footer class="footer">
       <p class="footer-signoff">See you next session.</p>
+      <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
       <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <button type="button" class="footer-install" data-install>Get the app</button></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
@@ -749,7 +760,7 @@
     }
 
     function clockTime(date) {
-      const parts = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).formatToParts(date);
+      const parts = new Intl.DateTimeFormat(window.DISMEIGH_LOCALE || 'en-US', { timeZone: zone, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).formatToParts(date);
       const get = type => parts.find(p => p.type === type)?.value || '';
       const minutes = get('minute') === '00' ? '' : `:${get('minute')}`;
       return `${get('hour')}${minutes} ${get('dayPeriod')} ${get('timeZoneName')}`.trim();
@@ -759,7 +770,7 @@
       const start = new Date(event.start);
       const today = new Date();
       const tomorrow = new Date(today.getTime() + 86400000);
-      let day = new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short', month: 'short', day: 'numeric' }).format(start);
+      let day = new Intl.DateTimeFormat(window.DISMEIGH_LOCALE || 'en-US', { timeZone: zone, weekday: 'short', month: 'short', day: 'numeric' }).format(start);
       if (dayKey(start) === dayKey(today)) day = 'Today';
       else if (dayKey(start) === dayKey(tomorrow)) day = 'Tomorrow';
       return event.allDay ? day : `${day} · ${clockTime(start)}`;
@@ -796,10 +807,10 @@
           ? events.map(e => `
               <span class="show">
                 <span class="show-title">${escapeHtml(e.title)}</span>
-                <span class="show-time">${e.live ? 'On air now' : e.allDay ? 'All day' : clockTime(new Date(e.start))}</span>
+                <span class="show-time" data-played="${(window.T || (x => x))('Played')} · ">${e.live ? 'On air now' : e.allDay ? 'All day' : clockTime(new Date(e.start))}</span>
                 ${e.done && /^https:\/\//i.test(e.link || '') ? `<a class="show-recap" href="${escapeHtml(e.link)}" target="_blank" rel="noopener noreferrer">${/clip/i.test(e.link) ? 'Clip of the night' : 'Watch the VOD'} <span aria-hidden="true">&rarr;</span></a>` : ''}
               </span>`).join('')
-          : '<span class="show show-off"><span class="show-title">Off night / rest day</span></span>';
+          : `<span class="show show-off"><span class="show-title">${(window.T || (x => x))('Off night / rest day')}</span></span>`;
         const badge = state === 'is-live' ? '<span class="day-badge">Live</span>'
           : isToday ? '<span class="day-badge">Today</span>' : '';
         return `
@@ -1259,7 +1270,7 @@
         const { videos } = await r.json();
         if (!videos?.length) return;
         const row = document.getElementById('yt-row');
-        const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+        const fmt = new Intl.DateTimeFormat(window.DISMEIGH_LOCALE || 'en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
         videos.forEach((v, i) => {
           const card = document.createElement('article');
           card.className = 'yt-card' + (v.short ? ' is-short' : '');
@@ -1410,6 +1421,7 @@
     };
     const current = SEASONS[season];
     if (current) document.querySelector('#title-intro .sub').textContent = current.line;
+    else if (document.documentElement.hasAttribute('data-latenight')) document.querySelector('#title-intro .sub').textContent = 'Late night session';
     if (current?.fx && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const fx = document.createElement('div');
       fx.className = `season-fx fx-${current.fx.shape}`;
