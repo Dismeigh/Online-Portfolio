@@ -2,6 +2,12 @@
   "note": "Bounty board. Each bounty: title, details (optional), reward (optional), status: open | progress | claimed, claimedBy (optional). Newest first. The board shows up to 6.",
   "bounties": [
     {
+      "title": "Hit 200 followers",
+      "details": "Every follow counts. Hit Follow on Twitch to help get there, and track it on the follower goal up top.",
+      "reward": "A garage tour of the Sojourn ST on stream",
+      "status": "progress"
+    },
+    {
       "title": "Beat a Phasmophobia round on Nightmare without dying",
       "details": "Dismeigh's challenge: survive a full Nightmare investigation on stream.",
       "reward": "Chat picks my next loadout",
