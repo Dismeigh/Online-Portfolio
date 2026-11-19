@@ -1555,3 +1555,73 @@ body.is-onair .site-nav { top: var(--onair-h, 0px); }
   .milestone-bar { flex-wrap: nowrap; gap: 0.6rem; padding: 0.45rem 0.75rem; font-size: 0.85rem; }
   .milestone-thanks { display: none; }
 }
+
+/* Stream recap links on finished days */
+.show-recap {
+  flex-basis: 100%;
+  font-family: var(--typed);
+  font-size: 0.85rem;
+  color: var(--mustard);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.day-row.is-done .show-recap { opacity: 1; }
+.day-row.is-done:has(.show-recap) { opacity: 0.85; }
+
+/* Wanted poster for the next game */
+.wanted {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  align-items: center;
+  gap: 1.6rem;
+  margin: 0.4rem 0 1.4rem;
+}
+.wanted[hidden] { display: none; }
+.wanted-poster {
+  position: relative;
+  padding: 1rem 1rem 1.1rem;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(120, 85, 40, 0.18), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(120, 85, 40, 0.22), transparent 45%),
+    var(--paper);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+  transform: rotate(-2.5deg);
+}
+.wanted-poster::before { content: ""; position: absolute; inset: 0.4rem; border: 2px solid rgba(20, 17, 15, 0.55); pointer-events: none; }
+.wanted-poster p { margin: 0 !important; color: var(--ink) !important; }
+.wanted-top { font-family: var(--display); font-size: 2.6rem; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; }
+.wanted-game {
+  margin: 0.5rem 0 !important;
+  padding: 0.5rem 0.3rem;
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  font-family: var(--display);
+  font-size: 1.45rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.wanted-alive { font-family: var(--typed); font-size: 0.85rem; }
+.wanted-poster .wanted-bounty {
+  display: inline-block;
+  margin-top: 0.5rem !important;
+  padding: 0.1rem 0.45rem;
+  background: var(--ink);
+  color: var(--mustard) !important;
+  font-family: var(--display);
+  font-size: 0.85rem;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.wanted-label { margin: 0 !important; font-family: var(--typed); color: var(--mustard) !important; }
+.wanted-title { margin: 0.1rem 0 0.2rem; font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.05; text-transform: uppercase; }
+.wanted-when { margin: 0 0 0.7rem !important; color: var(--paper) !important; font-weight: 600; }
+.wanted-link { color: var(--mustard); font-weight: 600; text-decoration: none; }
+.wanted-link:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .wanted { grid-template-columns: 1fr; gap: 1.2rem; }
+  .wanted-poster { max-width: 240px; justify-self: center; }
+}

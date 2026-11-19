@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=19">
+  <link rel="stylesheet" href="styles.css?v=20">
 
   <!-- Font Awesome icons -->
   <link
@@ -118,8 +118,8 @@
       const thanksgiving = nth(11, 4, 4);
 
       // Personal days. Fill these in as 'MM-DD' (birthday) and 'YYYY-MM-DD' (first stream); they beat holidays.
-      const BIRTHDAY = '';
-      const STREAM_START = '';
+      const BIRTHDAY = '04-12';
+      const STREAM_START = '2021-06-10';
       const mmdd = `${String(M).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
       let season = '';
       if (STREAM_START && STREAM_START.slice(5) === mmdd && Y > Number(STREAM_START.slice(0, 4))) {
@@ -348,6 +348,21 @@
         <div class="schedule-head">
           <h2 id="schedule-heading">This Week&rsquo;s Streams</h2>
           <p class="schedule-week" id="schedule-week">Week of &hellip;</p>
+        </div>
+
+        <div class="wanted" id="wanted" hidden>
+          <div class="wanted-poster" aria-hidden="true">
+            <p class="wanted-top">Wanted</p>
+            <p class="wanted-game" id="wanted-poster-game"></p>
+            <p class="wanted-alive">Played or alive</p>
+            <p class="wanted-bounty">Bounty: one full session of chaos</p>
+          </div>
+          <div class="wanted-info">
+            <p class="wanted-label" id="wanted-label">Next on the docket</p>
+            <h3 class="wanted-title" id="wanted-game"></h3>
+            <p class="wanted-when" id="wanted-when"></p>
+            <a class="wanted-link" href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Be there on Twitch <span aria-hidden="true">&rarr;</span></a>
+          </div>
         </div>
 
         <ol class="schedule-board" id="schedule-board" aria-live="polite"></ol>
@@ -748,6 +763,7 @@
               <span class="show">
                 <span class="show-title">${escapeHtml(e.title)}</span>
                 <span class="show-time">${e.live ? 'On air now' : e.allDay ? 'All day' : clockTime(new Date(e.start))}</span>
+                ${e.done && /^https:\/\//i.test(e.link || '') ? `<a class="show-recap" href="${escapeHtml(e.link)}" target="_blank" rel="noopener noreferrer">${/clip/i.test(e.link) ? 'Clip of the night' : 'Watch the VOD'} <span aria-hidden="true">&rarr;</span></a>` : ''}
               </span>`).join('')
           : '<span class="show show-off"><span class="show-title">Off night / rest day</span></span>';
         const badge = state === 'is-live' ? '<span class="day-badge">Live</span>'
@@ -772,6 +788,18 @@
       nextStreamRow.hidden = false;
       nextStreamEvent = next || null;
       updateCountdown();
+
+      // Wanted poster for the next game on the calendar
+      const wanted = document.getElementById('wanted');
+      if (next) {
+        document.getElementById('wanted-poster-game').textContent = next.title;
+        document.getElementById('wanted-game').textContent = next.title;
+        document.getElementById('wanted-label').textContent = next.live ? 'Caught live right now' : 'Next on the docket';
+        document.getElementById('wanted-when').textContent = next.live ? 'On Twitch now' : streamWhen(next);
+        wanted.hidden = false;
+      } else {
+        wanted.hidden = true;
+      }
 
       if (data.week && Array.isArray(data.week.events)) {
         renderBoard(data.week);
@@ -1340,7 +1368,7 @@
       thanksgiving: { line: 'Thanksgiving session', fx: { shape: 'leaf', colors: ['#e8762b', '#b73b2c', '#e3a92b', '#8a4b2a'] } },
       holiday:      { line: 'Holiday session', fx: { shape: 'flake', colors: ['#efe6d2'] } },
       birthday:     { line: 'Birthday session', fx: { shape: 'confetti', colors: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'] } },
-      anniversary:  { line: (() => { const n = Number(document.documentElement.dataset.streamYears || 1); return `Stream anniversary: year ${n}`; })(),
+      anniversary:  { line: (() => { const n = Number(document.documentElement.dataset.streamYears || 1); return `Twitch anniversary: year ${n}`; })(),
                       fx: { shape: 'confetti', colors: ['#e3a92b', '#efe6d2', '#b73b2c'] } },
     };
     const current = SEASONS[season];
