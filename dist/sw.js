@@ -1,7 +1,7 @@
 // Dismeigh site service worker: makes the site installable and gives it an offline page.
 // Pages are always fetched fresh when online; only static files are cached.
-const CACHE = 'dismeigh-v22';
-const PRECACHE = ['/offline.html', '/styles.css?v=42', '/app.js?v=35', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg', '/banner.webp'];
+const CACHE = 'dismeigh-v23';
+const PRECACHE = ['/offline.html', '/styles.css?v=43', '/app.js?v=35', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg', '/banner.webp'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));

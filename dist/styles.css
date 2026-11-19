@@ -2299,3 +2299,51 @@ a.status-row.status-link:hover, a.status-row.status-link:focus-visible { outline
 .crew-section .crew-note { margin: 0; color: var(--paper-dim); }
 .crew-go { align-self: flex-start; margin-top: auto; }
 .crew-live-row[hidden] { display: none; }
+
+/* Home: new viewer button */
+.guide-cta { display: flex; align-items: center; gap: 0.7rem; width: fit-content; max-width: 100%; margin: 1.3rem auto 0; padding: 0.7rem 1.1rem;
+  background: var(--mustard); color: var(--ink); text-decoration: none; border: 3px solid var(--paper); box-shadow: 6px 6px 0 var(--red); font-size: 1rem; }
+.guide-cta strong { font-family: var(--display); font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; margin-right: 0.3rem; }
+.guide-cta .icon { font-size: 1.2rem; }
+.guide-cta:hover, .guide-cta:focus-visible { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--red); }
+
+/* Viewer guide page */
+.guide-section .guide-lede, .shelf-section .shelf-lede, .shelf-strip .shelf-lede { max-width: 42rem; margin: 0.4rem 0 1.6rem; font-size: 1.1rem; color: var(--paper); }
+.guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; }
+.guide-card { padding: 1.2rem 1.25rem 1.3rem; background: var(--ink-2); border-top: 6px solid var(--mustard); box-shadow: 8px 8px 0 rgba(0,0,0,0.45); }
+.guide-card.guide-rules { background: var(--paper); color: var(--ink); border-top-color: var(--red); box-shadow: 8px 8px 0 var(--red); }
+.guide-section .guide-num { margin: 0; font-family: var(--typed); color: var(--mustard); }
+.guide-section .guide-rules .guide-num { color: #9e3326; }
+.guide-card h2 { margin: 0.1rem 0 0.7rem; font-family: var(--display); font-weight: 400; font-size: clamp(1.7rem, 4vw, 2.2rem); line-height: 1; text-transform: uppercase; }
+.guide-section .guide-card p { color: var(--paper-dim); }
+.guide-section .guide-note { margin: -0.3rem 0 0.6rem; font-size: 0.92rem; }
+.guide-list { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+.guide-rules .guide-list { color: #2a231e; }
+.guide-rules .guide-list li::marker { color: var(--red); }
+.guide-links { color: var(--paper); }
+.guide-links a { color: var(--mustard); font-weight: 600; }
+.guide-cmd-list { margin: 0; display: grid; gap: 0.45rem; }
+.guide-cmd-list div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.6rem; align-items: baseline; }
+.guide-cmd-list dt code { display: inline-block; padding: 0.05rem 0.45rem; background: var(--ink); color: var(--mustard); border: 1px solid var(--line); font-family: var(--typed); font-size: 0.95rem; }
+.guide-cmd-list dd { margin: 0; color: var(--paper); }
+.guide-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem !important; }
+@media (max-width: 860px) { .guide-grid { grid-template-columns: 1fr; } .guide-cmd-list div { grid-template-columns: 6.5rem minmax(0, 1fr); } }
+
+/* Dismeigh's Shelf */
+.shelf-row { margin-top: 1.8rem; }
+.shelf-row-title { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.8rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; text-transform: uppercase; color: var(--mustard); }
+.shelf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.2rem; }
+.shelf-card { display: flex; flex-direction: column; padding: 1rem 1.1rem 1.1rem; background: var(--paper); color: var(--ink); box-shadow: 7px 7px 0 rgba(0,0,0,0.5); border-left: 8px solid var(--red); }
+.shelf-card.shelf-games { border-left-color: #3f8f8c; }
+.shelf-card.shelf-cars { border-left-color: #2242a8; }
+.shelf-card.shelf-music { border-left-color: var(--mustard); }
+.shelf-card h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.55rem; line-height: 1.05; text-transform: uppercase; }
+.shelf-section .shelf-blurb { margin: 0.45rem 0 0; color: #3a312a; }
+.shelf-link { margin-top: auto; padding-top: 0.7rem; color: #9e3326; font-weight: 700; text-decoration: none; }
+.shelf-link:hover, .shelf-link:focus-visible { text-decoration: underline; }
+/* Home strip */
+.shelf-chips { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0 0 1.3rem; padding: 0; list-style: none; }
+.shelf-chip { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.8rem; background: var(--ink-2); border: 2px solid var(--line); }
+.shelf-chip .icon { color: var(--mustard); }
+.shelf-chip-cat { font-family: var(--typed); font-size: 0.78rem; color: var(--paper-dim); }
+.shelf-chip-name { font-family: var(--display); letter-spacing: 0.04em; text-transform: uppercase; color: var(--paper); }
