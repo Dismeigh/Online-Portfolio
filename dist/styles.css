@@ -2124,3 +2124,5 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 .bounty-run .run-head p { color: var(--paper-dim); }
 .game-overlay { z-index: 1; }
 .game-hud { z-index: 2; }
+.run-section .bounty-run { margin-top: 0; padding-top: 0; border-top: 0; }
+.run-section .run-head h2 { margin-bottom: 0.4rem; }

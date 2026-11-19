@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=31">
+  <link rel="stylesheet" href="styles.css?v=32">
 
   <!-- Font Awesome icons -->
   <link
@@ -420,43 +420,10 @@
       <section id="bounties" class="content-section bounty-section sweep" aria-labelledby="bounties-heading">
         <div class="section-kicker"><span>Side job</span> Bounty Board</div>
         <h2 id="bounties-heading">Bounty Board</h2>
-        <p>Challenges up for grabs on stream. When a bounty gets claimed, it gets stamped. Waiting for the next one? Take a Bounty Run below.</p>
+        <p>Challenges up for grabs on stream. When a bounty gets claimed, it gets stamped. Waiting for the next one? Try Bounty Run further down the page.</p>
         <div class="bounty-grid" id="bounty-grid" aria-live="polite"></div>
         <p class="bounty-empty" id="bounty-empty" hidden>The board&rsquo;s clear right now. New bounties get posted here, so check back.</p>
 
-        <div class="bounty-run" id="bounty-run">
-          <div class="run-head">
-            <h3 id="bounty-run-heading">Bounty Run</h3>
-            <p>Dodge the rocks, grab the <b>B</b> chips for +50, and get your name on the board.</p>
-          </div>
-          <div class="run-layout">
-            <div class="game-box" id="game-box">
-              <canvas id="game" role="img" aria-label="Bounty Run game. Drag inside the game, use the mouse, or the arrow keys to steer."></canvas>
-              <div class="game-hud" aria-hidden="true"><span>Score <b id="g-score">0</b></span><span>Best <b id="g-best">0</b></span></div>
-              <div class="game-overlay" id="g-overlay">
-                <p class="game-title" id="g-title">Bounty Run</p>
-                <p class="game-sub" id="g-sub" aria-live="polite">Phone: drag inside this box to steer. Computer: mouse, arrow keys or A and D.</p>
-                <form class="game-form" id="g-form" hidden>
-                  <label for="g-name">Name for the scoreboard</label>
-                  <input id="g-name" name="name" maxlength="10" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Up to 10 characters">
-                  <p class="game-msg" id="g-msg" role="alert"></p>
-                  <div class="game-form-btns"><button type="submit" id="g-post">Post score</button><button type="button" id="g-skip" class="game-skip">Skip</button></div>
-                </form>
-                <button type="button" class="game-start" id="g-start">Launch</button>
-              </div>
-            </div>
-            <section class="scoreboard" aria-labelledby="scoreboard-heading">
-              <h4 id="scoreboard-heading">Scoreboard</h4>
-              <div class="board-tabs" role="tablist" aria-label="Scoreboard">
-                <button type="button" role="tab" data-board="all" aria-selected="true">All-time</button>
-                <button type="button" role="tab" data-board="week" aria-selected="false">This week</button>
-              </div>
-              <ol class="board-list" id="board-list" aria-live="polite"></ol>
-              <p class="board-msg" id="board-msg">Loading the board&hellip;</p>
-              <p class="board-note">This week&rsquo;s board resets every Monday. Your personal best also saves on this device.</p>
-            </section>
-          </div>
-        </div>
       </section>
 
       <section id="highlights" class="content-section highlight-section sweep">
@@ -528,6 +495,44 @@
           <div class="yt-row" id="yt-row"></div>
         </div>
       </section>
+
+      <section id="bounty-run-section" class="content-section run-section sweep" aria-labelledby="bounty-run-heading">
+        <div class="section-kicker"><span>Side game</span> Bounty Run</div>
+        <div class="bounty-run" id="bounty-run">
+          <div class="run-head">
+            <h2 id="bounty-run-heading">Bounty Run</h2>
+            <p>Dodge the rocks, grab the <b>B</b> chips for +50, and get your name on the board.</p>
+          </div>
+          <div class="run-layout">
+            <div class="game-box" id="game-box">
+              <canvas id="game" role="img" aria-label="Bounty Run game. Drag inside the game, use the mouse, or the arrow keys to steer."></canvas>
+              <div class="game-hud" aria-hidden="true"><span>Score <b id="g-score">0</b></span><span>Best <b id="g-best">0</b></span></div>
+              <div class="game-overlay" id="g-overlay">
+                <p class="game-title" id="g-title">Bounty Run</p>
+                <p class="game-sub" id="g-sub" aria-live="polite">Phone: drag inside this box to steer. Computer: mouse, arrow keys or A and D.</p>
+                <form class="game-form" id="g-form" hidden>
+                  <label for="g-name">Name for the scoreboard</label>
+                  <input id="g-name" name="name" maxlength="10" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Up to 10 characters">
+                  <p class="game-msg" id="g-msg" role="alert"></p>
+                  <div class="game-form-btns"><button type="submit" id="g-post">Post score</button><button type="button" id="g-skip" class="game-skip">Skip</button></div>
+                </form>
+                <button type="button" class="game-start" id="g-start">Launch</button>
+              </div>
+            </div>
+            <section class="scoreboard" aria-labelledby="scoreboard-heading">
+              <h4 id="scoreboard-heading">Scoreboard</h4>
+              <div class="board-tabs" role="tablist" aria-label="Scoreboard">
+                <button type="button" role="tab" data-board="all" aria-selected="true">All-time</button>
+                <button type="button" role="tab" data-board="week" aria-selected="false">This week</button>
+              </div>
+              <ol class="board-list" id="board-list" aria-live="polite"></ol>
+              <p class="board-msg" id="board-msg">Loading the board&hellip;</p>
+              <p class="board-note">This week&rsquo;s board resets every Monday. Your personal best also saves on this device.</p>
+            </section>
+          </div>
+        </div>
+      </section>
+
 
     </main>
 
@@ -1305,7 +1310,7 @@
 
   }
   </script>
-  <script src="/bounty-run.js" defer></script>
-  <script src="/app.js" defer></script>
+  <script src="/bounty-run.js?v=32" defer></script>
+  <script src="/app.js?v=32" defer></script>
 </body>
 </html>
