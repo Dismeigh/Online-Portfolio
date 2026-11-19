@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=18">
+  <link rel="stylesheet" href="styles.css?v=19">
 
   <!-- Font Awesome icons -->
   <link
@@ -99,7 +99,7 @@
   <script>
     // Seasonal and holiday looks, by Eastern date. Preview any with ?season=<key> (or ?season=off).
     // Keys: newyear, mlk, valentines, presidents, stpatricks, easter, mothers, memorial, fathers,
-    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December)
+    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December), birthday, anniversary
     (() => {
       const now = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' })
         .formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, Number(p.value)]));
@@ -117,8 +117,16 @@
       const within = (mm, dd, before = 0, after = 0) => today >= dayNum(mm, dd) - before && today <= dayNum(mm, dd) + after;
       const thanksgiving = nth(11, 4, 4);
 
+      // Personal days. Fill these in as 'MM-DD' (birthday) and 'YYYY-MM-DD' (first stream); they beat holidays.
+      const BIRTHDAY = '';
+      const STREAM_START = '';
+      const mmdd = `${String(M).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
       let season = '';
-      if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
+      if (STREAM_START && STREAM_START.slice(5) === mmdd && Y > Number(STREAM_START.slice(0, 4))) {
+        season = 'anniversary';
+        document.documentElement.dataset.streamYears = String(Y - Number(STREAM_START.slice(0, 4)));
+      } else if (BIRTHDAY && BIRTHDAY === mmdd) season = 'birthday';
+      else if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
       else if (M === 1 && D === nth(1, 1, 3)) season = 'mlk';
       else if (M === 2 && (D === 13 || D === 14)) season = 'valentines';
       else if (M === 2 && D === nth(2, 1, 3)) season = 'presidents';
@@ -138,6 +146,7 @@
         const override = new URLSearchParams(location.search).get('season');
         if (override) season = override === 'off' ? '' : override;
       } catch {}
+      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = '1';
       if (season) document.documentElement.dataset.season = season;
     })();
   </script>
@@ -150,6 +159,10 @@
     <span class="onair-long">Dismeigh is live on Twitch right now.</span><span class="onair-short">Streaming now</span>
     <span class="onair-detail" id="onair-detail" hidden></span>
     <a class="onair-link" href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Watch now &rarr;</a>
+  </div>
+  <div class="milestone-bar" id="milestone-bar" role="status" hidden>
+    <span class="milestone-badge">Milestone</span>
+    <span>We hit <strong id="milestone-number">200</strong> followers on Twitch.<span class="milestone-thanks"> Thanks for riding along!</span></span>
   </div>
   <!-- Fixed background for iOS/Discord overscroll -->
   <div class="fixed-bg" aria-hidden="true"></div>
@@ -320,7 +333,7 @@
         </div>
         <div class="follow-goal" id="follow-goal" hidden>
           <div class="follow-goal-head">
-            <p class="follow-goal-title">Road to <span id="follow-goal-target">200</span> followers</p>
+            <p class="follow-goal-title">Road to <span id="follow-goal-target">200</span> followers <span class="follow-goal-stamp" id="follow-goal-stamp" hidden></span></p>
             <p class="follow-goal-count"><strong id="follow-goal-count">0</strong> on Twitch <span aria-hidden="true">&middot;</span> <span id="follow-goal-left"></span></p>
           </div>
           <div class="follow-goal-track" role="progressbar" aria-label="Twitch follower goal" aria-valuemin="0" id="follow-goal-bar">
@@ -435,6 +448,12 @@
             <p class="build-car">2014 Ford Focus ST</p>
             <p class="build-score"><strong>9</strong> done <span aria-hidden="true">&middot;</span> <strong>12</strong> on the list</p>
           </header>
+          <div class="build-progress">
+            <div class="build-progress-track" role="progressbar" aria-label="Build progress" aria-valuemin="0" aria-valuemax="100" id="build-progress-bar">
+              <span class="build-progress-fill" id="build-progress-fill"></span>
+            </div>
+            <p class="build-progress-label" id="build-progress-label"></p>
+          </div>
           <div class="build-cols">
             <section class="build-col build-done" aria-label="Mods done">
               <h4>Done</h4>
@@ -1241,6 +1260,66 @@
       if (taps.length >= 5) { taps = []; fireBang(); }
     });
 
+    // Follower milestone celebration: 3 days after a new milestone (recorded by a GitHub Action).
+    // Preview with ?milestone=200
+    (async () => {
+      let hit = null;
+      try {
+        const preview = new URLSearchParams(location.search).get('milestone');
+        if (preview) hit = { milestone: Number(preview), fresh: true };
+      } catch {}
+      if (!hit) {
+        try {
+          const r = await fetch('/milestones.json', { cache: 'no-store' });
+          if (!r.ok) return;
+          const dated = (await r.json()).achieved.filter(a => a.date);
+          const latest = dated.at(-1);
+          if (!latest) return;
+          const todayET = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+          const days = (Date.parse(todayET) - Date.parse(latest.date)) / 86400000;
+          hit = { milestone: latest.milestone, fresh: days >= 0 && days < 3 };
+        } catch { return; }
+      }
+      if (!hit?.fresh || !Number.isFinite(hit.milestone)) return;
+      document.getElementById('milestone-number').textContent = hit.milestone.toLocaleString();
+      document.getElementById('milestone-bar').hidden = false;
+      const stamp = document.getElementById('follow-goal-stamp');
+      stamp.textContent = `${hit.milestone.toLocaleString()} reached!`;
+      stamp.hidden = false;
+      let seen = false;
+      try { seen = sessionStorage.getItem(`dismeigh-milestone-${hit.milestone}`) === '1'; sessionStorage.setItem(`dismeigh-milestone-${hit.milestone}`, '1'); } catch {}
+      if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const burst = document.createElement('div');
+      burst.className = 'milestone-burst';
+      burst.setAttribute('aria-hidden', 'true');
+      const colors = ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'];
+      for (let i = 0; i < (innerWidth < 600 ? 40 : 70); i++) {
+        const piece = document.createElement('i');
+        piece.style.cssText = `left:${Math.random() * 100}%;background:${colors[i % 4]};animation-delay:${Math.random() * 1.2}s;` +
+          `animation-duration:${2.6 + Math.random() * 2}s;--drift:${(Math.random() * 160 - 80).toFixed(0)}px;--spin:${(Math.random() * 900 - 450).toFixed(0)}deg`;
+        burst.append(piece);
+      }
+      document.body.append(burst);
+      setTimeout(() => burst.remove(), 6000);
+    })();
+
+    // Build progress meter, counted from the build sheet lists
+    (() => {
+      const done = document.querySelectorAll('.build-done li').length;
+      const planned = document.querySelectorAll('.build-planned li').length;
+      const total = done + planned;
+      if (!total) return;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('build-progress-label').textContent = `${done} of ${total} mods · ${pct}% built`;
+      const bar = document.getElementById('build-progress-bar');
+      bar.setAttribute('aria-valuenow', String(pct));
+      const fill = document.getElementById('build-progress-fill');
+      const io = new IntersectionObserver(entries => {
+        if (entries.some(e => e.isIntersecting)) { fill.style.width = `${pct}%`; io.disconnect(); }
+      }, { threshold: 0.3 });
+      io.observe(bar);
+    })();
+
     // Seasonal touches: intro line and a light falling effect
     const season = document.documentElement.dataset.season;
     const SEASONS = {
@@ -1260,6 +1339,9 @@
       veterans:     { line: 'Thank you, veterans' },
       thanksgiving: { line: 'Thanksgiving session', fx: { shape: 'leaf', colors: ['#e8762b', '#b73b2c', '#e3a92b', '#8a4b2a'] } },
       holiday:      { line: 'Holiday session', fx: { shape: 'flake', colors: ['#efe6d2'] } },
+      birthday:     { line: 'Birthday session', fx: { shape: 'confetti', colors: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'] } },
+      anniversary:  { line: (() => { const n = Number(document.documentElement.dataset.streamYears || 1); return `Stream anniversary: year ${n}`; })(),
+                      fx: { shape: 'confetti', colors: ['#e3a92b', '#efe6d2', '#b73b2c'] } },
     };
     const current = SEASONS[season];
     if (current) document.querySelector('#title-intro .sub').textContent = current.line;

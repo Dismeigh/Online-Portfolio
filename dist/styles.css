@@ -1472,3 +1472,86 @@ body.is-onair .site-nav { top: var(--onair-h, 0px); }
 }
 .skip-link:focus { top: 1rem; }
 .hero:focus { outline: none; }
+
+/* Follower milestone celebration */
+.milestone-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 0.9rem;
+  padding: 0.5rem max(4vw, 1rem);
+  background: var(--mustard);
+  color: var(--ink);
+  font-weight: 600;
+  text-align: center;
+}
+.milestone-bar[hidden] { display: none; }
+.milestone-bar strong { font-family: var(--display); font-weight: 400; font-size: 1.15rem; letter-spacing: 0.03em; }
+.milestone-badge {
+  padding: 0.05rem 0.5rem;
+  background: var(--ink);
+  color: var(--mustard);
+  font-family: var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.follow-goal-stamp {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0 0.45rem;
+  border: 2px solid var(--mustard);
+  color: var(--mustard);
+  font-size: 0.95rem;
+  vertical-align: middle;
+  transform: rotate(-4deg);
+}
+.follow-goal-stamp[hidden] { display: none; }
+.milestone-burst { position: fixed; inset: 0; z-index: 1050; pointer-events: none; overflow: hidden; }
+.milestone-burst i {
+  position: absolute;
+  top: -16px;
+  width: 8px;
+  height: 13px;
+  border-radius: 1px;
+  animation: burstFall ease-in forwards;
+}
+@keyframes burstFall { to { transform: translate(var(--drift, 0), 110vh) rotate(var(--spin, 360deg)); opacity: 0.6; } }
+
+/* Build progress meter */
+.build-progress { margin-top: 1rem; }
+.build-progress-track {
+  position: relative;
+  height: 1.1rem;
+  background: rgba(20, 17, 15, 0.12);
+  border: 2px solid var(--ink);
+  overflow: hidden;
+}
+.build-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: repeating-linear-gradient(-45deg, var(--teal) 0 10px, #357a77 10px 20px);
+  border-right: 3px solid var(--ink);
+  transition: width 1.2s cubic-bezier(.2, .8, .2, 1);
+}
+.build-progress-label { margin: 0.45rem 0 0 !important; font-family: var(--typed); font-size: 0.9rem; color: #3b332c !important; }
+.build-col li.is-next { background: rgba(227, 169, 43, 0.28); font-weight: 600; }
+.build-col li.is-next::after {
+  content: "Next up";
+  margin-left: 0.5rem;
+  padding: 0 0.4rem;
+  background: var(--ink);
+  color: var(--mustard);
+  font-family: var(--display);
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) { .build-progress-fill { transition: none; } .milestone-burst { display: none; } }
+@media (max-width: 600px) {
+  .milestone-bar { flex-wrap: nowrap; gap: 0.6rem; padding: 0.45rem 0.75rem; font-size: 0.85rem; }
+  .milestone-thanks { display: none; }
+}

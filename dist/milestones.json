@@ -1,0 +1,6 @@
+{
+  "note": "Twitch follower milestones. Updated automatically by scripts/check-milestone.mjs; the site celebrates for 3 days after a new one.",
+  "achieved": [
+    { "milestone": 100, "date": null }
+  ]
+}
