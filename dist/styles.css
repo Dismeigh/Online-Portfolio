@@ -745,7 +745,7 @@ body.is-onair .site-nav { top: var(--onair-h, 0px); }
   overflow: hidden;
   background: var(--ink);
   cursor: pointer;
-  animation: introOut 0.5s cubic-bezier(.7, 0, .3, 1) 1.7s forwards;
+  animation: introOut 0.5s cubic-bezier(.7, 0, .3, 1) 2.7s forwards;
 }
 .title-intro[hidden] { display: none; }
 .title-intro .slab { position: absolute; }
@@ -2367,3 +2367,4 @@ a.status-row.status-link:hover, a.status-row.status-link:focus-visible { outline
 .crew-strip-more { color: var(--mustard); font-weight: 700; text-decoration: none; white-space: nowrap; }
 .crew-strip-more:hover, .crew-strip-more:focus-visible { text-decoration: underline; }
 @media (max-width: 860px) { .crew-strip { grid-template-columns: 1fr; } .command-center .crew-strip-head p { max-width: none; } }
+.title-intro .skip-hint { position: absolute; bottom: 1.4rem; left: 0; right: 0; margin: 0; text-align: center; font-family: var(--typed); font-size: 0.85rem; color: var(--paper-dim); opacity: 0; animation: fadeUp 0.3s ease-out 1.2s forwards; }

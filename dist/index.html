@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=44">
+  <link rel="stylesheet" href="styles.css?v=45">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -161,7 +161,17 @@
   <div class="title-intro" id="title-intro" hidden aria-hidden="true">
     <span class="slab slab-a"></span><span class="slab slab-b"></span>
     <div class="words"><p class="kick">Now showing</p><h2>DISMEIGH</h2><span class="sub">Session start</span></div>
+    <p class="skip-hint">Click or tap to skip</p>
   </div>
+  <script>
+    // Title card: decide right away (before the page paints) so it covers the page instead of flashing over it
+    (() => {
+      const intro = document.getElementById('title-intro');
+      let seen = false;
+      try { seen = sessionStorage.getItem('dismeigh-intro') === '1'; sessionStorage.setItem('dismeigh-intro', '1'); } catch {}
+      if (!seen && !matchMedia('(prefers-reduced-motion: reduce)').matches) { intro.hidden = false; intro.dataset.playing = '1'; }
+    })();
+  </script>
   <div class="onair-bar" id="onair-bar" role="status" hidden>
     <span class="onair-badge">On air</span>
     <span class="onair-long">Dismeigh is live on Twitch right now.</span><span class="onair-short">Streaming now</span>
@@ -1358,20 +1368,13 @@
       }
     });
 
-    // #10 Title-card intro: once per visit, click or any key skips it
+    // #10 Title-card intro: shown once per visit (started at the top of the page); click, tap or any key skips it
     const intro = document.getElementById('title-intro');
-    const playIntro = () => {
-      intro.hidden = false;
-      intro.style.animation = 'none'; void intro.offsetWidth; intro.style.animation = '';
-      intro.querySelectorAll('*').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
-    };
-    const hideIntro = () => { intro.hidden = true; };
+    const hideIntro = () => { intro.hidden = true; delete intro.dataset.playing; };
     intro.addEventListener('click', hideIntro);
     intro.addEventListener('animationend', e => { if (e.target === intro) hideIntro(); });
-    window.addEventListener('keydown', hideIntro);
-    let seen = false;
-    try { seen = sessionStorage.getItem('dismeigh-intro') === '1'; sessionStorage.setItem('dismeigh-intro', '1'); } catch {}
-    if (!seen && !matchMedia('(prefers-reduced-motion: reduce)').matches) playIntro(); else hideIntro();
+    window.addEventListener('keydown', e => { if (intro.dataset.playing) hideIntro(); });
+    if (!intro.dataset.playing) hideIntro();
 
   }
   </script>
