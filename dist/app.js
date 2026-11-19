@@ -45,8 +45,7 @@
       footer.appendChild(line);
     }
     const total = Object.keys(SECRETS).length;
-    const T = window.T || (x => x);
-    line.textContent = T(found.length >= total ? `All ${total} secrets found. Certified bounty hunter.` : `Secrets found: ${found.length} of ${total}`);
+    line.textContent = found.length >= total ? `All ${total} secrets found. Certified bounty hunter.` : `Secrets found: ${found.length} of ${total}`;
   }
 
   function toast(title, detail) {
@@ -56,10 +55,8 @@
     el.className = 'achievement-toast';
     el.setAttribute('role', 'status');
     el.innerHTML = '<p class="at-kicker"></p><p class="at-title"></p>';
-    const T = window.T || (x => x);
-    el.querySelector('.at-kicker').textContent = T(detail);
-    el.querySelector('.at-title').textContent = T(title);
-    el.querySelector('.at-title').dataset.label = T('Achievement unlocked');
+    el.querySelector('.at-kicker').textContent = detail;
+    el.querySelector('.at-title').textContent = title;
     document.body.appendChild(el);
     setTimeout(() => el.classList.add('is-leaving'), 3600);
     setTimeout(() => el.remove(), 4200);
@@ -170,3 +167,6 @@
     }
   }));
 })();
+
+// Clean up the language setting from the removed Spanish toggle
+try { localStorage.removeItem('dismeigh-lang'); } catch {}
