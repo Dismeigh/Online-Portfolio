@@ -1,0 +1,47 @@
+{
+  "note": "Channel Lore entries. Edit, add or remove freely; the /lore page reads this file.",
+  "entries": [
+    {
+      "term": "The soap rule",
+      "game": "Phasmophobia",
+      "what": "Drop the soap and the ghost starts hunting. Every time. It has happened more than once on stream.",
+      "links": [
+        { "label": "Exhibit A", "url": "https://www.youtube.com/shorts/NIdDiwJDk8w" },
+        { "label": "Exhibit B", "url": "https://www.youtube.com/shorts/wHagQ9Wtzxc" }
+      ]
+    },
+    {
+      "term": "Kids Cuisine",
+      "game": "Off the clock",
+      "what": "A childhood favorite, revisited years later for an honest review. The verdict: it is not good anymore.",
+      "links": [{ "label": "The review", "url": "https://www.youtube.com/shorts/oaHmQ0GmAYM" }]
+    },
+    {
+      "term": "The RV convertible",
+      "game": "RV There Yet?",
+      "what": "Hit something mid-drive and took the roof clean off. The RV is a convertible now.",
+      "links": [{ "label": "The crash", "url": "https://www.youtube.com/shorts/eXDswIZ5EeY" }]
+    },
+    {
+      "term": "Infinite matches",
+      "game": "Phasmophobia",
+      "what": "A glitch that handed out endless invisible matches, plus some arms bending in ways arms should not.",
+      "links": [{ "label": "The glitch", "url": "https://www.youtube.com/shorts/dl8030RgYlU" }]
+    },
+    {
+      "term": "The Taco Bell shout-out",
+      "game": "Phasmophobia",
+      "what": "Last words before getting taken out by a ghost: a shout-out to Taco Bell.",
+      "links": [{ "label": "Final words", "url": "https://www.youtube.com/shorts/10jIgrwH6vk" }]
+    },
+    {
+      "term": "QOTD",
+      "game": "Shorts",
+      "what": "Question of the Day: quick would-you-rather questions for chat, like dream house or dream car.",
+      "links": [
+        { "label": "QOTD #1", "url": "https://www.youtube.com/shorts/nCHUOYPxTe0" },
+        { "label": "QOTD #2", "url": "https://www.youtube.com/shorts/zJlkwrg6oec" }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dismeigh">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.denizen-dismeigh.com/">
@@ -46,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=20">
+  <link rel="stylesheet" href="styles.css?v=21">
 
   <!-- Font Awesome icons -->
   <link
@@ -657,6 +661,7 @@
     <footer class="footer">
       <p class="footer-signoff">See you next session.</p>
       <p class="footer-brand">Dismeigh</p>
+      <p class="footer-links"><a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -1268,6 +1273,7 @@
     const bang = document.getElementById('bang');
     let bangTimer;
     const fireBang = () => {
+      window.dismeighUnlock?.('bang');
       bang.hidden = false;
       bang.classList.remove('is-firing'); void bang.offsetWidth; bang.classList.add('is-firing');
       clearTimeout(bangTimer);
@@ -1391,6 +1397,35 @@
       document.body.append(fx);
     }
 
+    // Secret 2: rev the garage gauge (3 quick clicks/taps) to hit the redline
+    const gauge = document.querySelector('.garage-meter');
+    let revs = [];
+    gauge?.addEventListener('click', () => {
+      const now = Date.now();
+      revs = revs.filter(t => now - t < 1500).concat(now);
+      gauge.classList.remove('is-revving'); void gauge.offsetWidth; gauge.classList.add('is-revving');
+      if (revs.length >= 3) {
+        revs = [];
+        gauge.classList.add('is-redline');
+        setTimeout(() => gauge.classList.remove('is-redline'), 2400);
+        window.dismeighUnlock?.('redline');
+      }
+    });
+
+    // Secret 3: tap the Wanted poster 3 times to claim the bounty
+    const poster = document.querySelector('.wanted-poster');
+    let taps3 = [];
+    poster?.addEventListener('click', () => {
+      const now = Date.now();
+      taps3 = taps3.filter(t => now - t < 1500).concat(now);
+      if (taps3.length >= 3) {
+        taps3 = [];
+        poster.classList.add('is-claimed');
+        setTimeout(() => poster.classList.remove('is-claimed'), 2600);
+        window.dismeighUnlock?.('bounty');
+      }
+    });
+
     // #10 Title-card intro: once per visit, click or any key skips it
     const intro = document.getElementById('title-intro');
     const playIntro = () => {
@@ -1408,5 +1443,6 @@
 
   }
   </script>
+  <script src="/app.js" defer></script>
 </body>
 </html>

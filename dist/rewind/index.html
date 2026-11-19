@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dismeigh Rewind</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A year of Dismeigh streams: hours, games, and the busiest nights, straight from the stream calendar.">
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta property="og:title" content="Dismeigh Rewind">
+  <meta property="og:description" content="A year of Dismeigh streams: hours, games, and the busiest nights, straight from the stream calendar.">
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=21">
+</head>
+<body class="subpage">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a href="/" class="nav-brand">Dismeigh</a>
+    <a href="/">&larr; Back to the ship</a>
+  </nav>
+  <main id="content" class="sub-main" tabindex="-1">
+    <header class="sub-hero">
+      <span class="sub-slab sub-slab-a" aria-hidden="true"></span>
+      <span class="sub-slab sub-slab-b" aria-hidden="true"></span>
+      <p class="sub-kicker">Year in review</p>
+      <h1 class="sub-title">Dismeigh Rewind <span id="rw-year"></span></h1>
+      <div class="rw-years" id="rw-years" aria-label="Choose a year"></div>
+    </header>
+
+    <p class="rw-status" id="rw-status" role="status">Rolling back the tape&hellip;</p>
+
+    <section class="rw-body" id="rw-body" hidden>
+      <div class="rw-tiles">
+        <div class="rw-tile"><span>Streams</span><strong id="rw-streams">0</strong></div>
+        <div class="rw-tile"><span>Hours live</span><strong id="rw-hours">0</strong></div>
+        <div class="rw-tile"><span>Most played</span><strong class="is-text" id="rw-top">&ndash;</strong></div>
+        <div class="rw-tile"><span>Favorite night</span><strong class="is-text" id="rw-day">&ndash;</strong></div>
+      </div>
+
+      <div class="rw-grid">
+        <section class="rw-card" aria-labelledby="rw-months-h">
+          <h2 id="rw-months-h">Streams by month</h2>
+          <ol class="rw-months" id="rw-months"></ol>
+          <p class="rw-note" id="rw-busiest"></p>
+        </section>
+        <section class="rw-card" aria-labelledby="rw-games-h">
+          <h2 id="rw-games-h">Top games</h2>
+          <ol class="rw-games" id="rw-games"></ol>
+        </section>
+      </div>
+
+      <div class="rw-facts">
+        <p id="rw-longest"></p>
+        <p id="rw-first"></p>
+      </div>
+
+      <div class="rw-share">
+        <button type="button" class="social-btn" id="rw-copy">Copy link to this Rewind</button>
+      </div>
+      <p class="rw-fine">Counted from the stream calendar using scheduled start and end times.</p>
+    </section>
+  </main>
+  <footer class="footer">
+    <p class="footer-signoff">See you next session.</p>
+    <p class="footer-brand">Dismeigh</p>
+    <p class="footer-links"><a href="/">Home</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Rewind</a></p>
+  </footer>
+  <script src="/app.js" defer></script>
+  <script>
+  {
+    const nowYear = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric' }).format(new Date()));
+    const params = new URLSearchParams(location.search);
+    let year = Number(params.get('year')) || nowYear;
+    if (year < 2021 || year > nowYear) year = nowYear;
+    const $ = id => document.getElementById(id);
+    $('rw-year').textContent = year;
+    document.title = `Dismeigh Rewind ${year}`;
+    $('rw-years').innerHTML = Array.from({ length: nowYear - 2021 + 1 }, (_, i) => nowYear - i)
+      .map(y => `<a href="?year=${y}"${y === year ? ' aria-current="page"' : ''}>${y}</a>`).join('');
+    const fmtDate = iso => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(iso));
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function render(d) {
+      if (!d.streams) {
+        $('rw-status').textContent = `No streams on the calendar for ${year} yet. Rewind fills in as sessions land on the schedule.`;
+        return;
+      }
+      $('rw-status').hidden = true;
+      $('rw-streams').textContent = d.streams.toLocaleString();
+      $('rw-hours').textContent = d.hours.toLocaleString();
+      $('rw-top').textContent = d.games[0]?.title || '–';
+      $('rw-day').textContent = d.favoriteDay ? d.favoriteDay + 's' : '–';
+      const max = Math.max(1, ...d.months.map(m => m.streams));
+      $('rw-months').innerHTML = d.months.map(m => `<li><span class="rw-m">${m.name.slice(0, 3)}</span><span class="rw-bar"><i style="width:${(m.streams / max) * 100}%"></i></span><span class="rw-n">${m.streams}</span></li>`).join('');
+      $('rw-busiest').textContent = d.busiestMonth ? `Busiest month: ${d.busiestMonth}.` : '';
+      $('rw-games').innerHTML = d.games.slice(0, 8).map((g, i) => `<li><span class="rw-rank">${i + 1}</span><span class="rw-game">${esc(g.title)}</span><span class="rw-gh">${g.hours} hrs &middot; ${g.streams} ${g.streams === 1 ? 'session' : 'sessions'}</span></li>`).join('');
+      $('rw-longest').innerHTML = d.longest ? `<strong>Longest session:</strong> ${esc(d.longest.title)}, ${d.longest.hours} hours on ${fmtDate(d.longest.start)}.` : '';
+      $('rw-first').innerHTML = d.first ? `<strong>First session of ${year}:</strong> ${esc(d.first.title)} on ${fmtDate(d.first.start)}.` : '';
+      $('rw-body').hidden = false;
+    }
+
+    fetch(`/api/rewind?year=${year}`).then(r => r.ok ? r.json() : Promise.reject()).then(render)
+      .catch(() => { if (window.REWIND_SAMPLE) return render(window.REWIND_SAMPLE); $('rw-status').textContent = 'The tape is stuck. Try again in a bit.'; });
+
+    $('rw-copy').addEventListener('click', async () => {
+      const link = `https://www.denizen-dismeigh.com/rewind/?year=${year}`;
+      try { await navigator.clipboard.writeText(link); $('rw-copy').textContent = 'Link copied'; }
+      catch { $('rw-copy').textContent = link; }
+      setTimeout(() => { $('rw-copy').textContent = 'Copy link to this Rewind'; }, 2500);
+    });
+  }
+  </script>
+</body>
+</html>

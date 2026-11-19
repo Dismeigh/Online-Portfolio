@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Channel Lore | Dismeigh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The running jokes, legendary moments and inside bits from the Dismeigh streams, explained for new viewers.">
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta property="og:title" content="Channel Lore | Dismeigh">
+  <meta property="og:description" content="The running jokes, legendary moments and inside bits from the Dismeigh streams, explained for new viewers.">
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=21">
+</head>
+<body class="subpage">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a href="/" class="nav-brand">Dismeigh</a>
+    <a href="/">&larr; Back to the ship</a>
+  </nav>
+  <main id="content" class="sub-main" tabindex="-1">
+    <header class="sub-hero">
+      <span class="sub-slab sub-slab-a" aria-hidden="true"></span>
+      <span class="sub-slab sub-slab-b" aria-hidden="true"></span>
+      <p class="sub-kicker">Case files</p>
+      <h1 class="sub-title">Channel Lore</h1>
+      <p class="sub-intro">New around here? These are the running jokes and legendary moments chat keeps bringing up.</p>
+    </header>
+
+    <div class="lore-tools">
+      <label for="lore-search">Search the lore</label>
+      <input id="lore-search" type="search" placeholder="Try &ldquo;soap&rdquo; or &ldquo;Phasmophobia&rdquo;" autocomplete="off">
+    </div>
+    <p class="lore-empty" id="lore-empty" hidden>Nothing in the files matches that yet.</p>
+    <div class="lore-grid" id="lore-grid" aria-live="polite"></div>
+  </main>
+  <footer class="footer">
+    <p class="footer-signoff">See you next session.</p>
+    <p class="footer-brand">Dismeigh</p>
+    <p class="footer-links"><a href="/">Home</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Rewind</a></p>
+  </footer>
+  <script src="/app.js" defer></script>
+  <script>
+  {
+    const grid = document.getElementById('lore-grid');
+    const empty = document.getElementById('lore-empty');
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let entries = [];
+    const draw = q => {
+      const query = q.trim().toLowerCase();
+      const list = entries.filter(e => !query || [e.term, e.game, e.what].join(' ').toLowerCase().includes(query));
+      grid.innerHTML = list.map((e, i) => `
+        <article class="lore-card">
+          <p class="lore-num">File ${String(entries.indexOf(e) + 1).padStart(2, '0')}${e.game ? ` &middot; ${esc(e.game)}` : ''}</p>
+          <h2>${esc(e.term)}</h2>
+          <p>${esc(e.what)}</p>
+          ${(e.links || []).filter(l => /^https:\/\//.test(l.url)).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label)} &rarr;</a>`).join(' ')}
+        </article>`).join('');
+      empty.hidden = list.length > 0;
+    };
+    fetch('/lore.json').then(r => r.json()).then(d => { entries = d.entries || []; draw(''); });
+    document.getElementById('lore-search').addEventListener('input', e => draw(e.target.value));
+  }
+  </script>
+</body>
+</html>
