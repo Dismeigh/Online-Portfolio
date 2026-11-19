@@ -2,7 +2,7 @@
 // 1) Every main page and data feed must load.
 // 2) Lighthouse (mobile) scores for the home page are compared to the stored baseline.
 // Problems are written to health-problems.md, which the workflow turns into a GitHub issue.
-import { readFile, writeFile, appendFile } from 'node:fs/promises';
+import { readFile, writeFile, appendFile, mkdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 
 const SITE = 'https://www.denizen-dismeigh.com';
@@ -61,6 +61,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const drops = compare(scores, baseline);
   const { next, changed } = raise(scores, baseline);
   if (changed && !drops.length) {
+    await mkdir('.github/health', { recursive: true });
     await writeFile(BASELINE, JSON.stringify({ updated: new Date().toISOString().slice(0, 10), scores: next }, null, 2) + '\n');
   }
 
