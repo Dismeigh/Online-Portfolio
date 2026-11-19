@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 
   <!-- Font Awesome icons -->
   <link
@@ -97,12 +97,43 @@
 <body>
   <a class="skip-link" href="#top">Skip to content</a>
   <script>
-    // Seasonal touches, by Eastern date. Preview any of them with ?season=spooky|holiday|newyear|off
+    // Seasonal and holiday looks, by Eastern date. Preview any with ?season=<key> (or ?season=off).
+    // Keys: newyear, mlk, valentines, presidents, stpatricks, easter, mothers, memorial, fathers,
+    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December)
     (() => {
-      const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'numeric', day: 'numeric' })
-        .formatToParts(new Date()).map(p => [p.type, Number(p.value)]));
-      const m = parts.month, d = parts.day;
-      let season = m === 10 ? 'spooky' : (m === 12 && d === 31) || (m === 1 && d <= 2) ? 'newyear' : m === 12 ? 'holiday' : '';
+      const now = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' })
+        .formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, Number(p.value)]));
+      const Y = now.year, M = now.month, D = now.day;
+      const dow = (m, d) => new Date(Date.UTC(Y, m - 1, d)).getUTCDay();
+      const nth = (m, weekday, n) => { const first = (7 + weekday - dow(m, 1)) % 7 + 1; return first + (n - 1) * 7; };
+      const last = (m, weekday) => { const days = new Date(Date.UTC(Y, m, 0)).getUTCDate(); return days - (7 + dow(m, days) - weekday) % 7; };
+      // Easter (Anonymous Gregorian algorithm)
+      const a = Y % 19, b = Math.floor(Y / 100), c = Y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+        g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+        l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const easterM = Math.floor((h + l - 7 * m + 114) / 31), easterD = ((h + l - 7 * m + 114) % 31) + 1;
+      const dayNum = (mm, dd) => Date.UTC(Y, mm - 1, dd) / 86400000;
+      const today = dayNum(M, D);
+      const within = (mm, dd, before = 0, after = 0) => today >= dayNum(mm, dd) - before && today <= dayNum(mm, dd) + after;
+      const thanksgiving = nth(11, 4, 4);
+
+      let season = '';
+      if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
+      else if (M === 1 && D === nth(1, 1, 3)) season = 'mlk';
+      else if (M === 2 && (D === 13 || D === 14)) season = 'valentines';
+      else if (M === 2 && D === nth(2, 1, 3)) season = 'presidents';
+      else if (M === 3 && D === 17) season = 'stpatricks';
+      else if (within(easterM, easterD, 2, 0)) season = 'easter';
+      else if (M === 5 && D === nth(5, 0, 2)) season = 'mothers';
+      else if (M === 5 && D === last(5, 1)) season = 'memorial';
+      else if (M === 6 && D === nth(6, 0, 3)) season = 'fathers';
+      else if (M === 6 && D === 19) season = 'juneteenth';
+      else if (M === 7 && (D === 3 || D === 4)) season = 'july4';
+      else if (M === 9 && D === nth(9, 1, 1)) season = 'labor';
+      else if (M === 10) season = 'spooky';
+      else if (M === 11 && D === 11) season = 'veterans';
+      else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
+      else if (M === 12) season = 'holiday';
       try {
         const override = new URLSearchParams(location.search).get('season');
         if (override) season = override === 'off' ? '' : override;
@@ -1210,22 +1241,42 @@
       if (taps.length >= 5) { taps = []; fireBang(); }
     });
 
-    // Seasonal touches: intro line, and falling snow or confetti
+    // Seasonal touches: intro line and a light falling effect
     const season = document.documentElement.dataset.season;
-    const seasonLine = { spooky: 'Spooky session', holiday: 'Holiday session', newyear: 'New year, new session' }[season];
-    if (seasonLine) document.querySelector('#title-intro .sub').textContent = seasonLine;
-    if ((season === 'holiday' || season === 'newyear') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const SEASONS = {
+      newyear:      { line: 'New year, new session', fx: { shape: 'confetti', colors: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'] } },
+      mlk:          { line: "Honoring Dr. King's legacy" },
+      valentines:   { line: "Valentine's session", fx: { shape: 'heart', colors: ['#f28ab2', '#b73b2c', '#efe6d2'] } },
+      presidents:   { line: "Happy Presidents' Day" },
+      stpatricks:   { line: 'Lucky session', fx: { shape: 'clover', colors: ['#5fbf6a', '#1f6633', '#9bd88f'] } },
+      easter:       { line: 'Happy Easter', fx: { shape: 'egg', colors: ['#f7b3c9', '#b3d9f7', '#c9f0b3', '#f7e7a3', '#d9b3f7'] } },
+      mothers:      { line: "Happy Mother's Day", fx: { shape: 'petal', colors: ['#f28ab2', '#f7c6d9', '#efe6d2'] } },
+      memorial:     { line: 'Remembering those who gave all' },
+      fathers:      { line: "Happy Father's Day" },
+      juneteenth:   { line: 'Celebrating Juneteenth' },
+      july4:        { line: 'Fourth of July session', fx: { shape: 'star', colors: ['#b73b2c', '#efe6d2', '#7fb3e8'] } },
+      labor:        { line: 'Happy Labor Day' },
+      spooky:       { line: 'Spooky session' },
+      veterans:     { line: 'Thank you, veterans' },
+      thanksgiving: { line: 'Thanksgiving session', fx: { shape: 'leaf', colors: ['#e8762b', '#b73b2c', '#e3a92b', '#8a4b2a'] } },
+      holiday:      { line: 'Holiday session', fx: { shape: 'flake', colors: ['#efe6d2'] } },
+    };
+    const current = SEASONS[season];
+    if (current) document.querySelector('#title-intro .sub').textContent = current.line;
+    if (current?.fx && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const fx = document.createElement('div');
-      fx.className = 'season-fx';
+      fx.className = `season-fx fx-${current.fx.shape}`;
       fx.setAttribute('aria-hidden', 'true');
-      const colors = season === 'newyear' ? ['#e3a92b', '#c4402f', '#3f8f8c', '#efe6d2'] : ['#efe6d2'];
-      for (let i = 0, n = innerWidth < 600 ? 18 : 32; i < n; i++) {
-        const flake = document.createElement('i');
-        const size = season === 'newyear' ? 5 + Math.random() * 5 : 3 + Math.random() * 5;
-        flake.style.cssText = `left:${Math.random() * 100}%;width:${size}px;height:${season === 'newyear' ? size * 1.6 : size}px;` +
-          `background:${colors[i % colors.length]};animation-duration:${9 + Math.random() * 10}s;animation-delay:${-Math.random() * 18}s;` +
-          `--drift:${(Math.random() * 60 - 30).toFixed(0)}px;opacity:${(0.25 + Math.random() * 0.35).toFixed(2)}`;
-        fx.append(flake);
+      const { colors, shape } = current.fx;
+      const sized = { flake: [3, 8], confetti: [5, 10], heart: [10, 18], clover: [12, 18], egg: [9, 14], petal: [8, 14], star: [9, 16], leaf: [12, 20] }[shape] || [4, 8];
+      for (let i = 0, n = innerWidth < 600 ? 16 : 28; i < n; i++) {
+        const piece = document.createElement('i');
+        const size = sized[0] + Math.random() * (sized[1] - sized[0]);
+        const tall = shape === 'confetti' ? 1.6 : shape === 'egg' ? 1.3 : 1;
+        piece.style.cssText = `left:${Math.random() * 100}%;width:${size}px;height:${size * tall}px;` +
+          `background-color:${colors[i % colors.length]};animation-duration:${10 + Math.random() * 10}s;animation-delay:${-Math.random() * 20}s;` +
+          `--drift:${(Math.random() * 80 - 40).toFixed(0)}px;--spin:${(Math.random() * 540 - 270).toFixed(0)}deg;opacity:${(0.3 + Math.random() * 0.35).toFixed(2)}`;
+        fx.append(piece);
       }
       document.body.append(fx);
     }
