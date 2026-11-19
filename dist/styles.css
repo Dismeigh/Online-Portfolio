@@ -2146,14 +2146,14 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 .launch-section .lc-verdict { margin-top: 0.4rem; min-height: 2.6em; color: #d8cdb6; }
 .launch-section .lc-best { margin-top: 0.3rem; font-family: var(--typed); font-size: 0.9rem; color: var(--paper-dim); }
 .launch-section .lc-best b { color: var(--mustard); font-weight: 400; }
-.lc-strip { position: relative; height: 92px; margin: 1.1rem -1.1rem 0; background:
-  repeating-linear-gradient(90deg, transparent 0 60px, rgba(239,230,210,0.5) 60px 92px) 0 82px / 100% 4px no-repeat, #2a2522; border-top: 3px solid #3a322b; border-bottom: 3px solid #3a322b; overflow: hidden; }
-.lc-line { position: absolute; left: 172px; top: 0; bottom: 0; width: 6px; background: repeating-linear-gradient(0deg, #f3ead2 0 8px, #14110f 8px 16px); }
-.lc-car { position: absolute; left: 18px; bottom: 6px; transition: transform 1.1s cubic-bezier(0.5, 0, 0.9, 0.6); will-change: transform; }
+.lc-strip { position: relative; height: 128px; margin: 1.1rem -1.1rem 0; background:
+  repeating-linear-gradient(90deg, transparent 0 60px, rgba(239,230,210,0.5) 60px 92px) 0 118px / 100% 4px no-repeat, var(--lc-road, #2a2522); border-top: 3px solid #3a322b; border-bottom: 3px solid #3a322b; overflow: hidden; }
+.lc-line { position: absolute; left: 252px; top: 0; bottom: 0; width: 6px; background: repeating-linear-gradient(0deg, #f3ead2 0 8px, #14110f 8px 16px); }
+.lc-car { position: absolute; left: 14px; bottom: 2px; overflow: visible; transition: transform 1.1s cubic-bezier(0.5, 0, 0.9, 0.6); will-change: transform; }
 .lc-panel.armed .lc-car { animation: lc-idle 0.12s steps(2) infinite; }
 .lc-panel.launched .lc-car { transform: translateX(calc(100vw)); }
 @keyframes lc-idle { 50% { translate: 0 1px; } }
-.lc-smoke { position: absolute; left: 0; bottom: 8px; width: 70px; height: 34px; border-radius: 50%; background: radial-gradient(circle, rgba(239,230,210,0.55), transparent 70%); opacity: 0; pointer-events: none; }
+.lc-smoke { position: absolute; left: 0; bottom: 8px; width: 70px; height: 34px; border-radius: 50%; background: radial-gradient(circle, var(--lc-smoke, rgba(239,230,210,0.55)), transparent 70%); opacity: 0; pointer-events: none; }
 .lc-smoke.puff { animation: lc-puff 0.9s ease-out; }
 @keyframes lc-puff { 0% { opacity: 0.9; transform: scale(0.5); } 100% { opacity: 0; transform: scale(2.4) translateX(-20px); } }
 .lc-controls { display: grid; justify-items: center; gap: 0.6rem; margin-top: 1.1rem; }
@@ -2230,3 +2230,24 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 /* Inline icons (Font Awesome Free, CC BY 4.0) */
 .icon { display: inline-block; width: auto; height: 1em; vertical-align: -0.125em; fill: currentColor; flex-shrink: 0; overflow: visible; }
 .status-row .icon, .featured-clip-label .icon { color: var(--mustard); }
+
+/* Launch Control holiday looks: decorations on the car, road tint, smoke color, launch burst */
+.lc-car .deco { display: none; }
+[data-season="holiday"] .lc-car .deco-holiday, [data-season="spooky"] .lc-car .deco-spooky, [data-season="july4"] .lc-car .deco-july4,
+[data-season="newyear"] .lc-car .deco-party, [data-season="birthday"] .lc-car .deco-party, [data-season="anniversary"] .lc-car .deco-party,
+[data-season="easter"] .lc-car .deco-easter, [data-season="thanksgiving"] .lc-car .deco-thanksgiving, [data-season="valentines"] .lc-car .deco-valentines,
+[data-season="stpatricks"] .lc-car .deco-stpatricks, [data-season="mothers"] .lc-car .deco-mothers { display: inline; }
+[data-season="holiday"] .lc-strip { --lc-road: #343a46; --lc-smoke: rgba(240,246,255,0.8); border-top-color: #eef3f8; box-shadow: inset 0 5px 0 #eef3f8; }
+[data-season="spooky"] .lc-strip { --lc-road: #2a1d36; --lc-smoke: rgba(143,211,106,0.6); }
+[data-season="thanksgiving"] .lc-strip { --lc-road: #3a2a1e; --lc-smoke: rgba(232,150,70,0.55); }
+[data-season="valentines"] .lc-strip { --lc-road: #3a2230; --lc-smoke: rgba(242,138,178,0.65); }
+[data-season="stpatricks"] .lc-strip { --lc-road: #1e2f24; --lc-smoke: rgba(95,191,106,0.6); }
+[data-season="easter"] .lc-strip { --lc-road: #2c2840; --lc-smoke: rgba(217,179,247,0.6); }
+[data-season="mothers"] .lc-strip { --lc-road: #33232e; --lc-smoke: rgba(247,198,217,0.65); }
+[data-season="july4"] .lc-strip { --lc-road: #1c2238; --lc-smoke: rgba(127,179,232,0.6); }
+.lc-burst { position: absolute; inset: 0; pointer-events: none; }
+.lc-burst i { position: absolute; width: 7px; height: 7px; border-radius: 1px; opacity: 0; }
+.lc-burst.go i { animation: lc-burst 1.1s ease-out forwards; }
+@keyframes lc-burst { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: 0; transform: translate(var(--bx), var(--by)) rotate(var(--br)); } }
+@media (max-width: 860px) { .lc-strip { height: 108px; background-position: 0 98px, 0 0; } .lc-line { left: 182px; } .lc-car { width: 170px; height: 76px; } }
+@media (prefers-reduced-motion: reduce) { .lc-burst.go i { animation: none; } }

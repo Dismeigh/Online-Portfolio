@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=35">
+  <link rel="stylesheet" href="/styles.css?v=36">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 </head>
 
@@ -261,17 +261,112 @@
             </div>
             <div class="lc-strip" aria-hidden="true">
               <span class="lc-line"></span>
-              <svg class="lc-car" id="lc-car" viewBox="0 0 220 80" width="150" height="55">
-                <path d="M8 56 L10 42 Q14 34 30 32 L62 30 Q78 14 104 12 L150 12 Q168 13 182 26 L204 34 Q214 38 214 48 L214 56 Z" fill="#2242a8" stroke="#14110f" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M74 30 Q88 18 106 17 L128 17 L128 30 Z" fill="#9fc0e8" stroke="#14110f" stroke-width="2"/>
-                <path d="M134 17 L150 17 Q164 18 174 30 L134 30 Z" fill="#9fc0e8" stroke="#14110f" stroke-width="2"/>
-                <rect x="8" y="40" width="9" height="7" fill="#e85a3c" stroke="#14110f" stroke-width="1.5"/>
-                <rect x="203" y="40" width="10" height="6" fill="#f3ead2" stroke="#14110f" stroke-width="1.5"/>
-                <path d="M60 50 L170 50" stroke="#14110f" stroke-width="2" opacity="0.5"/>
-                <circle cx="52" cy="58" r="15" fill="#14110f"/><circle cx="52" cy="58" r="7" fill="#5a4c41"/>
-                <circle cx="174" cy="58" r="15" fill="#14110f"/><circle cx="174" cy="58" r="7" fill="#5a4c41"/>
-              </svg>
+              <svg class="lc-car" id="lc-car" viewBox="0 -16 300 134" width="236" height="105" aria-hidden="true">
+  <defs>
+    <linearGradient id="stPaint" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4065e6"/><stop offset="0.42" stop-color="#2242c6"/><stop offset="1" stop-color="#132a86"/>
+    </linearGradient>
+    <linearGradient id="stGlass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f3f5a"/><stop offset="0.5" stop-color="#151c28"/><stop offset="1" stop-color="#0c1018"/>
+    </linearGradient>
+  </defs>
+  <!-- wheel wells -->
+  <circle cx="70" cy="91" r="24" fill="#07090f"/><circle cx="232" cy="91" r="24" fill="#07090f"/>
+  <!-- body -->
+  <path d="M18 104 Q10 102 10 92 L9.5 74 Q9.5 66 13 62 L16 52 Q22 38 30 28 Q70 17 116 17 Q142 18 157 23 L201 50 Q241 53 268 60 Q284 64 288 72 L290 92 Q290 104 280 105 L254.7 105 A25 25 0 1 0 209.3 105 L92.7 105 A25 25 0 1 0 47.3 105 L26 105 Q20 105 18 104 Z"
+        fill="url(#stPaint)" stroke="#0b0f1e" stroke-width="2.2" stroke-linejoin="round"/>
+  <!-- roof spoiler over the hatch -->
+  <path d="M19 31 L30 25.5 Q40 22 52 21 L50 25 Q38 26 30 30 Z" fill="#0d1226" stroke="#0b0f1e" stroke-width="1.2" stroke-linejoin="round"/>
+  <!-- side glass with black trim -->
+  <path d="M34 45 Q40 33 54 29 L110 23.5 Q139 22.6 152 26.5 L184 50.5 L60 50.5 Q44 50 34 45 Z" fill="#0b0f1e"/>
+  <path d="M38.5 44 Q44 34.5 56 31.4 L72 29.6 L72 48.5 L60 48.5 Q46 48 38.5 44 Z" fill="url(#stGlass)"/>
+  <path d="M76 29.2 L119 25 L119 48.5 L76 48.5 Z" fill="url(#stGlass)"/>
+  <path d="M124 24.6 Q141 24.4 150.5 28 L179 48.5 L124 48.5 Z" fill="url(#stGlass)"/>
+  <path d="M84 29.5 L101 27.8 L89 46 L80 46 Z M130 25.5 L139 25.5 L127 43 L125 43 Z" fill="#ffffff" opacity="0.09"/>
+  <!-- shoulder highlight and lower crease -->
+  <path d="M30 57 Q120 53.5 198 55 Q238 57 264 62" fill="none" stroke="#7d9cff" stroke-width="1.6" opacity="0.55"/>
+  <path d="M28 74 Q120 71 206 76" fill="none" stroke="#0b0f1e" stroke-width="1" opacity="0.4"/>
+  <!-- door cuts and handles -->
+  <path d="M122 51 L122 101 M193 51 L195 92 M77 51 L77 70 Q78 78 84 84" fill="none" stroke="#0b0f1e" stroke-width="1.2" opacity="0.75"/>
+  <rect x="104" y="57.5" width="11" height="3" rx="1.5" fill="#0b0f1e" opacity="0.7"/>
+  <rect x="166" y="57.5" width="11" height="3" rx="1.5" fill="#0b0f1e" opacity="0.7"/>
+  <!-- black sequential mirror -->
+  <path d="M181 46 L193 44 Q198 45 197 51 L185 53 Z" fill="#0b0f1e"/>
+  <path d="M186 51.5 L196 50" stroke="#f2a51e" stroke-width="1.6"/>
+  <!-- side skirt -->
+  <path d="M93 101 L209 101 L209 105 L93 105 Z" fill="#0b0f1e"/>
+  <!-- ACANII headlight: dark housing, white LED strip -->
+  <path d="M252 59 Q270 61 285 67 L284 72.5 Q268 70.5 254 65.5 Z" fill="#141826" stroke="#0b0f1e" stroke-width="1"/>
+  <path d="M258 62.2 Q271 64.3 282 68.7" stroke="#eef4ff" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- front bumper intake and fog -->
+  <path d="M278 82 L290 82 L290 98 Q286 102 280 102 Z" fill="#0b0f1e"/>
+  <path d="M265 92 L274 92" stroke="#0b0f1e" stroke-width="3" stroke-linecap="round"/>
+  <!-- taillight -->
+  <path d="M11 64 L15.5 51 Q18 44 22 41 Q24 42 23.5 45 L19 66 Z" fill="#d42a2a" stroke="#0b0f1e" stroke-width="1"/>
+  <path d="M14 59 L18.5 48" stroke="#ff8a7a" stroke-width="1.2"/>
+  <!-- rear bumper lower -->
+  <path d="M10 92 Q10 102 18 104 L30 104 L30 98 L12 96 Z" fill="#0b0f1e" opacity="0.85"/>
+  <!-- wheels: gloss black 5-spoke -->
+  <g id="stWheel">
+    <circle cx="70" cy="91" r="22" fill="#0a0a0c"/>
+    <circle cx="70" cy="91" r="16.5" fill="#17181d" stroke="#30323a" stroke-width="1"/>
+    <g fill="#34363e" stroke="#0a0a0c" stroke-width="0.8">
+      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z"/>
+      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(72 70 91)"/>
+      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(144 70 91)"/>
+      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(216 70 91)"/>
+      <path d="M68.3 91 L67.6 75.5 Q70 74.5 72.4 75.5 L71.7 91 Z" transform="rotate(288 70 91)"/>
+    </g>
+    <circle cx="70" cy="91" r="3.4" fill="#0a0a0c" stroke="#3a3c44" stroke-width="0.8"/>
+  </g>
+  <use href="#stWheel" x="162"/>
+
+  <!-- Holiday decorations (shown by the site's holiday look) -->
+  <g class="deco deco-holiday">
+    <path d="M32 27 Q70 13 116 13.5 Q142 14.5 156 20 Q140 15.5 116 16 Q72 16 34 29 Z" fill="#f4f8fc" stroke="#cfd9e6" stroke-width="1"/>
+    <path d="M150 25 C151 13 147 6 140 1 M148.5 15 L141 13 M150 20 L158 13 M158 13 L161 7" fill="none" stroke="#7a4a26" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="291" cy="80" r="5.5" fill="#e8321e" stroke="#0b0f1e" stroke-width="1.2"/>
+  </g>
+  <g class="deco deco-spooky">
+    <path d="M100 10 Q100 3 104 1" stroke="#3f8f3c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="11" rx="13" ry="8.5" fill="#e8762b" stroke="#0b0f1e" stroke-width="1.5"/>
+    <path d="M94 6 Q93 11 94 16 M106 6 Q107 11 106 16" stroke="#b9561a" stroke-width="1" fill="none"/>
+    <path d="M94 9 L97 9 L95.5 6.5 Z M103 9 L106 9 L104.5 6.5 Z M93 13 Q100 17 107 13 Q100 15 93 13 Z" fill="#14110f"/>
+  </g>
+  <g class="deco deco-july4">
+    <path d="M40 24 L40 -10" stroke="#1a1a1a" stroke-width="1.3"/>
+    <rect x="40" y="-10" width="20" height="13" fill="#efe6d2" stroke="#0b0f1e" stroke-width="0.8"/>
+    <path d="M40 -7.4 H60 M40 -2.2 H60 M40 0.4 H60" stroke="#b73b2c" stroke-width="1.6"/><path d="M40 -9.2 H60" stroke="#b73b2c" stroke-width="1"/>
+    <rect x="40" y="-10" width="8.5" height="7" fill="#2242a8"/>
+  </g>
+  <g class="deco deco-party">
+    <path d="M90 18 L101 -12 L112 18 Z" fill="#e3a92b" stroke="#0b0f1e" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M93.5 9 L108.5 9 M97 0 L105 0" stroke="#b73b2c" stroke-width="2.4"/>
+    <circle cx="101" cy="-12" r="3.6" fill="#efe6d2" stroke="#0b0f1e" stroke-width="1"/>
+  </g>
+  <g class="deco deco-easter">
+    <path d="M94 18 Q88 -4 95 -9 Q100 -4 99 18 Z M104 18 Q104 -6 111 -8 Q115 0 109 18 Z" fill="#f7c6d9" stroke="#0b0f1e" stroke-width="1.3"/>
+    <path d="M95 14 Q92 0 95 -5 M106 14 Q107 -2 110 -4" stroke="#f28ab2" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+  <g class="deco deco-thanksgiving">
+    <path d="M70 18 q6 -9 13 -2 q-6 5 -13 2 Z" fill="#e8762b" stroke="#0b0f1e" stroke-width="0.8"/>
+    <path d="M100 16 q7 -8 13 0 q-7 4 -13 0 Z" fill="#b73b2c" stroke="#0b0f1e" stroke-width="0.8"/>
+    <path d="M128 18 q5 -9 12 -3 q-5 6 -12 3 Z" fill="#e3a92b" stroke="#0b0f1e" stroke-width="0.8"/>
+  </g>
+  <g class="deco deco-valentines">
+    <path d="M150 88 C134 78 136 64 146 65 C150 65.5 151 68 151 70 C151 68 153 65.5 157 65 C167 64 168 78 151 88 Z" fill="#f28ab2" stroke="#0b0f1e" stroke-width="1.2" transform="translate(-6 -6)"/>
+  </g>
+  <g class="deco deco-stpatricks" transform="translate(150 74)">
+    <circle cx="-4.5" cy="-3" r="5" fill="#5fbf6a" stroke="#0b0f1e" stroke-width="1"/><circle cx="4.5" cy="-3" r="5" fill="#5fbf6a" stroke="#0b0f1e" stroke-width="1"/>
+    <circle cx="0" cy="4" r="5" fill="#5fbf6a" stroke="#0b0f1e" stroke-width="1"/><path d="M1 8 Q3 14 7 16" stroke="#1f6633" stroke-width="2" fill="none"/>
+  </g>
+  <g class="deco deco-mothers" transform="translate(150 72)">
+    <circle r="4" cx="0" cy="-6" fill="#f7c6d9"/><circle r="4" cx="5.7" cy="-1.8" fill="#f7c6d9"/><circle r="4" cx="3.5" cy="4.9" fill="#f7c6d9"/>
+    <circle r="4" cx="-3.5" cy="4.9" fill="#f7c6d9"/><circle r="4" cx="-5.7" cy="-1.8" fill="#f7c6d9"/><circle r="3" fill="#e3a92b"/>
+  </g>
+</svg>
               <span class="lc-smoke" id="lc-smoke"></span>
+              <span class="lc-burst" id="lc-burst"></span>
             </div>
             <div class="lc-controls">
               <button type="button" class="game-start lc-btn" id="lc-btn">Stage</button>
@@ -413,7 +508,7 @@
 
   }
   </script>
-  <script src="/drag-race.js?v=35" defer></script>
+  <script src="/drag-race.js?v=36" defer></script>
   <script src="/app.js?v=35" defer></script>
 </body>
 </html>

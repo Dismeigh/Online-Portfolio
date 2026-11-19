@@ -13,6 +13,29 @@
   const buzz = p => { try { navigator.vibrate?.(p); } catch {} };
   const fmt = ms => (ms / 1000).toFixed(3);
 
+  // Holiday looks: a burst of colors when you launch (decorations and road colors come from styles.css)
+  const BURSTS = {
+    newyear: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'], birthday: ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2'],
+    anniversary: ['#e3a92b', '#efe6d2', '#b73b2c'], july4: ['#b73b2c', '#efe6d2', '#7fb3e8'], holiday: ['#efe6d2', '#c8322a', '#3fa35a'],
+    valentines: ['#f28ab2', '#f7c6d9', '#b73b2c'], stpatricks: ['#5fbf6a', '#f0c63a', '#9bd88f'], easter: ['#f7b3c9', '#b3d9f7', '#c9f0b3', '#f7e7a3'],
+    thanksgiving: ['#e8762b', '#b73b2c', '#e3a92b'], spooky: ['#e8762b', '#9b6bd6', '#8fd36a'], mothers: ['#f28ab2', '#f7c6d9', '#efe6d2'],
+  };
+  const burstColors = BURSTS[document.documentElement.dataset.season];
+  const burstBox = document.getElementById('lc-burst');
+  function burst() {
+    if (!burstColors || !burstBox || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const w = burstBox.clientWidth;
+    burstBox.classList.remove('go');
+    burstBox.replaceChildren(...Array.from({ length: 26 }, (_, i) => {
+      const p = document.createElement('i');
+      const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 70;
+      p.style.cssText = `left:${w * 0.72}px;top:45px;background:${burstColors[i % burstColors.length]};` +
+        `--bx:${Math.cos(a) * d * 1.6}px;--by:${Math.sin(a) * d}px;--br:${Math.random() * 540 - 270}deg;animation-delay:${0.35 + Math.random() * 0.25}s`;
+      return p;
+    }));
+    void burstBox.offsetWidth; burstBox.classList.add('go');
+  }
+
   let best = Number(store.get('dismeigh-launch-best')) || 0;
   if (best) bestEl.textContent = fmt(best);
   nameIn.value = store.get('dismeigh-arcade-name') || '';
@@ -68,6 +91,7 @@
     if (ms === null) { timeEl.textContent = '—'; verdict.textContent = note; return; }
     panel.classList.add('launched');
     smoke.classList.remove('puff'); void smoke.offsetWidth; smoke.classList.add('puff');
+    burst();
     buzz(30);
     lastMs = ms;
     timeEl.textContent = fmt(ms);
