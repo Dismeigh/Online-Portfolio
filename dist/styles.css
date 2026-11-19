@@ -2252,3 +2252,26 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 @media (max-width: 860px) { .lc-strip { height: 108px; background-position: 0 98px, 0 0; } .lc-line { left: 188px; } .lc-car { width: 170px; height: 85px; } }
 @media (prefers-reduced-motion: reduce) { .lc-burst.go i { animation: none; } }
 
+
+/* Voice page */
+.voice-section .voice-lede { max-width: 44rem; margin: 0.4rem 0 1.6rem; font-size: 1.1rem; color: var(--paper); }
+.voice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; align-items: stretch; }
+.voice-card { display: flex; flex-direction: column; padding: 1.2rem 1.2rem 1.1rem; background: var(--ink-2); border-top: 6px solid var(--mustard); box-shadow: 8px 8px 0 rgba(0,0,0,0.45); }
+.voice-card.voice-now { background: var(--paper); color: var(--ink); border-top-color: var(--red); box-shadow: 8px 8px 0 var(--red); }
+.voice-section .voice-tag { display: flex; align-items: center; gap: 0.45rem; margin: 0 0 0.5rem; font-family: var(--typed); font-size: 0.9rem; color: var(--mustard); }
+.voice-section .voice-now .voice-tag { color: #9e3326; }
+.voice-card h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1; text-transform: uppercase; }
+.voice-section .voice-card p { margin: 0.5rem 0 0; color: var(--paper-dim); }
+.voice-section .voice-now p { color: #3a312a; }
+.voice-section .voice-now .voice-show { margin-top: 0.25rem; font-family: var(--typed); color: #5a4c41; }
+.voice-section .voice-now .voice-show strong { color: var(--ink); }
+.voice-actions { margin-top: auto !important; padding-top: 1rem; }
+.voice-actions .social-btn { display: inline-flex; align-items: center; gap: 0.5rem; max-width: 100%; overflow-wrap: anywhere; }
+.voice-now .social-btn { background: var(--ink); color: var(--paper); }
+@media (max-width: 900px) { .voice-grid { grid-template-columns: 1fr; } }
+
+/* Console row that links somewhere */
+a.status-row.status-link { color: inherit; text-decoration: none; }
+a.status-row.status-link:hover, a.status-row.status-link:focus-visible { outline: 2px solid var(--mustard); outline-offset: 2px; }
+.status-row strong em { font-style: italic; }
+.voice-section .voice-card .voice-email { margin-top: 0.5rem; font-family: var(--typed); font-size: 0.88rem; color: var(--paper-dim); overflow-wrap: anywhere; }
