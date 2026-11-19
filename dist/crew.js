@@ -9,13 +9,24 @@
     } catch { return null; }   // null = couldn't reach Twitch
   };
   const isLive = t => t && !/offline|not live|not currently/i.test(t);
+  // Fill a picture holder with the friend's avatar; show their initial if the image can't load
+  function setPic(holder, f, size) {
+    holder.textContent = f.name.slice(0, 1).toUpperCase();
+    if (!f.avatar) return;
+    const img = document.createElement('img');
+    img.alt = ''; img.width = size; img.height = size; img.decoding = 'async'; img.referrerPolicy = 'no-referrer';
+    img.onload = () => holder.replaceChildren(img);
+    img.src = f.avatar;
+  }
 
   async function check(friend) {
     const user = encodeURIComponent(String(friend.twitch || '').toLowerCase());
     const [uptime, avatar] = await Promise.all([ask(`uptime/${user}`), ask(`avatar/${user}`)]);
     const live = isLive(uptime);
     const [game, title] = live ? await Promise.all([ask(`game/${user}`), ask(`title/${user}`)]) : ['', ''];
-    return { ...friend, live, unknown: uptime === null, game: game || '', title: title || '', avatar: /^https:\/\//.test(avatar || '') ? avatar : '', url: `https://twitch.tv/${user}` };
+    // Profile picture: DecAPI's answer if it gives one, otherwise unavatar.io (looks up Twitch avatars by username)
+    const pic = /^https:\/\/[^\s]+$/.test(avatar || '') ? avatar : `https://unavatar.io/twitch/${user}?fallback=false`;
+    return { ...friend, live, unknown: uptime === null, game: game || '', title: title || '', avatar: pic, url: `https://twitch.tv/${user}` };
   }
 
   async function loadCrew() {
@@ -35,8 +46,7 @@
         const card = el('article', `crew-card${f.live ? ' is-live' : ''}`);
         const top = el('div', 'crew-top');
         const pic = el('div', 'crew-pic');
-        if (f.avatar) { const img = el('img'); img.src = f.avatar; img.alt = ''; img.loading = 'lazy'; img.width = 72; img.height = 72; pic.append(img); }
-        else pic.textContent = f.name.slice(0, 1).toUpperCase();
+        setPic(pic, f, 72);
         const who = el('div', 'crew-who');
         who.append(el('h2', 'crew-name', f.name), el('p', `crew-status${f.live ? ' live' : ''}`, f.live ? 'Live now' : f.unknown ? 'Status unknown' : 'Offline'));
         top.append(pic, who);
@@ -72,8 +82,7 @@
         a.href = f.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
         a.setAttribute('aria-label', `${f.name}, ${f.live ? `live now${f.game ? ` playing ${f.game}` : ''}` : f.unknown ? 'on Twitch' : 'offline'}`);
         const pic = el('span', 'crew-chip-pic');
-        if (f.avatar) { const img = el('img'); img.src = f.avatar; img.alt = ''; img.loading = 'lazy'; img.width = 44; img.height = 44; pic.append(img); }
-        else pic.textContent = f.name.slice(0, 1).toUpperCase();
+        setPic(pic, f, 44);
         const text = el('span', 'crew-chip-text');
         text.append(el('span', 'crew-chip-name', f.name),
           el('span', `crew-chip-status${f.live ? ' live' : ''}`, f.live ? `Live${f.game ? ` · ${f.game}` : ''}` : f.unknown ? 'On Twitch' : 'Offline'));
