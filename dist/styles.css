@@ -1998,8 +1998,6 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
 .extras-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 
 /* Accounts: Sign in with Twitch, footer controls */
-.footer-account { display: grid; justify-items: center; gap: 0.4rem; margin-top: 0.8rem; }
-.twitch-signin {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
@@ -2012,13 +2010,6 @@ a.extra-card:hover { transform: translate(-3px, -3px) rotate(-0.5deg); box-shado
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--ink-3);
 }
-.twitch-signin:hover { background: #503484; }
-.twitch-signin svg { width: 1.2rem; height: 1.2rem; }
-.account-note { margin: 0; font-size: 0.82rem; color: var(--paper-dim); }
-.account-who { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; color: var(--paper); font-weight: 600; }
-.account-who img { border-radius: 50%; border: 2px solid var(--mustard); }
-.account-actions { margin: 0; font-size: 0.85rem; color: var(--paper-dim); }
-.account-actions button { min-height: 2.75rem; padding: 0 0.3rem; border: 0; background: none; color: var(--mustard); font: 600 0.85rem var(--body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .hall-optin { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2.75rem; font-size: 0.9rem; color: var(--paper); }
 .hall-optin input { width: 1.2rem; height: 1.2rem; accent-color: var(--mustard); }
 .hall-optin a { color: var(--mustard); font-weight: 600; }
@@ -2623,3 +2614,14 @@ html.search-open { overflow: hidden; }
   .nav-menu a[aria-current="page"] { color: var(--mustard); }
 }
 .tour-card.is-center { box-shadow: 0 0 0 9999px rgba(10, 8, 7, 0.72), 8px 8px 0 rgba(0, 0, 0, 0.55); }
+
+/* Hidden car-meet page (QR sticker on the ST) */
+.spotted { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 2rem; align-items: start; margin-top: 1rem; }
+.spotted-photo { margin: 0; }
+.spotted-photo img { display: block; width: 100%; height: auto; border: 5px solid var(--paper); box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.55); transform: rotate(-1.5deg); }
+.spotted-photo figcaption { margin-top: 0.9rem; font-family: var(--typed); color: var(--mustard); }
+.spotted-copy h2 { margin: 0 0 0.6rem; font-family: var(--display); font-weight: 400; font-size: 2rem; text-transform: uppercase; }
+.spotted-copy ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; }
+.spotted-copy a { color: var(--mustard); font-weight: 700; }
+.spotted-note { margin-top: 1.2rem; font-family: var(--typed); font-size: 0.9rem; color: var(--paper-dim); }
+@media (max-width: 720px) { .spotted { grid-template-columns: 1fr; } .spotted-photo { max-width: 340px; } }
