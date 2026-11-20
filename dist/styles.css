@@ -2559,3 +2559,10 @@ html.search-open { overflow: hidden; }
 .cr-block p span { display: block; font-family: var(--typed); font-size: 0.85rem; letter-spacing: 0; text-transform: none; color: var(--paper-dim); }
 .cr-end { margin: 4rem 0 0; font-family: var(--display); font-size: clamp(2rem, 7vw, 3.4rem); text-transform: uppercase; }
 @media (prefers-reduced-motion: reduce) { .credits-window { overflow-y: auto; -webkit-mask-image: none; mask-image: none; } }
+
+/* Small phones: tighten the top bar so every link (including Lore) fits */
+@media (max-width: 389px) {
+  .site-nav { padding-inline: 0.2rem; }
+  .site-nav a, .site-nav .nav-more { letter-spacing: 0.01em; padding-inline: 0.18rem; }
+  .site-nav .nav-search { min-width: 2.2rem; padding-inline: 0; }
+}
