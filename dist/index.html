@@ -65,19 +65,28 @@
         "publisher": { "@id": "https://www.denizen-dismeigh.com/#dismeigh" }
       },
       {
+        "@type": "ProfilePage",
+        "@id": "https://www.denizen-dismeigh.com/#profile",
+        "url": "https://www.denizen-dismeigh.com/",
+        "name": "Dismeigh | VTuber, Cars & Creative Tech",
+        "isPartOf": { "@id": "https://www.denizen-dismeigh.com/#website" },
+        "mainEntity": { "@id": "https://www.denizen-dismeigh.com/#dismeigh" }
+      },
+      {
         "@type": "Person",
         "@id": "https://www.denizen-dismeigh.com/#dismeigh",
         "name": "Dismeigh",
         "url": "https://www.denizen-dismeigh.com/",
         "image": "https://www.denizen-dismeigh.com/avatar.png",
         "description": "VTuber, car enthusiast, voice actor and creative developer.",
-        "jobTitle": "VTuber and creative developer",
+        "jobTitle": "VTuber, voice actor and creative developer",
         "sameAs": [
           "https://twitch.tv/dismeigh",
           "https://youtube.com/@dismeigh",
           "https://x.com/dismeigh",
           "https://tiktok.com/@denizen.dismeigh",
-          "https://instagram.com/_dismeigh_"
+          "https://instagram.com/_dismeigh_",
+          "https://ko-fi.com/dismeigh"
         ],
         "founder": { "@id": "https://www.denizen-dismeigh.com/#denizen-technologies" }
       },
@@ -680,8 +689,30 @@
       return new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
     }
 
-    function clockTime(date) {
-      const parts = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).formatToParts(date);
+    // Viewers outside Eastern time see times in their own time zone, with Eastern alongside.
+    // Preview another zone with ?tz=America/Los_Angeles (or Europe/London, Asia/Tokyo...)
+    const viewerZone = (() => {
+      const asked = new URLSearchParams(location.search).get('tz');
+      for (const z of [asked, Intl.DateTimeFormat().resolvedOptions().timeZone]) {
+        if (!z) continue;
+        try { new Intl.DateTimeFormat('en-US', { timeZone: z }); return z; } catch {}
+      }
+      return zone;
+    })();
+    const stamp = (date, z) => new Intl.DateTimeFormat('en-CA', { timeZone: z, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date);
+    const isEastern = date => stamp(date, viewerZone) === stamp(date, zone);
+    const zoneName = (date, z) => new Intl.DateTimeFormat('en-US', { timeZone: z, timeZoneName: 'short' }).formatToParts(date).find(p => p.type === 'timeZoneName')?.value || '';
+
+    // The viewer's time, with a weekday added if it lands on a different day than in Eastern
+    function localTime(date) {
+      const t = clockTime(date, viewerZone);
+      const dayHere = new Intl.DateTimeFormat('en-CA', { timeZone: viewerZone }).format(date);
+      if (dayHere === dayKey(date)) return t;
+      return `${new Intl.DateTimeFormat('en-US', { timeZone: viewerZone, weekday: 'short' }).format(date)} ${t}`;
+    }
+
+    function clockTime(date, z = zone) {
+      const parts = new Intl.DateTimeFormat('en-US', { timeZone: z, hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).formatToParts(date);
       const get = type => parts.find(p => p.type === type)?.value || '';
       const minutes = get('minute') === '00' ? '' : `:${get('minute')}`;
       return `${get('hour')}${minutes} ${get('dayPeriod')} ${get('timeZoneName')}`.trim();
@@ -691,10 +722,14 @@
       const start = new Date(event.start);
       const today = new Date();
       const tomorrow = new Date(today.getTime() + 86400000);
-      let day = new Intl.DateTimeFormat('en-US', { timeZone: zone, weekday: 'short', month: 'short', day: 'numeric' }).format(start);
-      if (dayKey(start) === dayKey(today)) day = 'Today';
-      else if (dayKey(start) === dayKey(tomorrow)) day = 'Tomorrow';
-      return event.allDay ? day : `${day} · ${clockTime(start)}`;
+      // Today/Tomorrow and the time are in the viewer's own zone (Eastern added when that differs)
+      const z = event.allDay ? zone : viewerZone;
+      const key = d => new Intl.DateTimeFormat('en-CA', { timeZone: z }).format(d);
+      let day = new Intl.DateTimeFormat('en-US', { timeZone: z, weekday: 'short', month: 'short', day: 'numeric' }).format(start);
+      if (key(start) === key(today)) day = 'Today';
+      else if (key(start) === key(tomorrow)) day = 'Tomorrow';
+      if (event.allDay) return day;
+      return isEastern(start) ? `${day} · ${clockTime(start)}` : `${day} · ${clockTime(start, viewerZone)} (${clockTime(start)})`;
     }
 
     function escapeHtml(text) {
@@ -728,7 +763,7 @@
           ? events.map(e => `
               <span class="show">
                 <span class="show-title">${escapeHtml(e.title)}</span>
-                <span class="show-time">${e.live ? 'On air now' : e.allDay ? 'All day' : clockTime(new Date(e.start))}</span>
+                <span class="show-time">${e.live ? 'On air now' : e.allDay ? 'All day' : isEastern(new Date(e.start)) ? clockTime(new Date(e.start)) : `${localTime(new Date(e.start))}<small class="show-et">${clockTime(new Date(e.start))}</small>`}</span>
                 ${e.done && /^https:\/\//i.test(e.link || '') ? `<a class="show-recap" href="${escapeHtml(e.link)}" target="_blank" rel="noopener noreferrer">${/clip/i.test(e.link) ? 'Clip of the night' : 'Watch the VOD'} <span aria-hidden="true">&rarr;</span></a>` : ''}
               </span>`).join('')
           : '<span class="show show-off"><span class="show-title">Off night / rest day</span></span>';
@@ -769,6 +804,8 @@
 
       if (data.week && Array.isArray(data.week.events)) {
         renderBoard(data.week);
+        const sample = new Date(data.week.events.find(e => !e.allDay)?.start || Date.now());
+        if (!isEastern(sample)) scheduleNote.textContent = `Times are in your time zone (${zoneName(sample, viewerZone)}), with Eastern underneath. The days follow Eastern time. This board updates itself from the stream calendar.`;
         board.hidden = false;
         scheduleFallback.hidden = true;
       }

@@ -2464,3 +2464,6 @@ html.search-open { overflow: hidden; }
   .site-nav .nav-search span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .search-dialog { margin-top: 1rem; }
 }
+
+/* Schedule: Eastern time under the viewer's local time */
+.show-time .show-et { display: block; color: var(--paper-dim); font-size: 0.8em; }
