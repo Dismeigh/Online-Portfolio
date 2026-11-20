@@ -2622,3 +2622,4 @@ html.search-open { overflow: hidden; }
   .nav-menu-primary { display: grid; padding-bottom: 0.35rem; margin-bottom: 0.35rem; border-bottom: 2px dashed var(--line); }
   .nav-menu a[aria-current="page"] { color: var(--mustard); }
 }
+.tour-card.is-center { box-shadow: 0 0 0 9999px rgba(10, 8, 7, 0.72), 8px 8px 0 rgba(0, 0, 0, 0.55); }

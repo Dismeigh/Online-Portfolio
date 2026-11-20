@@ -613,11 +613,23 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   if (location.pathname !== '/' && location.pathname !== '/index.html') return;
   const forced = new URLSearchParams(location.search).has('tour');
   if (store.get('dismeigh-tour') && !forced) return;
+  // alt: used when the main target is hidden (phones, where top-bar links live in the Menu)
   const STEPS = [
-    { sel: '#schedule-heading', title: 'When I’m live', text: 'The stream schedule. Add it to your own calendar so you never miss a session.' },
+    { sel: '.status-console', title: 'Am I live?', text: 'Check here. When I\u2019m on, a bar pops up at the top of every page too.' },
+    { sel: '#crew-strip-heading', title: 'The crew', text: 'The streamers I run with, with their live status. If we\u2019re in the same game, you\u2019ll see it.' },
+    { sel: '#schedule-heading', title: 'When I\u2019m live', text: 'The stream schedule. Add it to your own calendar so you never miss a session.' },
+    { sel: '#bounties-heading', title: 'Bounty Board', text: 'Challenges up for grabs on stream. Pull one off and you win the reward.' },
+    { sel: '#highlights h2', title: 'Clips', text: 'The best bursts of chaos from past streams, playable right here.' },
+    { sel: '#shelf-strip-heading', title: 'Dismeigh\u2019s Shelf', text: 'My favorite anime, games, cars and music, plus my verdicts on the games I\u2019ve played.' },
     { sel: '#bounty-run-heading', title: 'The arcade', text: 'Play Bounty Run, set a high score, and get your name on the board.' },
-    { sel: '.site-nav a[href="/lore/"]', title: 'Channel lore', text: 'The running jokes, explained, plus the Quote Board. Start here if chat isn’t making sense.' },
+    { sel: '#log-strip-heading', title: 'Ship\u2019s Log', text: 'The guestbook. Sign it before you head out.' },
+    { sel: '.site-nav a[href="/lore/"]', title: 'Channel lore', text: 'The running jokes, explained, plus the Quote Board. Start here if chat isn\u2019t making sense.',
+      alt: { sel: '.nav-more', title: 'The Menu', text: 'Everything else lives in here: the lore and Quote Board, the Garage, my voice and web work, the viewer guide, free wallpapers and more.' } },
+    { sel: '.site-nav a[href="/garage/"]', title: 'The Garage', text: 'My car, the Sojourn ST, plus Launch Control: a drag race you can play.' },
+    { sel: '.site-nav a[href="/voice/"]', title: 'Voice and Work', text: 'Voice is my voice acting, like Sir Ian in Alvion. Work is the websites and Discord servers I build.' },
+    { sel: '.nav-more', wide: true, title: 'More', text: 'The rest of the ship: the new viewer guide, the crew page, the Ship\u2019s Log, free wallpapers and my year in review.' },
     { sel: '.nav-search', title: 'Search the ship', text: 'Looking for something? Search the whole site from here. On a keyboard, just press /.' },
+    { sel: null, title: 'That\u2019s the tour', text: 'One more thing: there are a few secrets hidden around the ship. Happy hunting.' },
   ];
   const done = () => store.set('dismeigh-tour', '1');
 
@@ -626,7 +638,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   offer.setAttribute('role', 'dialog');
   offer.setAttribute('aria-label', 'Site tour');
   offer.hidden = true;
-  offer.innerHTML = '<p><strong>New here?</strong> Take a 20-second tour of the ship.</p><div class="tour-actions"><button type="button" class="tour-start">Start tour</button><button type="button" class="tour-skip">No thanks</button></div>';
+  offer.innerHTML = '<p><strong>New here?</strong> Take a quick tour of the ship.</p><div class="tour-actions"><button type="button" class="tour-start">Start tour</button><button type="button" class="tour-skip">No thanks</button></div>';
   document.body.append(offer);
   offer.querySelector('.tour-skip').addEventListener('click', () => { offer.hidden = true; done(); });
   offer.querySelector('.tour-start').addEventListener('click', () => { offer.hidden = true; done(); run(0); });
@@ -645,7 +657,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   document.body.append(spot, card);
   let step = -1, target = null;
   const place = () => {
-    if (!target) return;
+    if (!target) { card.style.width = `${Math.min(340, innerWidth - 24)}px`; card.style.left = `${(innerWidth - card.offsetWidth) / 2}px`; card.style.top = `${Math.max(12, (innerHeight - card.offsetHeight) / 2)}px`; return; }
     const r = target.getBoundingClientRect(), pad = 8;
     Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2}px`, height: `${r.height + pad * 2}px` });
     const cw = Math.min(340, innerWidth - 24);
@@ -655,26 +667,37 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     card.style.top = `${below + ch < innerHeight - 12 ? below : Math.max(12, r.top - ch - 18)}px`;
   };
   const end = () => { step = -1; target = null; spot.hidden = card.hidden = true; window.removeEventListener('scroll', place); window.removeEventListener('resize', place); };
+  // Work out which stops apply on this screen (phones swap top-bar stops for the Menu), so the count is right
+  let plan = [];
+  const visible = el => !!el && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+  const buildPlan = () => STEPS.map(st => {
+    if (!st.sel) return st;
+    if (st.wide && matchMedia('(max-width: 900px)').matches) return null;
+    if (visible(document.querySelector(st.sel))) return st;
+    if (st.alt && visible(document.querySelector(st.alt.sel))) return { ...st, ...st.alt };
+    return null;
+  }).filter(Boolean);
   function run(i) {
+    if (i === 0) plan = buildPlan();
     step = i;
-    if (i >= STEPS.length) return end();
-    const s = STEPS[i];
-    target = document.querySelector(s.sel);
-    if (!target || !target.getClientRects().length) return run(i + 1);
-    const inNav = !!target.closest('.site-nav');
-    if (!inNav) target.scrollIntoView({ block: 'center', behavior: reduce() ? 'auto' : 'smooth' });
-    else window.scrollTo({ top: window.scrollY });
-    card.querySelector('.tour-count').textContent = `${i + 1} of ${STEPS.length}`;
+    if (i >= plan.length) return end();
+    const s = plan[i];
+    target = s.sel ? document.querySelector(s.sel) : null;
+    if (target && !target.closest('.site-nav')) target.scrollIntoView({ block: 'center', behavior: reduce() ? 'auto' : 'smooth' });
+    card.querySelector('.tour-count').textContent = `${i + 1} of ${plan.length}`;
     card.querySelector('#tour-title').textContent = s.title;
     card.querySelector('.tour-text').textContent = s.text;
-    card.querySelector('.tour-next').textContent = i === STEPS.length - 1 ? 'Done' : 'Next';
-    spot.hidden = card.hidden = false;
+    card.querySelector('.tour-next').textContent = i === plan.length - 1 ? 'Done' : 'Next';
+    spot.hidden = !target;
+    card.hidden = false;
+    card.classList.toggle('is-center', !target);
     place();
     setTimeout(place, reduce() ? 0 : 450);
     window.addEventListener('scroll', place, { passive: true });
     window.addEventListener('resize', place);
     card.querySelector('.tour-next').focus({ preventScroll: true });
   }
+
   card.querySelector('.tour-next').addEventListener('click', () => run(step + 1));
   card.querySelector('.tour-end').addEventListener('click', end);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && step > -1) end(); });
