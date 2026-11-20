@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=48">
+  <link rel="stylesheet" href="styles.css?v=47">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -352,7 +352,7 @@
             <div class="status-row stream-status is-checking" id="stream-status">
               <span class="status-dot"></span>
               <span>Stream Status</span>
-              <strong><span id="stream-status-copy">Checking the signal...</span><small id="last-seen" hidden></small></strong>
+              <strong id="stream-status-copy">Checking the signal...</strong>
             </div>
             <div class="status-row next-stream" id="next-stream" hidden>
               <svg class="icon icon-calendar-days" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path d="M128 0c17.7 0 32 14.3 32 32v32h128V32c0-17.7 14.3-32 32-32s32 14.3 32 32v32h32c35.3 0 64 28.7 64 64v288c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128c0-35.3 28.7-64 64-64h32V32c0-17.7 14.3-32 32-32M64 240v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16m128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16m144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM64 368v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16m144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16"/></svg>
@@ -661,44 +661,6 @@
       } catch {
         setStreamStatus('offline', 'Probably cooking something');
       }
-      refreshLastSeen();
-    }
-
-    // "Last on 2 days ago playing Phasmophobia" under the offline status (served by functions/api/lastseen.js).
-    // Preview with ?lastseen=2d (or 3h, 0d) on any copy of the site.
-    const lastSeen = document.getElementById('last-seen');
-    const agoText = at => {
-      const nyDay = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(d);
-      const days = Math.round((new Date(nyDay(new Date())) - new Date(nyDay(new Date(at)))) / 86400000);
-      if (days <= 0) return 'earlier today';
-      if (days === 1) return 'yesterday';
-      if (days < 14) return `${days} days ago`;
-      if (days < 60) return `${Math.round(days / 7)} weeks ago`;
-      return 'a while back';
-    };
-    async function refreshLastSeen() {
-      if (!lastSeen) return;
-      let data = null;
-      const preview = new URLSearchParams(location.search).get('lastseen');
-      if (preview) {
-        const m = preview.match(/^(\d+)([dh])$/);
-        const back = m ? Number(m[1]) * (m[2] === 'd' ? 86400000 : 3600000) : 2 * 86400000;
-        data = { live: false, at: new Date(Date.now() - back).toISOString(), game: 'Phasmophobia' };
-      } else {
-        try {
-          const r = await fetch('/api/lastseen', { cache: 'no-store' });
-          if (r.ok) data = await r.json();
-        } catch {}
-      }
-      const offline = streamStatus.classList.contains('is-offline');
-      const at = data?.at ? Date.parse(data.at) : NaN;
-      let text = '';
-      if (offline && data) {
-        if (!Number.isNaN(at)) text = `Last on ${agoText(at)}${data.game ? ` playing ${data.game}` : ''}`;
-        else if (data.game) text = `Last played ${data.game}`;
-      }
-      lastSeen.textContent = text;
-      lastSeen.hidden = !text;
     }
 
     refreshStreamStatus();
