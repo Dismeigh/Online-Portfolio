@@ -1,7 +1,35 @@
 {
   "note": "Quote Board on the /lore page. Add new ones to the top: text is required, game and context are optional.",
   "quotes": [
-    { "text": "Time to unvirgin this river.", "game": "Fallout: New Vegas", "context": "On finding the Virgin River." },
-    { "text": "Splish splash, toaster bath.", "game": "Phasmophobia", "context": "" }
+    {
+      "text": "If you suck on those tiddies, you'll die.",
+      "game": "R.E.P.O.",
+      "context": ""
+    },
+    {
+      "text": "I'm getting pelted by all this wood.",
+      "game": "Phasmophobia",
+      "context": ""
+    },
+    {
+      "text": "Papa likey.",
+      "game": "Phasmophobia",
+      "context": ""
+    },
+    {
+      "text": "I'll wear a thong. I don't give a shit.",
+      "game": "Fallout: New Vegas",
+      "context": ""
+    },
+    {
+      "text": "Time to unvirgin this river.",
+      "game": "Fallout: New Vegas",
+      "context": "On finding the Virgin River."
+    },
+    {
+      "text": "Splish splash, toaster bath.",
+      "game": "Fallout: New Vegas",
+      "context": ""
+    }
   ]
 }
