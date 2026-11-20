@@ -442,6 +442,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     ['Quote Board', '/lore/#quotes', 'Page', 'Things that were said out loud, on purpose, in front of chat.', 'quotes quote said'],
     ['Dismeigh Rewind', '/rewind/', 'Page', 'The year in streams: hours, games and busiest nights.', 'rewind year review stats hours top games wrapped'],
     ['Events', '/event/', 'Page', 'Special streams and their run of show.', 'event special stream charity marathon'],
+    ['Wallpapers', '/wallpapers/', 'Page', 'Free phone wallpapers with Dismeigh\u2019s art.', 'wallpaper wallpapers lock screen background download free phone'],
     ['Get the app', '/install/', 'Page', 'Add the site to your phone or computer as an app.', 'install app home screen download'],
   ].map(([title, url, kind, text, words]) => ({ title, url, kind, text, words }));
 
