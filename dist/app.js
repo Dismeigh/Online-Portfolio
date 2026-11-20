@@ -360,9 +360,69 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     }).catch(() => {});
   }
 
+  // End credits: "Roll credits" in the footer plays a credits scroll of the people around the channel
+  if (footer && typeof HTMLDialogElement !== 'undefined') {
+    const SPONSORS = ['Xssy', 'Dubby'];  // keep in step with the sponsor buttons on the home page
+    const rollBtn = document.createElement('button');
+    rollBtn.type = 'button';
+    rollBtn.className = 'roll-credits';
+    rollBtn.textContent = 'Roll credits';
+    const links = footer.querySelector('.footer-links');
+    links ? links.after(rollBtn) : footer.append(rollBtn);
+
+    const dlg = document.createElement('dialog');
+    dlg.className = 'credits';
+    dlg.setAttribute('aria-label', 'End credits');
+    dlg.innerHTML = '<button type="button" class="credits-close">Close</button><div class="credits-window"><div class="credits-roll"></div></div>';
+    document.body.append(dlg);
+    const roll = dlg.querySelector('.credits-roll');
+    const unique = names => [...new Map(names.filter(Boolean).map(n => [String(n).toLowerCase(), String(n)])).values()];
+    const block = (title, names) => names.length ? `<section class="cr-block"><h3>${esc(title)}</h3>${names.map(n => `<p>${esc(n)}</p>`).join('')}</section>` : '';
+
+    const build = async () => {
+      const [crew, log, bounty, drag] = await Promise.all([
+        getJSON('/crew.json'), getJSON('/api/log'), getJSON('/api/arcade/scores?game=bounty'), getJSON('/api/arcade/scores?game=drag'),
+      ]);
+      let visitor = null;
+      try { visitor = Number(localStorage.getItem('dismeigh-visitor')) || null; } catch {}
+      roll.innerHTML = `
+        <p class="cr-title">Dismeigh</p>
+        <p class="cr-sub">a stream about questionable decisions</p>
+        <section class="cr-block"><h3>Starring</h3><p>Dismeigh <span>as themselves</span></p></section>
+        <section class="cr-block"><h3>And introducing</h3><p>The Sojourn ST <span>as the car</span></p></section>
+        ${block('The Crew', unique((crew?.crew || []).map(c => c.name)))}
+        ${block('With support from', SPONSORS)}
+        ${block('Bounty Run legends', unique((bounty?.all || []).map(r => r.name)).slice(0, 5))}
+        ${block('Launch Control legends', unique((drag?.all || []).map(r => r.name)).slice(0, 5))}
+        ${block('Signed the Ship\u2019s Log', unique((log?.entries || []).map(e => e.name)).slice(0, 24))}
+        <section class="cr-block"><h3>Special thanks</h3><p>${visitor ? `You, visitor #${visitor.toLocaleString('en-US')}` : 'You, for watching'}</p><p>Everyone in chat</p></section>
+        <p class="cr-end">See you next session.</p>`;
+    };
+    const start = async () => {
+      roll.innerHTML = '<p class="cr-sub">Rolling&hellip;</p>';
+      dlg.showModal();
+      document.documentElement.classList.add('search-open');
+      await build();
+      if (!dlg.open) return;
+      const windowH = dlg.querySelector('.credits-window').clientHeight;
+      const distance = roll.scrollHeight + windowH * 0.55;
+      roll.style.setProperty('--cr-from', `${Math.round(windowH * 0.55)}px`);
+      roll.style.setProperty('--cr-to', `${-roll.scrollHeight}px`);
+      roll.style.setProperty('--cr-time', `${Math.max(12, distance / 45)}s`);
+      roll.classList.remove('is-rolling'); void roll.offsetWidth;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) roll.classList.add('is-rolling');
+      dlg.querySelector('.credits-close').focus();
+    };
+    rollBtn.addEventListener('click', start);
+    dlg.querySelector('.credits-close').addEventListener('click', () => dlg.close());
+    roll.addEventListener('animationend', () => dlg.close());
+    dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => { roll.classList.remove('is-rolling'); document.documentElement.classList.remove('search-open'); rollBtn.focus(); });
+  }
+
   // Site search
   const nav = document.querySelector('.site-nav');
-  if (!nav || typeof HTMLDialogElement === 'undefined') return;
+  if (typeof HTMLDialogElement === 'undefined') return;
   const PAGES = [
     ['Live', '/#live', 'Home', 'See if Dismeigh is live on Twitch right now.', 'twitch stream live now watch status'],
     ['This Week’s Streams', '/#schedule', 'Home', 'The stream schedule, plus buttons to add it to your own calendar.', 'schedule when times calendar google apple outlook subscribe ics next stream'],
@@ -390,12 +450,13 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   const slug = s => String(s).toLowerCase().replace(/[\u2018\u2019']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 6).join('-');
   const buildIndex = async () => {
     if (index) return index;
-    const [lore, quotes, crew, bounties] = await Promise.all([getJSON('/lore.json'), quotesReady, getJSON('/crew.json'), getJSON('/bounties.json')]);
+    const [lore, quotes, crew, bounties, verdicts] = await Promise.all([getJSON('/lore.json'), quotesReady, getJSON('/crew.json'), getJSON('/bounties.json'), getJSON('/verdicts.json')]);
     index = [
       ...PAGES,
       ...(lore?.entries || []).map(e => ({ title: e.term, url: `/lore/#lore-${slug(e.term)}`, kind: 'Lore', text: e.what, words: e.game || '' })),
       ...quotes.map(q => ({ title: `“${q.text}”`, url: `/lore/#quote-${slug(q.text)}`, kind: 'Quote', text: [q.game, q.context].filter(Boolean).join(' · '), words: '' })),
       ...(crew?.crew || []).map(c => ({ title: c.name, url: '/crew/', kind: 'Crew', text: c.note || 'Part of the crew.', words: c.twitch || '' })),
+      ...(verdicts?.verdicts || []).filter(v => v && v.game).map(v => ({ title: v.game, url: '/shelf/#verdicts', kind: 'Verdict', text: `${Math.round(v.score)}/5${v.take ? ` \u00b7 ${v.take}` : ''}`, words: 'verdict rating review' })),
       ...(bounties?.bounties || []).filter(b => b && b.title).map(b => ({ title: b.title, url: '/#bounties', kind: 'Bounty', text: b.reward ? `Reward: ${b.reward}` : '', words: '' })),
     ];
     return index;
@@ -404,14 +465,18 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   const search = (items, query) => {
     const terms = norm(query).split(' ').filter(Boolean);
     if (!terms.length) return [];
-    return items.map(it => {
+    // Results that match every word first; if nothing does, fall back to results matching any word
+    const scored = items.map(it => {
       const title = norm(it.title), all = `${title} ${norm(it.text)} ${norm(it.words)} ${norm(it.kind)}`;
-      if (!terms.every(t => all.includes(t))) return null;
+      const hits = terms.filter(t => all.includes(t));
+      if (!hits.length) return null;
       let score = 0;
-      for (const t of terms) score += title.startsWith(t) ? 6 : title.includes(t) ? 4 : 1;
+      for (const t of hits) score += title.startsWith(t) ? 6 : title.includes(t) ? 4 : 1;
       if (it.kind === 'Page' || it.kind === 'Home' || it.kind === 'Arcade') score += 0.5;
-      return { it, score };
-    }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 8).map(r => r.it);
+      return { it, score, full: hits.length === terms.length };
+    }).filter(Boolean);
+    const full = scored.filter(r => r.full);
+    return (full.length ? full : scored).sort((a, b) => b.score - a.score).slice(0, 8).map(r => r.it);
   };
 
   const btn = document.createElement('button');
@@ -419,8 +484,10 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   btn.className = 'nav-search';
   btn.setAttribute('aria-label', 'Search the site');
   btn.innerHTML = '<svg viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M416 208c0 45.9-14.9 88.3-40 122.7l126.6 126.7c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208M208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288"/></svg><span>Search</span>';
-  const gauge = nav.querySelector('.fuel-gauge');
-  gauge ? nav.insertBefore(btn, gauge) : nav.append(btn);
+  if (nav) {
+    const gauge = nav.querySelector('.fuel-gauge');
+    gauge ? nav.insertBefore(btn, gauge) : nav.append(btn);
+  }
 
   const dlg = document.createElement('dialog');
   dlg.className = 'search-dialog';
@@ -467,7 +534,8 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   list.addEventListener('click', e => { if (e.target.closest('a')) dlg.close(); });
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
   dlg.addEventListener('close', () => document.documentElement.classList.remove('search-open'));
-  const open = () => {
+  const open = (query) => {
+    if (typeof query === 'string') input.value = query;
     if (dlg.open) return;
     document.querySelector('#nav-menu:not([hidden])') && document.querySelector('.nav-more')?.click();
     dlg.showModal();
@@ -476,7 +544,8 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     buildIndex();
     if (input.value) render();
   };
-  btn.addEventListener('click', open);
+  btn.addEventListener('click', () => open());
+  window.dismeighSearch = open;
   document.addEventListener('keydown', e => {
     const typing = e.target.closest?.('input, textarea, select, [contenteditable="true"]');
     if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey)) {

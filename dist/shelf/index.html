@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=52">
+  <link rel="stylesheet" href="/styles.css?v=53">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Dismeigh's Shelf", "item": "https://www.denizen-dismeigh.com/shelf/"}]}</script>
 </head>
@@ -211,6 +211,11 @@
             </article>
           </div>
         </section>
+        <section class="shelf-row verdicts" id="verdicts" aria-labelledby="verdicts-heading" hidden>
+          <h2 class="shelf-row-title" id="verdicts-heading"><svg class="icon icon-gavel" viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4 106.8 106.7-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4 58.8-58.7-45.3-45.3-58.7 58.7z"/></svg><span>Dismeigh&rsquo;s Verdicts</span></h2>
+          <p class="verdicts-lede">Games I&rsquo;ve played, rated out of five. The good, the bad, and the uninstalled.</p>
+          <div class="verdict-grid" id="verdict-grid"></div>
+        </section>
       </section>
     </main>
 
@@ -234,8 +239,30 @@
     }, { threshold: 0.15 });
     document.querySelectorAll('.sweep').forEach(el => io.observe(el));
 
+    // Dismeigh's Verdicts (verdicts.json): hidden until there's at least one
+    const LABELS = ['', 'Uninstalled', 'Rough ride', 'Decent', 'Solid', 'Masterpiece'];
+    const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    fetch('/verdicts.json').then(r => r.json()).then(d => {
+      const list = (d.verdicts || []).filter(v => v && v.game && v.score >= 1 && v.score <= 5);
+      if (!list.length) return;
+      document.getElementById('verdict-grid').innerHTML = list.map(v => {
+        const n = Math.round(v.score);
+        return `
+        <article class="verdict-card">
+          <h3>${esc(v.game)}</h3>
+          <p class="verdict-score" aria-label="${n} out of 5: ${LABELS[n]}">
+            <span class="verdict-pips" aria-hidden="true">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>
+            <span class="verdict-label" aria-hidden="true">${n}/5 &middot; ${LABELS[n]}</span>
+          </p>
+          ${v.take ? `<p class="verdict-take">${esc(v.take)}</p>` : ''}
+        </article>`;
+      }).join('');
+      document.getElementById('verdicts').hidden = false;
+      if (location.hash === '#verdicts') document.getElementById('verdicts').scrollIntoView();
+    }).catch(() => {});
+
   }
   </script>
-  <script src="/app.js?v=37" defer></script>
+  <script src="/app.js?v=38" defer></script>
 </body>
 </html>

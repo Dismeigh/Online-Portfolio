@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=52">
+  <link rel="stylesheet" href="/styles.css?v=53">
 </head>
 <body>
   <div class="fixed-bg" aria-hidden="true"></div>
@@ -23,12 +23,49 @@
       <h1 class="lost-code">404</h1>
       <h2 class="lost-title">Lost in space</h2>
       <p class="lost-copy">This page drifted off somewhere past the asteroid belt. Let&rsquo;s get you back to the ship.</p>
+      <form class="lost-search" id="lost-search" role="search">
+        <label for="lost-q">Looking for something?</label>
+        <div class="lost-search-row">
+          <input id="lost-q" type="search" autocomplete="off" spellcheck="false" placeholder="Search the ship">
+          <button type="submit" class="social-btn">Search</button>
+        </div>
+      </form>
       <div class="lost-links">
         <a href="/" class="social-btn">Back home</a>
         <a href="/#schedule" class="social-btn">Stream schedule</a>
         <a href="/#highlights" class="social-btn">Clips</a>
       </div>
+      <figure class="lost-quote" id="lost-quote" hidden>
+        <figcaption>While you&rsquo;re here, something from the Quote Board:</figcaption>
+        <blockquote><p id="lost-quote-text"></p></blockquote>
+        <p class="lost-quote-by" id="lost-quote-by"></p>
+      </figure>
     </section>
   </main>
+  <script src="/app.js?v=38" defer></script>
+  <script>
+  {
+    // Search from the 404 card opens the site search with the words filled in.
+    // If the site search can't open, fall back to the lore page's search.
+    const form = document.getElementById('lost-search');
+    const q = document.getElementById('lost-q');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (window.dismeighSearch) window.dismeighSearch(q.value.trim());
+      else location.href = `/lore/?q=${encodeURIComponent(q.value.trim())}`;
+    });
+    // Guess from the broken address: /garage-pics -> "garage pics"
+    const guess = decodeURIComponent(location.pathname).replace(/\.[a-z0-9]+$/i, '').replace(/[\/_-]+/g, ' ').trim();
+    if (guess && guess.length < 40) q.value = guess;
+    fetch('/quotes.json').then(r => r.json()).then(d => {
+      const list = (d.quotes || []).filter(x => x && x.text);
+      if (!list.length) return;
+      const pick = list[Math.floor(Math.random() * list.length)];
+      document.getElementById('lost-quote-text').textContent = pick.text;
+      document.getElementById('lost-quote-by').textContent = `\u2014 Dismeigh${pick.game ? `, ${pick.game}` : ''}`;
+      document.getElementById('lost-quote').hidden = false;
+    }).catch(() => {});
+  }
+  </script>
 </body>
 </html>

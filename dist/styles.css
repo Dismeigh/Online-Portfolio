@@ -2510,3 +2510,52 @@ html.search-open { overflow: hidden; }
 .footer-visitor .odo b { min-width: 1.15em; padding: 0.1em 0.15em; background: linear-gradient(#2a241f, #14110f 50%, #2a241f); color: var(--paper); font-family: var(--display); font-weight: 400; font-size: 1.05rem; line-height: 1.2; text-align: center; }
 .footer-visitor .odo b:last-child { color: var(--mustard); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* 404: search and a random quote */
+.lost-search { display: grid; gap: 0.4rem; margin: 0 auto 1.2rem; max-width: 420px; text-align: left; }
+.lost-search label { font-family: var(--typed); color: var(--paper-dim); font-size: 0.9rem; }
+.lost-search-row { display: flex; gap: 0.5rem; }
+.lost-search input { flex: 1; min-width: 0; min-height: 2.9rem; padding: 0.5rem 0.8rem; border: 2px solid var(--paper); background: var(--ink); color: var(--paper); font: 16px var(--body); }
+.lost-search input:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.lost-search .lost-search-row button { flex: 0 0 auto; width: auto; min-width: 0; padding: 0 1.1rem; cursor: pointer; }
+.lost-quote { margin: 1.6rem auto 0; padding-top: 1.2rem; max-width: 420px; border-top: 1px dashed var(--line); }
+.lost-quote figcaption { font-family: var(--typed); font-size: 0.85rem; color: var(--paper-dim); }
+.lost-quote blockquote { margin: 0.5rem 0 0; }
+.lost-quote blockquote p { margin: 0; font-family: var(--display); font-size: 1.6rem; line-height: 1.05; text-transform: uppercase; color: var(--paper); }
+.lost-quote blockquote p::before { content: '\201C'; color: var(--red); }
+.lost-quote blockquote p::after { content: '\201D'; color: var(--red); }
+.lost-quote-by { margin: 0.4rem 0 0; font-family: var(--typed); font-size: 0.85rem; color: var(--mustard); }
+
+/* Dismeigh's Verdicts (shelf page) */
+.verdicts { scroll-margin-top: 5rem; }
+.verdicts-lede { margin: -0.3rem 0 1rem; font-family: var(--typed); color: var(--paper-dim); }
+.verdict-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.2rem; }
+.verdict-card { padding: 1rem 1.1rem 1.1rem; background: var(--ink-2); border: 2px solid var(--line); border-top: 6px solid var(--red); box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.5); }
+.verdict-card h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.55rem; line-height: 1.05; text-transform: uppercase; color: var(--paper); }
+.verdict-score { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin: 0.55rem 0 0; }
+.verdict-pips { display: inline-flex; gap: 4px; }
+.verdict-pips i { width: 1.1rem; height: 0.7rem; background: #3a322b; transform: skewX(-18deg); }
+.verdict-pips i.on { background: var(--mustard); }
+.verdict-label { font-family: var(--typed); font-size: 0.85rem; color: var(--mustard); }
+.verdict-take { margin: 0.6rem 0 0; color: var(--paper); }
+
+/* End credits */
+.roll-credits { justify-self: center; margin: 0.3rem auto 0.2rem; min-height: 2.75rem; padding: 0.3rem 1rem; border: 2px solid var(--mustard); background: none; color: var(--mustard); font-family: var(--display); font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.roll-credits:hover, .roll-credits:focus-visible { background: var(--mustard); color: var(--ink); }
+.roll-credits:focus-visible { outline: 3px solid var(--paper); outline-offset: 2px; }
+.credits { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: #0b0908; color: var(--paper); }
+.credits::backdrop { background: #0b0908; }
+.credits-close { position: absolute; top: 1rem; right: 1rem; z-index: 2; min-height: 2.75rem; padding: 0.3rem 1rem; border: 2px solid var(--paper-dim); background: #0b0908; color: var(--paper); font-family: var(--typed); cursor: pointer; }
+.credits-close:hover, .credits-close:focus-visible { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.credits-window { position: absolute; inset: 0; overflow: hidden; -webkit-mask-image: linear-gradient(transparent, #000 15%, #000 85%, transparent); mask-image: linear-gradient(transparent, #000 15%, #000 85%, transparent); }
+.credits-roll { max-width: 34rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; text-align: center; }
+.credits-roll.is-rolling { animation: creditsRoll var(--cr-time, 30s) linear forwards; }
+@keyframes creditsRoll { from { transform: translateY(var(--cr-from, 100vh)); } to { transform: translateY(var(--cr-to, -100%)); } }
+.cr-title { margin: 0; font-family: var(--display); font-size: clamp(3rem, 12vw, 6rem); line-height: 0.9; text-transform: uppercase; color: var(--paper); text-shadow: 5px 5px 0 var(--red); }
+.cr-sub { margin: 0.6rem 0 0; font-family: var(--typed); color: var(--mustard); }
+.cr-block { margin-top: 3.2rem; }
+.cr-block h3 { margin: 0 0 0.8rem; font-family: var(--typed); font-weight: 400; font-size: 0.95rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mustard); }
+.cr-block p { margin: 0.35rem 0; font-family: var(--display); font-size: 1.6rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.cr-block p span { display: block; font-family: var(--typed); font-size: 0.85rem; letter-spacing: 0; text-transform: none; color: var(--paper-dim); }
+.cr-end { margin: 4rem 0 0; font-family: var(--display); font-size: clamp(2rem, 7vw, 3.4rem); text-transform: uppercase; }
+@media (prefers-reduced-motion: reduce) { .credits-window { overflow-y: auto; -webkit-mask-image: none; mask-image: none; } }
