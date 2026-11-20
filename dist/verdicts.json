@@ -1,4 +1,30 @@
 {
   "note": "Dismeigh's Verdicts on the Shelf page (/shelf/#verdicts). Each game: game, score (1 to 5), take (one-line hot take). The section stays hidden until there's at least one.",
-  "verdicts": []
+  "verdicts": [
+    {
+      "game": "Fallout: New Vegas",
+      "score": 5,
+      "take": ""
+    },
+    {
+      "game": "Phasmophobia",
+      "score": 5,
+      "take": ""
+    },
+    {
+      "game": "Raft",
+      "score": 5,
+      "take": ""
+    },
+    {
+      "game": "Fallout 4",
+      "score": 4,
+      "take": ""
+    },
+    {
+      "game": "R.E.P.O.",
+      "score": 4,
+      "take": ""
+    }
+  ]
 }
