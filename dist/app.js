@@ -26,8 +26,8 @@
     }
   }
 
-  // Secret achievements: three hidden easter eggs, tracked in this browser only
-  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones' };
+  // Secret achievements: hidden easter eggs, tracked in this browser (and on your account if signed in)
+  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish' };
   const KEY = 'dismeigh-secrets';
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
@@ -207,6 +207,34 @@
     }
   }
 
+  // Secret 5: type "swordfish" anywhere (or search it) and the password gets accepted
+  {
+    const WORD = 'swordfish';
+    let typed = '';
+    const launch = () => {
+      document.querySelector('.swordfish-fx')?.remove();
+      const fx = document.createElement('div');
+      fx.className = 'swordfish-fx';
+      fx.setAttribute('aria-hidden', 'true');
+      fx.innerHTML = `
+        <span class="sf-streak"></span>
+        <svg class="sf-ship" viewBox="0 0 28 28"><path d="M2 2 L25 11 L15.5 13.5 L13 24 Z" fill="#efe6d2" stroke="#14110f" stroke-width="1.6" stroke-linejoin="miter"/><path d="M2 2 L15.5 13.5" stroke="#b73b2c" stroke-width="1.4"/><path d="M15.5 13.5 L19.5 17.5" stroke="#e3a92b" stroke-width="2.2" stroke-linecap="square"/></svg>
+        <div class="sf-words"><p class="sf-big">Swordfish</p><p class="sf-small">Password accepted. Cleared for launch.</p></div>`;
+      document.body.append(fx);
+      requestAnimationFrame(() => fx.classList.add('is-firing'));
+      setTimeout(() => fx.classList.add('is-leaving'), 2600);
+      setTimeout(() => fx.remove(), 3200);
+      setTimeout(() => window.dismeighUnlock('swordfish'), 900);
+    };
+    window.dismeighSwordfish = launch;
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+      typed = (typed + e.key.toLowerCase()).slice(-WORD.length);
+      if (typed === WORD) { typed = ''; launch(); }
+    });
+  }
+
   // Haptic buzz on Android phones (iPhones don't allow websites to vibrate)
   function buzz(pattern) {
     try { if (!reduceMotion && navigator.vibrate) navigator.vibrate(pattern); } catch {}
@@ -310,6 +338,28 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     });
   }
 
+  // Retro visitor counter: each visitor's number, odometer style (functions/api/visits.js)
+  if (footer) {
+    const KEY = 'dismeigh-visitor';
+    const show = n => {
+      if (!Number.isInteger(n) || n < 1) return;
+      const digits = String(n).padStart(6, '0');
+      const p = document.createElement('p');
+      p.className = 'footer-visitor';
+      p.innerHTML = `<span>You are visitor</span> <span class="odo" aria-hidden="true">${[...digits].map(d => `<b>${d}</b>`).join('')}</span><span class="sr-only">number ${n.toLocaleString('en-US')}</span>`;
+      const brand = footer.querySelector('.footer-brand');
+      brand ? brand.before(p) : footer.append(p);
+    };
+    let saved = null;
+    try { saved = Number(localStorage.getItem(KEY)) || null; } catch {}
+    if (saved) show(saved);
+    else fetch('/api/visits', { method: 'POST' }).then(r => (r.ok ? r.json() : null)).then(d => {
+      if (!d?.n) return;
+      try { localStorage.setItem(KEY, String(d.n)); } catch {}
+      show(d.n);
+    }).catch(() => {});
+  }
+
   // Site search
   const nav = document.querySelector('.site-nav');
   if (!nav || typeof HTMLDialogElement === 'undefined') return;
@@ -336,13 +386,15 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   ].map(([title, url, kind, text, words]) => ({ title, url, kind, text, words }));
 
   let index = null;
+  // Same slugs as the lore page's share links
+  const slug = s => String(s).toLowerCase().replace(/[\u2018\u2019']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 6).join('-');
   const buildIndex = async () => {
     if (index) return index;
     const [lore, quotes, crew, bounties] = await Promise.all([getJSON('/lore.json'), quotesReady, getJSON('/crew.json'), getJSON('/bounties.json')]);
     index = [
       ...PAGES,
-      ...(lore?.entries || []).map(e => ({ title: e.term, url: `/lore/?q=${encodeURIComponent(e.term)}`, kind: 'Lore', text: e.what, words: e.game || '' })),
-      ...quotes.map(q => ({ title: `“${q.text}”`, url: `/lore/?q=${encodeURIComponent(q.text.split(/\s+/).slice(0, 4).join(' '))}#quotes`, kind: 'Quote', text: [q.game, q.context].filter(Boolean).join(' · '), words: '' })),
+      ...(lore?.entries || []).map(e => ({ title: e.term, url: `/lore/#lore-${slug(e.term)}`, kind: 'Lore', text: e.what, words: e.game || '' })),
+      ...quotes.map(q => ({ title: `“${q.text}”`, url: `/lore/#quote-${slug(q.text)}`, kind: 'Quote', text: [q.game, q.context].filter(Boolean).join(' · '), words: '' })),
       ...(crew?.crew || []).map(c => ({ title: c.name, url: '/crew/', kind: 'Crew', text: c.note || 'Part of the crew.', words: c.twitch || '' })),
       ...(bounties?.bounties || []).filter(b => b && b.title).map(b => ({ title: b.title, url: '/#bounties', kind: 'Bounty', text: b.reward ? `Reward: ${b.reward}` : '', words: '' })),
     ];
@@ -396,7 +448,12 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       <li><a href="${esc(r.url)}"><span class="search-kind">${esc(r.kind)}</span><strong>${esc(r.title)}</strong>${r.text ? `<small>${esc(r.text)}</small>` : ''}</a></li>`).join('');
     none.hidden = !q.trim() || results.length > 0;
   };
-  input.addEventListener('input', render);
+  input.addEventListener('input', () => {
+    if (input.value.trim().toLowerCase() === 'swordfish' && window.dismeighSwordfish) {
+      input.value = ''; list.innerHTML = ''; dlg.close(); window.dismeighSwordfish(); return;
+    }
+    render();
+  });
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); list.querySelector('a')?.click(); }
     if (e.key === 'ArrowDown') { e.preventDefault(); list.querySelector('a')?.focus(); }

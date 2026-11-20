@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=51">
+  <link rel="stylesheet" href="/styles.css?v=52">
   <link rel="canonical" href="https://www.denizen-dismeigh.com/lore/">
   <meta property="og:url" content="https://www.denizen-dismeigh.com/lore/">
   <meta property="og:type" content="website">
@@ -59,19 +59,23 @@
     <p class="footer-brand">Dismeigh</p>
     <p class="footer-links"><a href="/">Home</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
   </footer>
-  <script src="/app.js?v=36" defer></script>
+  <script src="/app.js?v=37" defer></script>
   <script>
   {
     const grid = document.getElementById('lore-grid');
     const empty = document.getElementById('lore-empty');
     const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let entries = [];
+    // Each card has its own link: /lore/#lore-the-soap-rule or /lore/#quote-papa-likey (same slugs as site search)
+    const slug = t => String(t).toLowerCase().replace(/[\u2018\u2019']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 6).join('-');
+    const shareBtn = (id, label) => `<button type="button" class="share-btn" data-share="${id}" aria-label="Share ${esc(label)}"><svg viewBox="0 0 576 512" aria-hidden="true" focusable="false"><path d="M419.5 96c-16.6 0-32.7 4.5-46.8 12.7-15.8-16-34.2-29.4-54.5-39.5 28.2-24 64.1-37.2 101.3-37.2C505.9 32 576 102 576 188.5c0 41.5-16.5 81.3-45.8 110.6l-71.1 71.1C429.8 399.5 390 416 348.5 416 262.1 416 192 346 192 259.5c0-1.5 0-3 .1-4.5.5-17.7 15.2-31.6 32.9-31.1s31.6 15.2 31.1 32.9v2.6c0 51.1 41.4 92.5 92.5 92.5 24.5 0 48-9.7 65.4-27.1l71.1-71.1c17.3-17.3 27.1-40.9 27.1-65.4 0-51.1-41.4-92.5-92.5-92.5zm-144.3 77.3c-1.9-.8-3.8-1.9-5.5-3.1-12.6-6.5-27-10.2-42.1-10.2-24.5 0-48 9.7-65.4 27.1l-71.1 71.1C73.8 275.5 64 299.1 64 323.6c0 51.1 41.4 92.5 92.5 92.5 16.5 0 32.6-4.4 46.7-12.6 15.8 16 34.2 29.4 54.6 39.5-28.2 23.9-64 37.2-101.3 37.2C70.1 480.2 0 410.2 0 323.7c0-41.5 16.5-81.3 45.8-110.6l71.1-71.1c29.3-29.3 69.1-45.8 110.6-45.8 86.6 0 156.5 70.6 156.5 156.9v3.9c-.4 17.7-15.1 31.6-32.8 31.2s-31.6-15.1-31.2-32.8v-2.3c0-33.7-18-63.3-44.8-79.6z"/></svg><span>Share</span></button>`;
     const updateEmpty = () => { empty.hidden = !!(grid.children.length || document.getElementById('quote-list')?.children.length); };
     const draw = q => {
       const query = q.trim().toLowerCase();
       const list = entries.filter(e => !query || [e.term, e.game, e.what].join(' ').toLowerCase().includes(query));
       grid.innerHTML = list.map((e, i) => `
-        <article class="lore-card">
+        <article class="lore-card" id="lore-${slug(e.term)}">
+          ${shareBtn(`lore-${slug(e.term)}`, e.term)}
           <p class="lore-num">File ${String(entries.indexOf(e) + 1).padStart(2, '0')}${e.game ? ` &middot; ${esc(e.game)}` : ''}</p>
           <h2>${esc(e.term)}</h2>
           <p>${esc(e.what)}</p>
@@ -87,7 +91,8 @@
       const query = q.trim().toLowerCase();
       const list = quotes.filter(x => x && x.text && (!query || [x.text, x.game, x.context].join(' ').toLowerCase().includes(query)));
       quoteList.innerHTML = list.map(x => `
-        <li class="quote-card">
+        <li class="quote-card" id="quote-${slug(x.text)}">
+          ${shareBtn(`quote-${slug(x.text)}`, 'this quote')}
           <blockquote><p>${esc(x.text)}</p></blockquote>
           <p class="quote-meta">&mdash; Dismeigh${x.game ? `, <span>${esc(x.game)}</span>` : ''}${x.context ? `<br><small>${esc(x.context)}</small>` : ''}</p>
         </li>`).join('');
@@ -95,8 +100,39 @@
       updateEmpty();
     };
     const drawAll = q => { draw(q); drawQuotes(q); };
-    fetch('/lore.json').then(r => r.json()).then(d => { entries = d.entries || []; draw(document.getElementById('lore-search').value); });
-    fetch('/quotes.json').then(r => r.json()).then(d => { quotes = d.quotes || []; drawQuotes(document.getElementById('lore-search').value); }).catch(() => { quoteBoard.hidden = true; });
+
+    // Share: the phone's share sheet where there is one, otherwise copy the link
+    document.querySelector('main').addEventListener('click', async e => {
+      const btn = e.target.closest('[data-share]');
+      if (!btn) return;
+      const card = btn.closest('.lore-card, .quote-card');
+      const url = `${location.origin}/lore/#${btn.dataset.share}`;
+      const title = card.matches('.quote-card') ? `\u201C${card.querySelector('blockquote').textContent.trim()}\u201D \u2014 Dismeigh` : `${card.querySelector('h2').textContent} \u00b7 Dismeigh lore`;
+      if (navigator.share && matchMedia('(pointer: coarse)').matches) {
+        try { await navigator.share({ title, url }); return; } catch (err) { if (err?.name === 'AbortError') return; }
+      }
+      let ok = false;
+      try { await navigator.clipboard.writeText(url); ok = true; } catch {}
+      const label = btn.querySelector('span');
+      label.textContent = ok ? 'Link copied' : 'Copy failed';
+      btn.classList.add('is-done');
+      setTimeout(() => { label.textContent = 'Share'; btn.classList.remove('is-done'); }, 1800);
+    });
+
+    // Opened from a shared link: jump to that card and flash it once both lists are drawn
+    const jumpToHash = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (!/^(lore|quote)-/.test(id)) return;
+      const card = document.getElementById(id);
+      if (!card) return;
+      card.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      card.classList.remove('is-target'); void card.offsetWidth; card.classList.add('is-target');
+    };
+    window.addEventListener('hashchange', jumpToHash);
+    Promise.allSettled([
+      fetch('/lore.json').then(r => r.json()).then(d => { entries = d.entries || []; draw(document.getElementById('lore-search').value); }),
+      fetch('/quotes.json').then(r => r.json()).then(d => { quotes = d.quotes || []; drawQuotes(document.getElementById('lore-search').value); }).catch(() => { quoteBoard.hidden = true; }),
+    ]).then(jumpToHash);
     document.getElementById('lore-search').addEventListener('input', e => drawAll(e.target.value));
     // Arriving from site search: /lore/?q=soap
     const startQ = new URLSearchParams(location.search).get('q');

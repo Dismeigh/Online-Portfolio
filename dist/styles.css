@@ -2467,3 +2467,46 @@ html.search-open { overflow: hidden; }
 
 /* Schedule: Eastern time under the viewer's local time */
 .show-time .show-et { display: block; color: var(--paper-dim); font-size: 0.8em; }
+
+/* Secret: Swordfish (type it anywhere) */
+.swordfish-fx { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; pointer-events: none; overflow: hidden; background: rgba(10, 8, 7, 0); transition: background 0.3s ease, opacity 0.5s ease; }
+.swordfish-fx.is-firing { background: rgba(10, 8, 7, 0.55); }
+.swordfish-fx.is-leaving { opacity: 0; }
+.sf-streak { position: absolute; left: 0; top: 46%; height: 6px; width: 100%; background: linear-gradient(90deg, transparent, var(--mustard) 40%, var(--red)); transform: scaleX(0); transform-origin: left; }
+.sf-ship { position: absolute; top: calc(46% - 34px); left: -120px; width: 76px; height: 76px; transform: rotate(135deg); filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.6)); }
+.sf-words { position: relative; text-align: center; margin-top: 7rem; }
+.sf-big { margin: 0; font-family: var(--display); font-size: clamp(3.4rem, 14vw, 9rem); line-height: 0.9; text-transform: uppercase; color: var(--paper); text-shadow: 6px 6px 0 var(--red); opacity: 0; transform: translateX(-30px); }
+.sf-small { margin: 0.7rem 0 0; font-family: var(--typed); font-size: clamp(1rem, 3vw, 1.35rem); color: var(--mustard); opacity: 0; }
+.swordfish-fx.is-firing .sf-streak { animation: sfStreak 0.7s ease-out forwards; }
+.swordfish-fx.is-firing .sf-ship { animation: sfFly 0.9s cubic-bezier(.5, 0, .2, 1) forwards; }
+.swordfish-fx.is-firing .sf-big { animation: sfIn 0.35s ease-out 0.45s forwards; }
+.swordfish-fx.is-firing .sf-small { animation: fadeUp 0.3s ease-out 0.8s forwards; }
+@keyframes sfStreak { to { transform: scaleX(1); opacity: 0.85; } }
+@keyframes sfFly { to { left: calc(100% + 120px); } }
+@keyframes sfIn { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .sf-streak, .sf-ship { display: none; }
+  .swordfish-fx.is-firing .sf-big, .swordfish-fx.is-firing .sf-small { animation: none; opacity: 1; transform: none; }
+}
+
+/* Share buttons on lore and quote cards */
+.lore-card, .quote-card { position: relative; scroll-margin-top: 5rem; }
+.lore-card h2 { padding-right: 5.5rem; }
+.share-btn { position: absolute; top: 0.7rem; right: 0.7rem; display: inline-flex; align-items: center; gap: 0.35rem; min-height: 2.75rem; padding: 0 0.7rem; border: 2px solid currentColor; background: transparent; font-family: var(--typed); font-size: 0.85rem; cursor: pointer; }
+.lore-card .share-btn { color: var(--ink); }
+.quote-card .share-btn { color: var(--paper-dim); top: auto; bottom: 0.7rem; }
+.share-btn svg { width: 0.95rem; height: 0.95rem; fill: currentColor; }
+.lore-card .share-btn:hover, .lore-card .share-btn:focus-visible { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.quote-card .share-btn:hover, .quote-card .share-btn:focus-visible { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.share-btn:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.share-btn.is-done { background: var(--mustard) !important; color: var(--ink) !important; border-color: var(--mustard) !important; }
+.quote-meta { padding-right: 6.5rem; }
+.lore-card.is-target, .quote-card.is-target { animation: cardFlash 1.6s ease-out; }
+@keyframes cardFlash { 0%, 30% { outline: 4px solid var(--mustard); outline-offset: 6px; } 100% { outline: 4px solid transparent; outline-offset: 6px; } }
+
+/* Retro visitor counter */
+.footer-visitor { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; font-family: var(--typed); font-size: 0.85rem; color: var(--paper-dim); }
+.footer-visitor .odo { display: inline-flex; gap: 2px; padding: 3px; background: #0b0908; border: 2px solid var(--paper-dim); }
+.footer-visitor .odo b { min-width: 1.15em; padding: 0.1em 0.15em; background: linear-gradient(#2a241f, #14110f 50%, #2a241f); color: var(--paper); font-family: var(--display); font-weight: 400; font-size: 1.05rem; line-height: 1.2; text-align: center; }
+.footer-visitor .odo b:last-child { color: var(--mustard); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
