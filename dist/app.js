@@ -288,6 +288,18 @@
   const moreBtn = document.querySelector('.nav-more');
   const menu = document.getElementById('nav-menu');
   if (moreBtn && menu) {
+    // Phones: the top bar shrinks to the name, Menu and Search, and the Menu holds every link
+    // (the main links are copied in above the usual "More" ones, and only shown on small screens)
+    const navEl = moreBtn.closest('.site-nav');
+    navEl.classList.add('has-menu');
+    const primary = document.createElement('div');
+    primary.className = 'nav-menu-primary';
+    navEl.querySelectorAll(':scope > a:not(.nav-brand)').forEach(link => primary.append(link.cloneNode(true)));
+    menu.prepend(primary);
+    const small = matchMedia('(max-width: 900px)');
+    const label = () => { moreBtn.textContent = small.matches ? 'Menu' : 'More'; };
+    label();
+    small.addEventListener?.('change', label);
     const place = () => {
       const nav = moreBtn.closest('.site-nav').getBoundingClientRect();
       const b = moreBtn.getBoundingClientRect();
@@ -296,7 +308,7 @@
     };
     const setOpen = open => {
       menu.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open));
-      if (open) { place(); menu.querySelector('a:not([hidden])')?.focus({ preventScroll: true }); }
+      if (open) { place(); [...menu.querySelectorAll('a:not([hidden])')].find(l => l.offsetParent)?.focus({ preventScroll: true }); }
     };
     moreBtn.addEventListener('click', e => { e.stopPropagation(); setOpen(menu.hidden); });
     document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target)) setOpen(false); });

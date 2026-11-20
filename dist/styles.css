@@ -2609,3 +2609,16 @@ html.search-open { overflow: hidden; }
 .tour-card h2 { margin: 0.15rem 0 0.35rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; line-height: 1; text-transform: uppercase; }
 .tour-text { margin: 0 0 0.8rem; color: #2a241f; }
 @media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } }
+
+/* Phones and small tablets: name + Menu + Search in the top bar; every link lives in the menu */
+.nav-menu-primary { display: none; }
+@media (max-width: 900px) {
+  .site-nav.has-menu { justify-content: flex-start; gap: 0.25rem; overflow: visible; padding-inline: 0.75rem; }
+  .site-nav.has-menu > a:not(.nav-brand) { display: none; }
+  .site-nav.has-menu .nav-brand { display: inline-flex; font-size: 1.3rem; padding-inline: 0.2rem; }
+  .site-nav.has-menu .nav-more { margin-left: auto; font-size: 1rem; letter-spacing: 0.06em; padding-inline: 0.75rem; min-height: 2.75rem; }
+  .site-nav.has-menu .nav-search { min-width: 2.75rem; padding-inline: 0.5rem; }
+  .nav-menu { width: min(18rem, calc(100vw - 16px)); max-height: calc(100dvh - 7rem); overflow-y: auto; }
+  .nav-menu-primary { display: grid; padding-bottom: 0.35rem; margin-bottom: 0.35rem; border-bottom: 2px dashed var(--line); }
+  .nav-menu a[aria-current="page"] { color: var(--mustard); }
+}
