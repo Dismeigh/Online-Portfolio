@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=55">
+  <link rel="stylesheet" href="styles.css?v=56">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -363,6 +363,11 @@
               <span class="status-dot"></span>
               <span>Stream Status</span>
               <strong id="stream-status-copy">Checking the signal...</strong>
+            </div>
+            <div class="status-row coop-row" id="coop-row" hidden>
+              <span class="status-dot"></span>
+              <span>Co-op</span>
+              <strong><span>In progress with</span> <span id="coop-names"></span></strong>
             </div>
             <div class="status-row next-stream" id="next-stream" hidden>
               <svg class="icon icon-calendar-days" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path d="M128 0c17.7 0 32 14.3 32 32v32h128V32c0-17.7 14.3-32 32-32s32 14.3 32 32v32h32c35.3 0 64 28.7 64 64v288c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128c0-35.3 28.7-64 64-64h32V32c0-17.7 14.3-32 32-32M64 240v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16m128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16m144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM64 368v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16m144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16"/></svg>
@@ -1161,6 +1166,9 @@
         liveGame = g && g.length < 80 && !/error|not found|offline/i.test(g) ? g : '';
       } catch { liveGame = ''; }
       renderDetail();
+      // Shared with crew.js so it can spot a crew member live in the same game ("Co-op in progress")
+      window.dismeighLiveGame = liveGame;
+      window.dispatchEvent(new CustomEvent('dismeigh:livegame', { detail: liveGame }));
     });
     new MutationObserver(() => { if (!status.classList.contains('is-live')) { liveSince = null; renderDetail(); } })
       .observe(status, { attributes: true, attributeFilter: ['class'] });
@@ -1484,8 +1492,8 @@
   }
   </script>
   <script src="/log.js?v=2" defer></script>
-  <script src="/crew.js?v=4" defer></script>
+  <script src="/crew.js?v=5" defer></script>
   <script src="/bounty-run.js?v=35" defer></script>
-  <script src="/app.js?v=40" defer></script>
+  <script src="/app.js?v=41" defer></script>
 </body>
 </html>

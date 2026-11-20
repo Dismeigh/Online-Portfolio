@@ -571,3 +571,99 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     }
   });
 })();
+
+// Back-to-top ship (long pages) and the first-visit tour (home page)
+(() => {
+  const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+
+  // Back to top: appears once you've scrolled a good way down, and flies you back up
+  const ship = document.createElement('button');
+  ship.type = 'button';
+  ship.className = 'to-top';
+  ship.setAttribute('aria-label', 'Back to top');
+  ship.hidden = true;
+  ship.innerHTML = '<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M2 2 L25 11 L15.5 13.5 L13 24 Z" fill="#efe6d2" stroke="#14110f" stroke-width="1.6" stroke-linejoin="miter"/><path d="M2 2 L15.5 13.5" stroke="#b73b2c" stroke-width="1.4"/><path d="M15.5 13.5 L19.5 17.5" stroke="#e3a92b" stroke-width="2.2" stroke-linecap="square"/></svg>';
+  document.body.append(ship);
+  const toggle = () => { ship.hidden = window.scrollY < window.innerHeight * 1.5 && !ship.classList.contains('is-flying'); };
+  window.addEventListener('scroll', toggle, { passive: true });
+  toggle();
+  ship.addEventListener('click', () => {
+    ship.classList.add('is-flying');
+    window.scrollTo({ top: 0, behavior: reduce() ? 'auto' : 'smooth' });
+    setTimeout(() => {
+      ship.classList.remove('is-flying'); toggle();
+      (document.querySelector('.nav-brand') || document.body).focus?.({ preventScroll: true });
+    }, reduce() ? 0 : 700);
+  });
+
+  // First-visit tour: home page only, offered once. Preview again with ?tour=1
+  if (location.pathname !== '/' && location.pathname !== '/index.html') return;
+  const forced = new URLSearchParams(location.search).has('tour');
+  if (store.get('dismeigh-tour') && !forced) return;
+  const STEPS = [
+    { sel: '#schedule-heading', title: 'When I’m live', text: 'The stream schedule. Add it to your own calendar so you never miss a session.' },
+    { sel: '#bounty-run-heading', title: 'The arcade', text: 'Play Bounty Run, set a high score, and get your name on the board.' },
+    { sel: '.site-nav a[href="/lore/"]', title: 'Channel lore', text: 'The running jokes, explained, plus the Quote Board. Start here if chat isn’t making sense.' },
+    { sel: '.nav-search', title: 'Search the ship', text: 'Looking for something? Search the whole site from here. On a keyboard, just press /.' },
+  ];
+  const done = () => store.set('dismeigh-tour', '1');
+
+  const offer = document.createElement('div');
+  offer.className = 'tour-offer';
+  offer.setAttribute('role', 'dialog');
+  offer.setAttribute('aria-label', 'Site tour');
+  offer.hidden = true;
+  offer.innerHTML = '<p><strong>New here?</strong> Take a 20-second tour of the ship.</p><div class="tour-actions"><button type="button" class="tour-start">Start tour</button><button type="button" class="tour-skip">No thanks</button></div>';
+  document.body.append(offer);
+  offer.querySelector('.tour-skip').addEventListener('click', () => { offer.hidden = true; done(); });
+  offer.querySelector('.tour-start').addEventListener('click', () => { offer.hidden = true; done(); run(0); });
+  setTimeout(() => { if (!document.querySelector('.title-intro:not([hidden])')) offer.hidden = false; else setTimeout(() => { offer.hidden = false; }, 2500); }, forced ? 600 : 4500);
+
+  const spot = document.createElement('div');
+  spot.className = 'tour-spot';
+  spot.hidden = true;
+  const card = document.createElement('div');
+  card.className = 'tour-card';
+  card.setAttribute('role', 'dialog');
+  card.setAttribute('aria-modal', 'false');
+  card.setAttribute('aria-labelledby', 'tour-title');
+  card.hidden = true;
+  card.innerHTML = '<p class="tour-count"></p><h2 id="tour-title"></h2><p class="tour-text"></p><div class="tour-actions"><button type="button" class="tour-next"></button><button type="button" class="tour-end">End tour</button></div>';
+  document.body.append(spot, card);
+  let step = -1, target = null;
+  const place = () => {
+    if (!target) return;
+    const r = target.getBoundingClientRect(), pad = 8;
+    Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2}px`, height: `${r.height + pad * 2}px` });
+    const cw = Math.min(340, innerWidth - 24);
+    card.style.width = `${cw}px`;
+    card.style.left = `${Math.min(Math.max(12, r.left), innerWidth - cw - 12)}px`;
+    const below = r.bottom + 18, ch = card.offsetHeight;
+    card.style.top = `${below + ch < innerHeight - 12 ? below : Math.max(12, r.top - ch - 18)}px`;
+  };
+  const end = () => { step = -1; target = null; spot.hidden = card.hidden = true; window.removeEventListener('scroll', place); window.removeEventListener('resize', place); };
+  function run(i) {
+    step = i;
+    if (i >= STEPS.length) return end();
+    const s = STEPS[i];
+    target = document.querySelector(s.sel);
+    if (!target || !target.getClientRects().length) return run(i + 1);
+    const inNav = !!target.closest('.site-nav');
+    if (!inNav) target.scrollIntoView({ block: 'center', behavior: reduce() ? 'auto' : 'smooth' });
+    else window.scrollTo({ top: window.scrollY });
+    card.querySelector('.tour-count').textContent = `${i + 1} of ${STEPS.length}`;
+    card.querySelector('#tour-title').textContent = s.title;
+    card.querySelector('.tour-text').textContent = s.text;
+    card.querySelector('.tour-next').textContent = i === STEPS.length - 1 ? 'Done' : 'Next';
+    spot.hidden = card.hidden = false;
+    place();
+    setTimeout(place, reduce() ? 0 : 450);
+    window.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', place);
+    card.querySelector('.tour-next').focus({ preventScroll: true });
+  }
+  card.querySelector('.tour-next').addEventListener('click', () => run(step + 1));
+  card.querySelector('.tour-end').addEventListener('click', end);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && step > -1) end(); });
+})();

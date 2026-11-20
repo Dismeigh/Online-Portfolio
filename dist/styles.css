@@ -2579,3 +2579,33 @@ html.search-open { overflow: hidden; }
 .wp-dl { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 1.2rem; border: 2px solid var(--mustard); color: var(--mustard); font-family: var(--display); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; }
 .wp-dl:hover, .wp-dl:focus-visible { background: var(--mustard); color: var(--ink); }
 .wp-note { margin-top: 1.6rem; font-family: var(--typed); font-size: 0.9rem; color: var(--paper-dim); }
+
+/* Co-op in progress row (live card) */
+.coop-row { border-left-color: #6fbf73; }
+.coop-row .status-dot { background: #6fbf73; }
+.coop-row strong span:first-child { color: var(--paper-dim); }
+.coop-row a { color: var(--mustard); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.coop-row a:hover, .coop-row a:focus-visible { color: var(--paper); }
+
+/* Back-to-top ship */
+.to-top { position: fixed; left: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom)); z-index: 900; width: 3rem; height: 3rem; display: grid; place-items: center; border: 2px solid var(--mustard); border-radius: 50%; background: var(--ink); cursor: pointer; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5); }
+.to-top svg { width: 1.5rem; height: 1.5rem; transform: rotate(45deg); transition: transform 0.6s cubic-bezier(.5, 0, .2, 1); }
+.to-top:hover, .to-top:focus-visible { background: var(--mustard); }
+.to-top:focus-visible { outline: 3px solid var(--paper); outline-offset: 2px; }
+.to-top.is-flying svg { transform: rotate(45deg) translate(-60vh, -60vh); }
+@media (prefers-reduced-motion: reduce) { .to-top svg { transition: none; } .to-top.is-flying svg { transform: rotate(45deg); } }
+
+/* First-visit tour */
+.tour-offer { position: fixed; left: 50%; bottom: calc(1rem + env(safe-area-inset-bottom)); z-index: 1250; width: min(380px, calc(100vw - 1.5rem)); transform: translateX(-50%); padding: 0.9rem 1rem 1rem; background: var(--paper); color: var(--ink); border-left: 6px solid var(--mustard); box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55); }
+.tour-offer p { margin: 0 0 0.7rem; }
+.tour-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tour-actions button { min-height: 2.75rem; padding: 0 1rem; border: 2px solid var(--ink); background: none; color: var(--ink); font-family: var(--display); letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.tour-actions button:first-child { background: var(--ink); color: var(--paper); }
+.tour-actions button:hover, .tour-actions button:focus-visible { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.tour-actions button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.tour-spot { position: fixed; z-index: 1240; border: 3px solid var(--mustard); border-radius: 4px; box-shadow: 0 0 0 9999px rgba(10, 8, 7, 0.72); pointer-events: none; transition: all 0.25s ease; }
+.tour-card { position: fixed; z-index: 1260; padding: 0.9rem 1rem 1rem; background: var(--paper); color: var(--ink); border-top: 6px solid var(--red); box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55); }
+.tour-count { margin: 0; font-family: var(--typed); font-size: 0.8rem; color: #9e3326; }
+.tour-card h2 { margin: 0.15rem 0 0.35rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; line-height: 1; text-transform: uppercase; }
+.tour-text { margin: 0 0 0.8rem; color: #2a241f; }
+@media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } }

@@ -91,7 +91,34 @@
       }));
       const n = crew.filter(f => f.live).length;
       summary.textContent = n ? `${n === 1 ? `${crew.find(f => f.live).name} is` : `${n} of the crew are`} live right now. Go say hi!` : 'The streamers I run with. Go say hi.';
+      lastCrew = crew; showCoop();
     }).catch(() => {});
+
+    // "Co-op in progress": Dismeigh and a crew member live in the same game right now.
+    // Preview with ?coop=1
+    const coopRow = document.getElementById('coop-row');
+    const status = document.getElementById('stream-status');
+    let lastCrew = [];
+    const preview = new URLSearchParams(location.search).has('coop');
+    const sameGame = (a, b) => !!a && !!b && a.trim().toLowerCase() === b.trim().toLowerCase();
+    function showCoop() {
+      if (!coopRow) return;
+      const mine = preview ? 'Phasmophobia' : window.dismeighLiveGame;
+      const live = preview || status?.classList.contains('is-live');
+      const crew = preview ? lastCrew.slice(0, 1).map(f => ({ ...f, live: true, game: 'Phasmophobia' })) : lastCrew;
+      const mates = live ? crew.filter(f => f.live && sameGame(f.game, mine)) : [];
+      if (!mates.length) { coopRow.hidden = true; return; }
+      const names = document.getElementById('coop-names');
+      names.replaceChildren();
+      mates.forEach((f, i) => {
+        if (i) names.append(document.createTextNode(i === mates.length - 1 ? ' & ' : ', '));
+        const a = el('a', '', f.name); a.href = f.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        names.append(a);
+      });
+      coopRow.hidden = false;
+    }
+    window.addEventListener('dismeigh:livegame', showCoop);
+    if (status) new MutationObserver(showCoop).observe(status, { attributes: true, attributeFilter: ['class'] });
     run(); setInterval(run, 180000);
   }
 })();
