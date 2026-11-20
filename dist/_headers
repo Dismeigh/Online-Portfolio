@@ -30,5 +30,7 @@
   Cache-Control: public, max-age=604800
 /avatar-280.jpg
   Cache-Control: public, max-age=604800
+/avatar-420.jpg
+  Cache-Control: public, max-age=604800
 /sw.js
   Cache-Control: no-cache
