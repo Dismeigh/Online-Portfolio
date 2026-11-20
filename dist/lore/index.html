@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=49">
+  <link rel="stylesheet" href="/styles.css?v=50">
 </head>
 <body class="subpage">
   <a class="skip-link" href="#content">Skip to content</a>
@@ -32,15 +32,22 @@
       <span class="sub-slab sub-slab-b" aria-hidden="true"></span>
       <p class="sub-kicker">Case files</p>
       <h1 class="sub-title">Channel Lore</h1>
-      <p class="sub-intro">New around here? These are the running jokes and legendary moments chat keeps bringing up.</p>
+      <p class="sub-intro">New around here? These are the running jokes, legendary moments and quotable lines chat keeps bringing up.</p>
     </header>
 
     <div class="lore-tools">
       <label for="lore-search">Search the lore</label>
-      <input id="lore-search" type="search" placeholder="Try &ldquo;soap&rdquo; or &ldquo;Phasmophobia&rdquo;" autocomplete="off">
+      <input id="lore-search" type="search" placeholder="Try &ldquo;soap&rdquo; or &ldquo;river&rdquo;" autocomplete="off">
     </div>
     <p class="lore-empty" id="lore-empty" hidden>Nothing in the files matches that yet.</p>
     <div class="lore-grid" id="lore-grid" aria-live="polite"></div>
+
+    <section class="quote-board" id="quotes" aria-labelledby="quotes-heading">
+      <p class="quote-kicker">Overheard on stream</p>
+      <h2 id="quotes-heading" class="quote-title">Quote Board</h2>
+      <p class="quote-lede">Things that were said out loud, on purpose, in front of chat.</p>
+      <ol class="quote-list" id="quote-list" aria-live="polite"></ol>
+    </section>
   </main>
   <footer class="footer">
     <p class="footer-signoff">See you next session.</p>
@@ -54,6 +61,7 @@
     const empty = document.getElementById('lore-empty');
     const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let entries = [];
+    const updateEmpty = () => { empty.hidden = !!(grid.children.length || document.getElementById('quote-list')?.children.length); };
     const draw = q => {
       const query = q.trim().toLowerCase();
       const list = entries.filter(e => !query || [e.term, e.game, e.what].join(' ').toLowerCase().includes(query));
@@ -64,10 +72,27 @@
           <p>${esc(e.what)}</p>
           ${(e.links || []).filter(l => /^https:\/\//.test(l.url)).map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.label)} &rarr;</a>`).join(' ')}
         </article>`).join('');
-      empty.hidden = list.length > 0;
+      updateEmpty();
     };
-    fetch('/lore.json').then(r => r.json()).then(d => { entries = d.entries || []; draw(''); });
-    document.getElementById('lore-search').addEventListener('input', e => draw(e.target.value));
+    // Quote Board (quotes.json), filtered by the same search box
+    const quoteList = document.getElementById('quote-list');
+    const quoteBoard = document.getElementById('quotes');
+    let quotes = [];
+    const drawQuotes = q => {
+      const query = q.trim().toLowerCase();
+      const list = quotes.filter(x => x && x.text && (!query || [x.text, x.game, x.context].join(' ').toLowerCase().includes(query)));
+      quoteList.innerHTML = list.map(x => `
+        <li class="quote-card">
+          <blockquote><p>${esc(x.text)}</p></blockquote>
+          <p class="quote-meta">&mdash; Dismeigh${x.game ? `, <span>${esc(x.game)}</span>` : ''}${x.context ? `<br><small>${esc(x.context)}</small>` : ''}</p>
+        </li>`).join('');
+      quoteBoard.hidden = list.length === 0;
+      updateEmpty();
+    };
+    const drawAll = q => { draw(q); drawQuotes(q); };
+    fetch('/lore.json').then(r => r.json()).then(d => { entries = d.entries || []; draw(document.getElementById('lore-search').value); });
+    fetch('/quotes.json').then(r => r.json()).then(d => { quotes = d.quotes || []; drawQuotes(document.getElementById('lore-search').value); }).catch(() => { quoteBoard.hidden = true; });
+    document.getElementById('lore-search').addEventListener('input', e => drawAll(e.target.value));
   }
   </script>
 </body>

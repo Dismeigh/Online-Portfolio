@@ -2414,3 +2414,18 @@ a.status-row.status-link:hover, a.status-row.status-link:focus-visible { outline
 .log-entry.is-pinned { border-left-color: var(--red); background: #2a2320; }
 .log-pin { padding: 0 0.45rem; background: var(--red); color: var(--paper); font-family: var(--display); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; align-self: center; }
 .log-pin::before { content: "\1F4CC  "; }
+
+/* Quote Board (lore page) */
+.quote-board { margin-top: 3rem; }
+.quote-title { margin: 0.3rem 0 0.4rem; font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 0.95; text-transform: uppercase; text-shadow: 3px 3px 0 var(--ink); }
+.quote-lede { margin: 0 0 1.4rem; font-family: var(--typed); color: var(--paper-dim); }
+.quote-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; }
+.quote-card { position: relative; padding: 1.3rem 1.4rem 1.1rem 1.6rem; background: var(--ink-2); border-left: 6px solid var(--mustard); box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5); }
+.quote-card blockquote { margin: 0; }
+.quote-card blockquote p { margin: 0; font-family: var(--display); font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.05; text-transform: uppercase; color: var(--paper); }
+.quote-card blockquote p::before { content: '\201C'; color: var(--red); margin-right: 0.1em; }
+.quote-card blockquote p::after { content: '\201D'; color: var(--red); margin-left: 0.05em; }
+.quote-meta { margin: 0.7rem 0 0; font-family: var(--typed); font-size: 0.9rem; color: var(--mustard); }
+.quote-meta small { color: var(--paper-dim); font-size: 0.85rem; }
+@media (max-width: 720px) { .quote-list { grid-template-columns: 1fr; } }
+.quote-kicker { margin: 0; font-family: var(--typed); color: var(--mustard); }
