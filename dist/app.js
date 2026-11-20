@@ -27,7 +27,7 @@
   }
 
   // Secret achievements: hidden easter eggs, tracked in this browser (and on your account if signed in)
-  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish' };
+  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer' };
   const KEY = 'dismeigh-secrets';
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
@@ -233,6 +233,23 @@
       typed = (typed + e.key.toLowerCase()).slice(-WORD.length);
       if (typed === WORD) { typed = ''; launch(); }
     });
+  }
+
+  // Secret 6: visit every main page on the site (tracked in this browser)
+  {
+    const PAGES = ['/', '/garage/', '/work/', '/voice/', '/crew/', '/shelf/', '/guide/', '/log/', '/lore/', '/rewind/', '/wallpapers/'];
+    const VKEY = 'dismeigh-explored';
+    let path = location.pathname.replace(/index\.html$/, '');
+    if (!path.endsWith('/')) path += '/';
+    if (PAGES.includes(path)) {
+      let seen = [];
+      try { seen = JSON.parse(localStorage.getItem(VKEY)) || []; } catch {}
+      if (!seen.includes(path)) {
+        seen.push(path);
+        try { localStorage.setItem(VKEY, JSON.stringify(seen)); } catch {}
+        if (PAGES.every(p => seen.includes(p))) setTimeout(() => window.dismeighUnlock('explorer'), 1500);
+      }
+    }
   }
 
   // Haptic buzz on Android phones (iPhones don't allow websites to vibrate)
