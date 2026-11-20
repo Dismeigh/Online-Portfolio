@@ -27,7 +27,7 @@
   }
 
   // Secret achievements: hidden easter eggs, tracked in this browser
-  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer', spotted: 'Spotted in the wild' };
+  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer', spotted: 'Spotted in the wild', konami: 'Cheat code', nightowl: 'Night owl', arcade: 'Arcade master', lorebuff: 'Lore buff', tourgrad: 'Tour graduate' };
   const KEY = 'dismeigh-secrets';
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
@@ -168,6 +168,46 @@
       }
     }
   }
+
+  // Secret: the Konami code (up up down down left right left right B A), or the same as swipes + two taps on a phone
+  {
+    const CODE = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
+    const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', b: 'b', B: 'b', a: 'a', A: 'a' };
+    let got = [];
+    const feed = k => {
+      got = [...got, k].slice(-CODE.length);
+      if (got.join() === CODE.join()) { got = []; cheat(); }
+    };
+    function cheat() {
+      document.querySelector('.cheat-fx')?.remove();
+      const fx = document.createElement('div');
+      fx.className = 'cheat-fx';
+      fx.setAttribute('aria-hidden', 'true');
+      fx.innerHTML = '<div class="cheat-words"><p class="cheat-big">Cheat code accepted</p><p class="cheat-small">Infinite lives unlocked. (Not really.)</p></div>';
+      document.body.append(fx);
+      setTimeout(() => fx.classList.add('is-leaving'), 2600);
+      setTimeout(() => fx.remove(), 3200);
+      setTimeout(() => window.dismeighUnlock('konami'), 700);
+    }
+    document.addEventListener('keydown', e => {
+      if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+      const k = KEYS[e.key];
+      if (k) feed(k);
+    });
+    // Phones: swipe up, up, down, down, left, right, left, right, then tap twice (B, A)
+    let sx = 0, sy = 0, st = 0;
+    document.addEventListener('touchstart', e => { const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Date.now() - st > 600) return;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) { if (got.length >= 8) feed(got.length === 8 ? 'b' : 'a'); return; }
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+      feed(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    }, { passive: true });
+  }
+
+  // Secret: visit between 3 and 4 in the morning (your own time)
+  if (new Date().getHours() === 3) setTimeout(() => window.dismeighUnlock('nightowl'), 2000);
 
   // Haptic buzz on Android phones (iPhones don't allow websites to vibrate)
   function buzz(pattern) {
@@ -615,7 +655,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     card.querySelector('.tour-next').focus({ preventScroll: true });
   }
 
-  card.querySelector('.tour-next').addEventListener('click', () => run(step + 1));
+  card.querySelector('.tour-next').addEventListener('click', () => { if (step === plan.length - 1) setTimeout(() => window.dismeighUnlock?.('tourgrad'), 300); run(step + 1); });
   card.querySelector('.tour-end').addEventListener('click', end);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && step > -1) end(); });
 })();

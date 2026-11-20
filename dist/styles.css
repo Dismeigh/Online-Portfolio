@@ -2625,3 +2625,12 @@ html.search-open { overflow: hidden; }
 .spotted-copy a { color: var(--mustard); font-weight: 700; }
 .spotted-note { margin-top: 1.2rem; font-family: var(--typed); font-size: 0.9rem; color: var(--paper-dim); }
 @media (max-width: 720px) { .spotted { grid-template-columns: 1fr; } .spotted-photo { max-width: 340px; } }
+
+/* Secret: cheat code (CRT flicker) */
+.cheat-fx { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; pointer-events: none; background: repeating-linear-gradient(rgba(0, 0, 0, 0.35) 0 2px, transparent 2px 4px), rgba(20, 60, 30, 0.35); animation: cheatFlicker 0.18s steps(2) 6; transition: opacity 0.5s ease; }
+.cheat-fx.is-leaving { opacity: 0; }
+.cheat-words { text-align: center; padding: 0 1rem; }
+.cheat-big { margin: 0; font-family: var(--display); font-size: clamp(2.4rem, 9vw, 5.5rem); line-height: 0.95; text-transform: uppercase; color: #9cff9c; text-shadow: 0 0 18px rgba(120, 255, 120, 0.7), 4px 4px 0 #0b0908; }
+.cheat-small { margin: 0.7rem 0 0; font-family: var(--typed); font-size: clamp(1rem, 3vw, 1.3rem); color: #e8ffe8; }
+@keyframes cheatFlicker { 50% { opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) { .cheat-fx { animation: none; } }
