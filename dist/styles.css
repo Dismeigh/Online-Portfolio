@@ -2414,3 +2414,8 @@ a.status-row.status-link:hover, a.status-row.status-link:focus-visible { outline
 .log-entry.is-pinned { border-left-color: var(--red); background: #2a2320; }
 .log-pin { padding: 0 0.45rem; background: var(--red); color: var(--paper); font-family: var(--display); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; align-self: center; }
 .log-pin::before { content: "\1F4CC  "; }
+
+/* Last seen line under the offline status */
+.stream-status strong { display: grid; gap: 0.15rem; }
+.stream-status > span:not(.status-dot) { white-space: nowrap; }
+.stream-status small { color: var(--mustard); font-size: 0.78rem; }
