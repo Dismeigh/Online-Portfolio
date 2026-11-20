@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=50">
+  <link rel="stylesheet" href="/styles.css?v=51">
 </head>
 <body class="subpage">
   <a class="skip-link" href="#content">Skip to content</a>
@@ -54,7 +54,7 @@
     <p class="footer-brand">Dismeigh</p>
     <p class="footer-links"><a href="/">Home</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a></p>
   </footer>
-  <script src="/app.js?v=35" defer></script>
+  <script src="/app.js?v=36" defer></script>
   <script>
   {
     const grid = document.getElementById('lore-grid');
@@ -93,6 +93,9 @@
     fetch('/lore.json').then(r => r.json()).then(d => { entries = d.entries || []; draw(document.getElementById('lore-search').value); });
     fetch('/quotes.json').then(r => r.json()).then(d => { quotes = d.quotes || []; drawQuotes(document.getElementById('lore-search').value); }).catch(() => { quoteBoard.hidden = true; });
     document.getElementById('lore-search').addEventListener('input', e => drawAll(e.target.value));
+    // Arriving from site search: /lore/?q=soap
+    const startQ = new URLSearchParams(location.search).get('q');
+    if (startQ) document.getElementById('lore-search').value = startQ.slice(0, 80);
   }
   </script>
 </body>

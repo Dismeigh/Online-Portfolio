@@ -289,3 +289,141 @@
 
 // Clean up the language setting from the removed Spanish toggle
 try { localStorage.removeItem('dismeigh-lang'); } catch {}
+
+// Random Quote Board line in the footer, and site-wide search (button in the top nav; "/" or Ctrl+K opens it)
+(() => {
+  const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const getJSON = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
+  const quotesReady = getJSON('/quotes.json').then(d => (d?.quotes || []).filter(q => q && q.text));
+
+  // Footer quote
+  const footer = document.querySelector('.footer');
+  if (footer) {
+    quotesReady.then(quotes => {
+      if (!quotes.length) return;
+      const q = quotes[Math.floor(Math.random() * quotes.length)];
+      const p = document.createElement('p');
+      p.className = 'footer-quote';
+      p.innerHTML = `<a href="/lore/#quotes"><q>${esc(q.text)}</q> <span>&mdash; Dismeigh${q.game ? `, ${esc(q.game)}` : ''}</span></a>`;
+      const after = footer.querySelector('.footer-latenight') || footer.querySelector('.footer-signoff');
+      after ? after.after(p) : footer.prepend(p);
+    });
+  }
+
+  // Site search
+  const nav = document.querySelector('.site-nav');
+  if (!nav || typeof HTMLDialogElement === 'undefined') return;
+  const PAGES = [
+    ['Live', '/#live', 'Home', 'See if Dismeigh is live on Twitch right now.', 'twitch stream live now watch status'],
+    ['This Week’s Streams', '/#schedule', 'Home', 'The stream schedule, plus buttons to add it to your own calendar.', 'schedule when times calendar google apple outlook subscribe ics next stream'],
+    ['Bounty Board', '/#bounties', 'Home', 'Challenges up for grabs on stream, and what you win.', 'bounty bounties challenge reward claim'],
+    ['Clips', '/#highlights', 'Home', 'Highlights and the latest YouTube Shorts.', 'clips highlights youtube shorts videos pinned clip'],
+    ['Bounty Run', '/#bounty-run-section', 'Arcade', 'The arcade game on the home page, with a weekly leaderboard.', 'game arcade play high score leaderboard scoreboard'],
+    ['Support & Shop', '/#support-heading', 'Home', 'Ways to support the stream.', 'support tip donate shop merch sponsor xssy'],
+    ['Ship’s Log', '/log/', 'Page', 'The guestbook. Leave a note for the crew.', 'guestbook log sign message note'],
+    ['The Garage', '/garage/', 'Page', 'Project Sojourn: the 2014 Ford Focus ST and its build sheet.', 'car garage sojourn st focus ford mods build sheet'],
+    ['Launch Control', '/garage/#launch-control', 'Arcade', 'Drag race the Sojourn ST. Best reaction and time wins.', 'drag race game launch quarter mile reaction leaderboard'],
+    ['Work', '/work/', 'Page', 'Websites, Discord servers, VTubing and creative tech.', 'work website web design discord server denizen technologies vtuber hire commission'],
+    ['Voice', '/voice/', 'Page', 'Voice acting: Sir Ian in Alvion, and open for roles.', 'voice acting actor sir ian alvion roles commissions'],
+    ['The Crew', '/crew/', 'Page', 'Streamer friends, with live status from Twitch.', 'crew friends streamers'],
+    ['Dismeigh’s Shelf', '/shelf/', 'Page', 'Favorite anime, games, cars and music.', 'shelf favorites anime cowboy bebop arifureta games fallout new vegas fallout 4 phasmophobia repo r.e.p.o. music xssy wesghost'],
+    ['New Viewer Guide', '/guide/', 'Page', 'House rules, chat commands and what to expect.', 'guide new viewer rules chat commands botrix first time'],
+    ['Channel Lore', '/lore/', 'Page', 'The running jokes and legendary moments, explained.', 'lore jokes inside moments'],
+    ['Quote Board', '/lore/#quotes', 'Page', 'Things that were said out loud, on purpose, in front of chat.', 'quotes quote said'],
+    ['Dismeigh Rewind', '/rewind/', 'Page', 'The year in streams: hours, games and busiest nights.', 'rewind year review stats hours top games wrapped'],
+    ['Events', '/event/', 'Page', 'Special streams and their run of show.', 'event special stream charity marathon'],
+    ['Get the app', '/install/', 'Page', 'Add the site to your phone or computer as an app.', 'install app home screen download'],
+  ].map(([title, url, kind, text, words]) => ({ title, url, kind, text, words }));
+
+  let index = null;
+  const buildIndex = async () => {
+    if (index) return index;
+    const [lore, quotes, crew, bounties] = await Promise.all([getJSON('/lore.json'), quotesReady, getJSON('/crew.json'), getJSON('/bounties.json')]);
+    index = [
+      ...PAGES,
+      ...(lore?.entries || []).map(e => ({ title: e.term, url: `/lore/?q=${encodeURIComponent(e.term)}`, kind: 'Lore', text: e.what, words: e.game || '' })),
+      ...quotes.map(q => ({ title: `“${q.text}”`, url: `/lore/?q=${encodeURIComponent(q.text.split(/\s+/).slice(0, 4).join(' '))}#quotes`, kind: 'Quote', text: [q.game, q.context].filter(Boolean).join(' · '), words: '' })),
+      ...(crew?.crew || []).map(c => ({ title: c.name, url: '/crew/', kind: 'Crew', text: c.note || 'Part of the crew.', words: c.twitch || '' })),
+      ...(bounties?.bounties || []).filter(b => b && b.title).map(b => ({ title: b.title, url: '/#bounties', kind: 'Bounty', text: b.reward ? `Reward: ${b.reward}` : '', words: '' })),
+    ];
+    return index;
+  };
+  const norm = s => String(s || '').toLowerCase().replace(/[‘’']/g, '').replace(/[^a-z0-9.]+/g, ' ');
+  const search = (items, query) => {
+    const terms = norm(query).split(' ').filter(Boolean);
+    if (!terms.length) return [];
+    return items.map(it => {
+      const title = norm(it.title), all = `${title} ${norm(it.text)} ${norm(it.words)} ${norm(it.kind)}`;
+      if (!terms.every(t => all.includes(t))) return null;
+      let score = 0;
+      for (const t of terms) score += title.startsWith(t) ? 6 : title.includes(t) ? 4 : 1;
+      if (it.kind === 'Page' || it.kind === 'Home' || it.kind === 'Arcade') score += 0.5;
+      return { it, score };
+    }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 8).map(r => r.it);
+  };
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'nav-search';
+  btn.setAttribute('aria-label', 'Search the site');
+  btn.innerHTML = '<svg viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M416 208c0 45.9-14.9 88.3-40 122.7l126.6 126.7c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208M208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288"/></svg><span>Search</span>';
+  const gauge = nav.querySelector('.fuel-gauge');
+  gauge ? nav.insertBefore(btn, gauge) : nav.append(btn);
+
+  const dlg = document.createElement('dialog');
+  dlg.className = 'search-dialog';
+  dlg.setAttribute('aria-labelledby', 'search-title');
+  dlg.innerHTML = `
+    <form method="dialog" class="search-box" role="search">
+      <div class="search-top">
+        <h2 id="search-title">Search the ship</h2>
+        <button class="search-close" type="submit" aria-label="Close search">&times;</button>
+      </div>
+      <label class="search-label" for="site-search-input">Pages, lore, quotes, crew and bounties</label>
+      <input id="site-search-input" type="search" autocomplete="off" spellcheck="false" placeholder="Try &ldquo;Sir Ian&rdquo; or &ldquo;Phasmophobia&rdquo;" aria-controls="site-search-results">
+      <ul class="search-results" id="site-search-results" aria-live="polite"></ul>
+      <p class="search-empty" hidden>Nothing on the ship matches that yet.</p>
+    </form>`;
+  document.body.append(dlg);
+  const input = dlg.querySelector('input');
+  const list = dlg.querySelector('.search-results');
+  const none = dlg.querySelector('.search-empty');
+  const render = async () => {
+    const q = input.value;
+    const results = search(await buildIndex(), q);
+    if (q !== input.value) return;
+    list.innerHTML = results.map(r => `
+      <li><a href="${esc(r.url)}"><span class="search-kind">${esc(r.kind)}</span><strong>${esc(r.title)}</strong>${r.text ? `<small>${esc(r.text)}</small>` : ''}</a></li>`).join('');
+    none.hidden = !q.trim() || results.length > 0;
+  };
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); list.querySelector('a')?.click(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); list.querySelector('a')?.focus(); }
+  });
+  list.addEventListener('keydown', e => {
+    const links = [...list.querySelectorAll('a')], i = links.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' && i > -1) { e.preventDefault(); links[Math.min(i + 1, links.length - 1)].focus(); }
+    if (e.key === 'ArrowUp' && i > -1) { e.preventDefault(); (i === 0 ? input : links[i - 1]).focus(); }
+  });
+  // Close after picking a result (also handles links to a spot on the same page)
+  list.addEventListener('click', e => { if (e.target.closest('a')) dlg.close(); });
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', () => document.documentElement.classList.remove('search-open'));
+  const open = () => {
+    if (dlg.open) return;
+    document.querySelector('#nav-menu:not([hidden])') && document.querySelector('.nav-more')?.click();
+    dlg.showModal();
+    document.documentElement.classList.add('search-open');
+    input.select();
+    buildIndex();
+    if (input.value) render();
+  };
+  btn.addEventListener('click', open);
+  document.addEventListener('keydown', e => {
+    const typing = e.target.closest?.('input, textarea, select, [contenteditable="true"]');
+    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey)) {
+      e.preventDefault(); open();
+    }
+  });
+})();
