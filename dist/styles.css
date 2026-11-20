@@ -2634,3 +2634,17 @@ html.search-open { overflow: hidden; }
 .cheat-small { margin: 0.7rem 0 0; font-family: var(--typed); font-size: clamp(1rem, 3vw, 1.3rem); color: #e8ffe8; }
 @keyframes cheatFlicker { 50% { opacity: 0.6; } }
 @media (prefers-reduced-motion: reduce) { .cheat-fx { animation: none; } }
+
+/* All-secrets reward */
+.footer-license { padding: 0; border: 0; background: none; color: var(--mustard); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 2.75rem; }
+.footer-license:hover, .footer-license:focus-visible { color: var(--paper); }
+.reward { width: min(26rem, calc(100vw - 1.5rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; padding: 1.2rem 1.3rem 1.3rem; border: 3px solid var(--mustard); background: var(--ink); color: var(--paper); text-align: center; box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.6); }
+.reward::backdrop { background: rgba(10, 8, 7, 0.8); }
+.reward-kicker { margin: 0; font-family: var(--typed); color: var(--mustard); }
+.reward h2 { margin: 0.2rem 0 0.4rem; font-family: var(--display); font-weight: 400; font-size: 2.2rem; line-height: 1; text-transform: uppercase; }
+.reward-text { margin: 0 0 0.9rem; color: var(--paper-dim); }
+.reward img { display: block; width: min(200px, 60vw); height: auto; margin: 0 auto 1rem; border: 4px solid var(--paper); box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5); }
+.reward-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; }
+.reward-dl, .reward-close { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 1.1rem; border: 2px solid var(--mustard); background: none; color: var(--mustard); font-family: var(--display); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+.reward-dl { background: var(--mustard); color: var(--ink); }
+.reward-dl:hover, .reward-dl:focus-visible, .reward-close:hover, .reward-close:focus-visible { background: var(--paper); color: var(--ink); border-color: var(--paper); }

@@ -45,8 +45,37 @@
       footer.appendChild(line);
     }
     const total = Object.keys(SECRETS).length;
-    line.textContent = found.length >= total ? `All ${total} secrets found. Certified bounty hunter.` : `Secrets found: ${found.length} of ${total}`;
+    if (found.length >= total) {
+      line.replaceChildren(`All ${total} secrets found. `);
+      const get = document.createElement('button');
+      get.type = 'button'; get.className = 'footer-license'; get.textContent = 'Get your Bounty Hunter license';
+      get.addEventListener('click', showReward);
+      line.append(get);
+    } else line.textContent = `Secrets found: ${found.length} of ${total}`;
   }
+
+  // Reward for finding every secret: a downloadable "Certified Bounty Hunter" license wallpaper
+  const LICENSE = '/assets/wallpapers/certified-bounty-hunter-7q4k.jpg';
+  function showReward() {
+    let dlg = document.getElementById('reward-dialog');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'reward-dialog';
+      dlg.className = 'reward';
+      dlg.setAttribute('aria-labelledby', 'reward-title');
+      dlg.innerHTML = `
+        <p class="reward-kicker">All secrets found</p>
+        <h2 id="reward-title">Certified Bounty Hunter</h2>
+        <p class="reward-text">You found every hidden thing on the ship. Here&rsquo;s your license, sized as a phone wallpaper.</p>
+        <img src="/assets/wallpapers/certified-bounty-hunter-7q4k-thumb.webp" width="360" height="780" alt="Bounty Hunter License wallpaper: Certified Bounty Hunter, 12 of 12 secrets, with Dismeigh's art and a Verified stamp">
+        <div class="reward-actions"><a class="reward-dl" href="${LICENSE}" download="dismeigh-bounty-hunter-license.jpg">Download license</a><button type="button" class="reward-close">Close</button></div>`;
+      document.body.append(dlg);
+      dlg.querySelector('.reward-close').addEventListener('click', () => dlg.close());
+      dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+    }
+    if (!dlg.open) dlg.showModal();
+  }
+  window.dismeighShowReward = showReward;
 
   function toast(title, detail) {
     const old = document.querySelector('.achievement-toast');
@@ -74,6 +103,7 @@
     save(list);
     const count = list.filter(x => SECRETS[x]).length;
     toast(SECRETS[id], count >= total ? `Secret ${count} of ${total}: all found!` : `Secret found: ${count} of ${total}`);
+    if (count >= total) setTimeout(showReward, 2400);
     buzz(count >= total ? [40, 60, 40, 60, 120] : [30, 50, 60]);
     updateFooter();
   };
@@ -572,7 +602,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   if (store.get('dismeigh-tour') && !forced) return;
   // alt: used when the main target is hidden (phones, where top-bar links live in the Menu)
   const STEPS = [
-    { sel: '.status-console', title: 'Am I live?', text: 'Check here. When I\u2019m on, a bar pops up at the top of every page too.' },
+    { sel: '.status-console', title: 'Am I live?', text: 'Check here. When I\u2019m on, an On Air bar pops up at the top too.' },
     { sel: '#crew-strip-heading', title: 'The crew', text: 'The streamers I run with, with their live status. If we\u2019re in the same game, you\u2019ll see it.' },
     { sel: '#schedule-heading', title: 'When I\u2019m live', text: 'The stream schedule. Add it to your own calendar so you never miss a session.' },
     { sel: '#bounties-heading', title: 'Bounty Board', text: 'Challenges up for grabs on stream. Pull one off and you win the reward.' },
@@ -658,4 +688,49 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   card.querySelector('.tour-next').addEventListener('click', () => { if (step === plan.length - 1) setTimeout(() => window.dismeighUnlock?.('tourgrad'), 300); run(step + 1); });
   card.querySelector('.tour-end').addEventListener('click', end);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && step > -1) end(); });
+})();
+
+// Live favicon: a red dot on the browser tab icon while Dismeigh is live
+(() => {
+  const links = [...document.querySelectorAll('link[rel="icon"]')];
+  if (!links.length) return;
+  const originals = links.map(l => l.href);
+  let dotted = null, isOn = false;
+  const makeDotted = () => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = c.height = 64;
+      const x = c.getContext('2d');
+      x.drawImage(img, 0, 0, 64, 64);
+      x.beginPath(); x.arc(48, 16, 14, 0, Math.PI * 2);
+      x.fillStyle = '#e0312a'; x.fill();
+      x.lineWidth = 5; x.strokeStyle = '#14110f'; x.stroke();
+      try { resolve(c.toDataURL('image/png')); } catch { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = '/favicon-48.png';
+  });
+  const set = async on => {
+    if (on === isOn) return;
+    isOn = on;
+    if (on && !dotted) dotted = await makeDotted();
+    links.forEach((l, i) => { l.href = on && dotted ? dotted : originals[i]; });
+  };
+  const status = document.getElementById('stream-status');
+  if (status) {
+    // Home page already checks Twitch; just follow its status light
+    const sync = () => set(status.classList.contains('is-live'));
+    new MutationObserver(sync).observe(status, { attributes: true, attributeFilter: ['class'] });
+    sync();
+    return;
+  }
+  const check = async () => {
+    try {
+      const r = await fetch(`https://decapi.me/twitch/uptime/dismeigh?t=${Date.now()}`, { cache: 'no-store' });
+      const t = (await r.text()).trim().toLowerCase();
+      set(r.ok && !!t && !/offline|not live|not currently|error|not found/.test(t));
+    } catch {}
+  };
+  if (new URLSearchParams(location.search).has('livefavicon')) set(true);
+  else { check(); setInterval(check, 180000); }
 })();
