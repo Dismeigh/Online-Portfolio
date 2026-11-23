@@ -7,7 +7,7 @@
     const data = await r.json().catch(() => ({}));
     return { status: r.status, data };
   };
-  const show = which => { $('login').hidden = which !== 'login'; $('panel').hidden = which !== 'panel'; };
+  const show = which => { for (const id of ['login', 'setup', 'panel']) $(id).hidden = which !== id; };
   let state = null;
 
   function render(s) {
@@ -50,12 +50,31 @@
   $('login-form').addEventListener('submit', async e => {
     e.preventDefault();
     $('login-msg').textContent = '';
-    const { status, data } = await api('login', { password: $('pw').value });
-    $('pw').value = '';
-    if (status === 200) return load();
-    $('login-msg').textContent = data.error || 'Couldn’t log in.';
+    const { status, data } = await api('login', { password: $('pw').value, code: $('code').value });
+    if (data.setup) {
+      $('pw').value = '';
+      $('setup-key').textContent = data.secret.replace(/(.{4})/g, '$1 ').trim();
+      $('qr').innerHTML = window.dismeighQrSvg ? window.dismeighQrSvg(data.uri) : '';
+      show('setup'); $('setup-code').focus();
+      return;
+    }
+    if (data.need === 'code') {
+      $('code-wrap').hidden = false;
+      if (status !== 200) { $('login-msg').textContent = data.error; $('code').value = ''; }
+      $('code').focus();
+      return;
+    }
+    if (status === 200) { $('pw').value = ''; $('code').value = ''; $('code-wrap').hidden = true; return load(); }
+    $('login-msg').textContent = data.error || 'Couldn\u2019t log in.';
   });
-  $('logout').addEventListener('click', async () => { await api('logout', {}); show('login'); $('pw').focus(); });
+  $('setup-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { status, data } = await api('twostep', { code: $('setup-code').value });
+    if (status === 200) { $('setup-code').value = ''; $('qr').innerHTML = ''; $('setup-key').textContent = ''; return load(); }
+    $('setup-msg').textContent = data.error || 'Couldn\u2019t turn it on.';
+    if (status === 401 && /timed out/i.test(data.error || '')) setTimeout(() => show('login'), 2500);
+  });
+  $('logout').addEventListener('click', async () => { await api('logout', {}); $('code-wrap').hidden = true; show('login'); $('pw').focus(); });
 
   const save = async restart => {
     const msg = $('goal-msg'); msg.textContent = 'Saving…';

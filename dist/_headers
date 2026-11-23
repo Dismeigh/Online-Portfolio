@@ -36,6 +36,8 @@
   Cache-Control: no-cache
 /goal.js
   Cache-Control: public, max-age=2592000
+/qr.js
+  Cache-Control: public, max-age=2592000
 /dashboard.js
   Cache-Control: public, max-age=2592000
 # Private dashboard: never cached, never framed, never indexed

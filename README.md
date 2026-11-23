@@ -49,6 +49,9 @@ Secrets (Pages project → Settings → Variables and Secrets), then redeploy:
 - `DASHBOARD_PASSWORD`: the dashboard password, 12+ characters. Changing it logs out every session.
 - `KOFI_VERIFICATION_TOKEN`: from Ko-fi → Settings → More → API. Set Ko-fi's webhook URL to `https://www.denizen-dismeigh.com/api/kofi`.
 
-How it works: `lib/admin.js` (login, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
-(webhook, goal, progress), `functions/api/admin/*`, `functions/api/kofi.js`, `functions/api/goal.js`, `dist/goal.js`.
+Login is two steps: the password, then a 6-digit code from an authenticator app (set up on the first login).
+Lost the phone? Change `DASHBOARD_PASSWORD`: that signs out every session and resets two-step login.
+
+How it works: `lib/admin.js` (password + authenticator code, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
+(webhook, goal, progress), `functions/api/admin/*` (login, twostep, logout, goal), `dist/dashboard.js`, `dist/qr.js`, `functions/api/kofi.js`, `functions/api/goal.js`, `dist/goal.js`.
 Ko-fi payments keep only amount, type, currency and time (tables `kofi_payments`, `site_settings` in the ARCADE D1 database).

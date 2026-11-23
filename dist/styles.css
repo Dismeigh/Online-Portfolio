@@ -2704,3 +2704,8 @@ html.search-open { overflow: hidden; }
 .dash-steps code { word-break: break-all; padding: 0.1rem 0.3rem; background: var(--ink); border: 1px solid var(--line, #3a322b); }
 @media (max-width: 520px) { .dash-two { grid-template-columns: 1fr; } }
 html:has(.dash-body) { background: var(--ink); }
+
+.dash-qr { width: 220px; max-width: 100%; margin: 0.7rem 0; padding: 0; background: #fff; }
+.dash-qr svg { display: block; width: 100%; height: auto; }
+#setup-form input { max-width: 12rem; letter-spacing: 0.3em; font-size: 1.3rem; }
+#setup-form .dash-btn, #code-wrap + .dash-btn { margin-top: 0.8rem; }
