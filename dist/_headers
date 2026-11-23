@@ -34,3 +34,17 @@
   Cache-Control: public, max-age=604800
 /sw.js
   Cache-Control: no-cache
+/goal.js
+  Cache-Control: public, max-age=2592000
+/dashboard.js
+  Cache-Control: public, max-age=2592000
+# Private dashboard: never cached, never framed, never indexed
+/dashboard/*
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+  Referrer-Policy: no-referrer
+/dashboard
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow

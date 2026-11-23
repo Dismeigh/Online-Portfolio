@@ -2648,3 +2648,59 @@ html.search-open { overflow: hidden; }
 .reward-dl, .reward-close { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 1.1rem; border: 2px solid var(--mustard); background: none; color: var(--mustard); font-family: var(--display); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
 .reward-dl { background: var(--mustard); color: var(--ink); }
 .reward-dl:hover, .reward-dl:focus-visible, .reward-close:hover, .reward-close:focus-visible { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+
+/* Ko-fi goal bar (home Support & Shop, Garage, dashboard preview) */
+.kofi-goal { margin: 1rem 0 1.1rem; }
+.goal-card { padding: 0.9rem 1rem 1rem; background: var(--ink-2, #1d1916); border: 2px solid var(--line, #3a322b); border-left: 6px solid var(--mustard); text-align: left; }
+.goal-head { display: grid; gap: 0.15rem; }
+.goal-label { font-family: var(--typed); font-size: 0.8rem; color: var(--mustard); text-transform: uppercase; letter-spacing: 0.06em; }
+.goal-head b { font-family: var(--display); font-weight: 400; font-size: 1.35rem; line-height: 1.05; text-transform: uppercase; color: var(--paper); }
+.goal-blurb { margin: 0.35rem 0 0; color: var(--paper-dim); font-size: 0.95rem; }
+.goal-bar { height: 0.95rem; margin: 0.7rem 0 0.6rem; background: #0b0908; border: 2px solid var(--paper-dim); overflow: hidden; }
+.goal-bar span { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--mustard) 0 10px, #c98f1c 10px 20px); transition: width 0.8s ease; }
+.goal-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem; color: var(--paper-dim); font-size: 0.95rem; }
+.goal-foot b { color: var(--paper); }
+.goal-btn { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 1rem; background: var(--mustard); color: var(--ink); font-family: var(--display); letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; border: 2px solid var(--mustard); }
+.goal-btn:hover, .goal-btn:focus-visible { background: var(--paper); border-color: var(--paper); }
+.goal-btn:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .goal-bar span { transition: none; } }
+
+/* Private dashboard */
+.dash-body { min-height: 100vh; background: var(--ink); color: var(--paper); }
+.dash { max-width: 44rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.dash-kicker { margin: 0; font-family: var(--typed); color: var(--mustard); }
+.dash-title { margin: 0.1rem 0 1.4rem; font-family: var(--display); font-weight: 400; font-size: clamp(2.4rem, 8vw, 3.6rem); line-height: 0.95; text-transform: uppercase; }
+.dash-card { margin-bottom: 1.4rem; padding: 1.1rem 1.2rem 1.3rem; background: var(--ink-2, #1d1916); border: 2px solid var(--line, #3a322b); }
+.dash-card h2 { margin: 0 0 0.6rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; text-transform: uppercase; }
+.dash-card label { display: block; margin: 0.8rem 0 0.3rem; font-weight: 600; }
+.dash-card label span { font-weight: 400; color: var(--paper-dim); }
+.dash-card input:not([type="checkbox"]) { width: 100%; min-height: 2.9rem; padding: 0.5rem 0.75rem; border: 2px solid var(--paper-dim); background: var(--ink); color: var(--paper); font: 16px var(--body); box-sizing: border-box; }
+.dash-card input:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.dash-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.dash-card .dash-check { display: flex; gap: 0.6rem; align-items: flex-start; font-weight: 400; }
+.dash-check input { width: 1.25rem; height: 1.25rem; margin-top: 0.1rem; accent-color: var(--mustard); }
+.dash-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+.dash-btn { min-height: 2.75rem; padding: 0 1rem; border: 2px solid var(--paper-dim); background: none; color: var(--paper); font-family: var(--display); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.dash-btn:hover, .dash-btn:focus-visible { border-color: var(--mustard); color: var(--mustard); }
+.dash-btn:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.dash-primary { background: var(--mustard); border-color: var(--mustard); color: var(--ink); }
+.dash-primary:hover, .dash-primary:focus-visible { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+.dash-small { min-height: 2.2rem; font-size: 0.85rem; padding: 0 0.6rem; }
+#login-form .dash-btn { margin-top: 1rem; }
+.dash-msg { min-height: 1.2em; margin: 0.8rem 0 0; color: var(--mustard); }
+.dash-note, .dash-hint { color: var(--paper-dim); }
+.dash-hint { font-size: 0.9rem; }
+.dash-bar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.dash-link { color: var(--mustard); }
+.dash-row-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.dash-row-head h2 { margin: 0; }
+.dash-switch { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; padding: 0 0.9rem 0 0.4rem; border: 2px solid var(--paper-dim); border-radius: 999px; background: var(--ink); color: var(--paper); font-family: var(--display); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.dash-knob { width: 2rem; height: 2rem; border-radius: 50%; background: var(--paper-dim); transition: background 0.2s ease; }
+.dash-switch.is-on { border-color: #6fbf73; }
+.dash-switch.is-on .dash-knob { background: #6fbf73; }
+.dash-switch:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.dash-preview { margin: 0.9rem 0 0.4rem; }
+.dash-steps { padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+.dash-steps code { word-break: break-all; padding: 0.1rem 0.3rem; background: var(--ink); border: 1px solid var(--line, #3a322b); }
+@media (max-width: 520px) { .dash-two { grid-template-columns: 1fr; } }
+html:has(.dash-body) { background: var(--ink); }

@@ -38,3 +38,17 @@ Redeploy once after adding the variable. Every push to `main` deploys automatica
 ## Stream schedule
 
 Add, move or cancel streams in the Calendar.online calendar. The site picks up changes within about five minutes. It shows the next stream (or "On Now" while one is running) and up to four more in the next 90 days, in Eastern time.
+
+## Private dashboard and Ko-fi goal bar
+
+`/dashboard/` is Dismeigh's private dashboard (not linked anywhere, not indexed). It switches the Ko-fi goal bar on and off,
+sets what it's for, the amount, and whether it also shows in the Garage.
+
+Secrets (Pages project → Settings → Variables and Secrets), then redeploy:
+
+- `DASHBOARD_PASSWORD`: the dashboard password, 12+ characters. Changing it logs out every session.
+- `KOFI_VERIFICATION_TOKEN`: from Ko-fi → Settings → More → API. Set Ko-fi's webhook URL to `https://www.denizen-dismeigh.com/api/kofi`.
+
+How it works: `lib/admin.js` (login, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
+(webhook, goal, progress), `functions/api/admin/*`, `functions/api/kofi.js`, `functions/api/goal.js`, `dist/goal.js`.
+Ko-fi payments keep only amount, type, currency and time (tables `kofi_payments`, `site_settings` in the ARCADE D1 database).
