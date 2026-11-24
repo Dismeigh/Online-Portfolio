@@ -3225,3 +3225,15 @@ html:has(.dash-body) { background: var(--ink); }
 .builder-total p { margin: 0; font-size: 1.05rem; } .builder-total b { font-family: var(--display); font-weight: 400; font-size: 1.4rem; }
 .builder-total .social-btn { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .builder-total p, .builder-total p b { color: var(--ink) !important; }
+
+/* Client page: documents */
+.client-docs { margin: 0.4rem 0 1rem; }
+.client-h2 { margin: 0.6rem 0 0.5rem; font-family: var(--display); font-weight: 400; font-size: 1.3rem; text-transform: uppercase; color: var(--paper); }
+.client-doc { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.6rem; padding: 0.8rem 0.9rem; margin-bottom: 0.5rem; border: 1px solid var(--line, #3a322b); background: rgba(0, 0, 0, 0.25); }
+.client-doc b { color: var(--paper); } .client-doc span { color: var(--paper-dim); font-size: 0.92rem; }
+.client-doc .client-kicker { font-size: 0.85rem; }
+.client-doc-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.client-pay { background: var(--mustard); color: var(--ink) !important; border-color: var(--mustard); }
+
+.rate-spots { margin-left: 0.4rem; padding-left: 0.4rem; border-left: 1px solid currentColor; font-weight: 700; }
+.dash-cap legend span { font-weight: 400; color: var(--paper-dim); } .dash-cap label { display: block; min-height: 0; }

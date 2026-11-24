@@ -12,6 +12,7 @@
        /overlay/?w=goal    Ko-fi goal bar          (suggested 700 x 220)
        /overlay/?w=log     Ship's Log messages     (suggested 700 x 150)
        /overlay/?w=arcade  Weekly arcade top 5     (suggested 420 x 330)
+       /overlay/?w=tips    Ko-fi tip alerts        (suggested 800 x 260, see-through until a tip lands)
        Add &bg=1 for a solid background instead of see-through. Public info only; nothing here is counted or tracked. -->
   <style>
     :root { --ink: #14110f; --ink-2: #1d1916; --paper: #efe6d2; --dim: #cfc4ad; --mustard: #e3a92f; --red: #b73b2c; --teal: #3f8f8c; }
@@ -37,6 +38,12 @@
     .rows li em { font: 400 22px Anton, Impact, sans-serif; font-style: normal; }
     .empty { margin: 10px 0 0; font-family: "Special Elite", monospace; color: var(--dim); }
     .pop { animation: pop 0.6s ease; }
+    .ov-tip { border-left-color: var(--red); animation: tipIn 0.6s cubic-bezier(.2, 1.4, .4, 1); }
+    .ov-tip .t { white-space: normal; }
+    .ov-out { animation: tipOut 0.6s ease forwards; }
+    @keyframes tipIn { from { transform: translateY(30px) scale(0.9); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes tipOut { to { transform: translateY(-20px); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .ov-tip, .ov-out { animation: none; } }
     @keyframes pop { 0% { transform: scale(0.96); } 50% { transform: scale(1.02); } 100% { transform: none; } }
   </style>
 </head>
@@ -96,7 +103,26 @@
       box.hidden = false;
     }
 
-    if (w === 'log') { log(); setInterval(log, 30000); setInterval(() => { at++; showLog(); }, 9000); }
+    // Tip alerts: pops for 8 seconds when a Ko-fi tip or membership comes in (checked every 10 seconds)
+    const seen = new Set(); let first = true, queue = [], showing = false;
+    async function tips() {
+      const d = await get('/api/tips');
+      for (const t of (d?.tips || []).slice().reverse()) { if (!seen.has(t.id)) { seen.add(t.id); if (!first) queue.push(t); } }
+      first = false; next();
+    }
+    function next() {
+      if (showing || !queue.length) return;
+      const t = queue.shift(); showing = true;
+      const amt = t.currency === 'USD' ? usd(t.cents / 100) : `${(t.cents / 100).toFixed(2)} ${esc(t.currency)}`;
+      box.className = 'ov ov-tip';
+      box.innerHTML = t.kind === 'member' ? `<span class="k">New crew member</span><p class="t">Someone joined the crew!</p><p class="msg"><b>${amt}</b> membership on Ko-fi. Thank you!</p>`
+        : `<span class="k">Ko-fi</span><p class="t">Someone just refueled the ship!</p><p class="msg"><b>${amt}</b> tip. Thank you, space cowboy!</p>`;
+      box.hidden = false;
+      setTimeout(() => { box.classList.add('ov-out'); setTimeout(() => { box.hidden = true; box.classList.remove('ov-out'); showing = false; next(); }, 600); }, 8000);
+    }
+
+    if (w === 'tips') { if (q.get('test') === '1') { queue.push({ kind: 'tip', cents: 500, currency: 'USD' }); next(); } tips(); setInterval(tips, 10000); }
+    else if (w === 'log') { log(); setInterval(log, 30000); setInterval(() => { at++; showLog(); }, 9000); }
     else if (w === 'arcade') { arcade(); setInterval(() => { gi++; arcade(); }, 15000); }
     else { goal(); setInterval(goal, 30000); }
   })();

@@ -4,6 +4,6 @@ import { statsTables } from '../../lib/stats.js';
 export async function onRequestGet({ env }) {
   const headers = { 'Cache-Control': 'public, max-age=60' };
   if (!env.ARCADE) return Response.json({ banner: null, look: null }, { headers });
-  try { await statsTables(env.ARCADE); return Response.json(await siteSettings(env.ARCADE), { headers }); }
+  try { await statsTables(env.ARCADE); const { commissionsSet, ...pub } = await siteSettings(env.ARCADE); return Response.json(pub, { headers }); }
   catch { return Response.json({ banner: null, look: null }, { headers }); }
 }

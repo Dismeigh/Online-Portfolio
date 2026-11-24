@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=109">
+  <link rel="stylesheet" href="/styles.css?v=110">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -206,6 +206,7 @@
             <button type="button" data-content="pricing">Rates</button>
             <button type="button" data-content="faq">Work FAQ</button>
             <button type="button" data-content="builder">Price builder</button>
+            <button type="button" data-content="garage">Garage build</button>
           </div>
           <p class="dash-note" id="content-note"></p>
           <div id="content-body"></div>
@@ -458,6 +459,13 @@
               <div><label for="cm-discord">Discord servers</label><select id="cm-discord"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
               <div><label for="cm-discord-note">Note <span>(optional)</span></label><input id="cm-discord-note" maxlength="120" placeholder="Usually done in 2&ndash;3 days"></div>
             </div>
+            <fieldset class="dash-checks dash-cap">
+              <legend>Spots <span>(optional)</span></legend>
+              <p class="dash-hint">How many jobs you can have going at once. The Work page shows &ldquo;2 spots left&rdquo; on its own, counting jobs that are Booked, Deposit paid or In progress, and shows Closed when you&rsquo;re full. Leave empty for no limit.</p>
+              <div class="dash-two"><div><label for="cap-web">Websites at once</label><input id="cap-web" type="number" min="0" max="50" inputmode="numeric" placeholder="3"></div>
+                <div><label for="cap-discord">Discord servers at once</label><input id="cap-discord" type="number" min="0" max="50" inputmode="numeric" placeholder="5"></div></div>
+              <p class="dash-hint" id="cap-status"></p>
+            </fieldset>
             <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
             <p class="dash-msg" id="comm-msg" role="status"></p>
           </form>
@@ -554,7 +562,7 @@
           <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Site tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
           <details class="dash-help-item"><summary>Close the site for a bit</summary><p>Site tab, Maintenance mode. Visitors see a back-soon page. This dashboard, Ko-fi and client links keep working.</p></details>
           <h3 class="dash-h3">Business</h3>
-          <details class="dash-help-item"><summary>Change my rates or open/close commissions</summary><p>Rates: Content tab, Rates. Open/closed: Site tab, Commissions, with a separate switch and note for voice, websites and Discord.</p></details>
+          <details class="dash-help-item"><summary>Change my rates or open/close commissions</summary><p>Rates: Content tab, Rates. Open/closed: Site tab, Commissions, with a separate switch and note for voice, websites and Discord. Set Spots there too, and the Work page shows spots left and closes itself when you’re full.</p></details>
           <details class="dash-help-item"><summary>Someone sent a quote request. Now what?</summary><p>Clients tab. Email them (button on the request), then Mark replied. If it turns into work, tap Make it a job. Requests delete themselves after 90 days unless you keep them.</p></details>
           <details class="dash-help-item"><summary>Send a client an agreement, invoice or status page</summary><p>Clients tab, open the job, then Agreement, client link, invoice & payments. Fill in each part, save, and use the Copy link buttons. Turn any link off at any time.</p></details>
           <details class="dash-help-item"><summary>Record money and see profit</summary><p>On the job, Record payment for anything paid outside Ko-fi (Ko-fi counts on its own). Add costs under Income, Expenses. Download spreadsheet gives you everything for tax time.</p></details>
@@ -600,6 +608,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=36" defer></script>
+  <script src="/dashboard.js?v=37" defer></script>
 </body>
 </html>

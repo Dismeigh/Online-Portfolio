@@ -1,0 +1,89 @@
+{
+  "note": "The Sojourn ST build sheet on the Garage page. Edit from the dashboard (Content tab, Garage build); once saved there, this file is only the fallback.",
+  "garage": [
+    {
+      "status": "done",
+      "name": "Turbosmart BOV"
+    },
+    {
+      "status": "done",
+      "name": "Borla catback exhaust"
+    },
+    {
+      "status": "done",
+      "name": "Whoosh catless DP with J-style defouler"
+    },
+    {
+      "status": "done",
+      "name": "Levels Performance intercooler"
+    },
+    {
+      "status": "done",
+      "name": "Aluminum CVF cold side charge pipe"
+    },
+    {
+      "status": "done",
+      "name": "Radium PCV oil catch can"
+    },
+    {
+      "status": "done",
+      "name": "ACANII headlights"
+    },
+    {
+      "status": "done",
+      "name": "Black sequential mirror signals"
+    },
+    {
+      "status": "done",
+      "name": "93 tune by Stratified"
+    },
+    {
+      "status": "planned",
+      "name": "Quarterpanel repair and repaint"
+    },
+    {
+      "status": "planned",
+      "name": "Boomba BOV"
+    },
+    {
+      "status": "planned",
+      "name": "Tune by Alan at Edge Auto Sports"
+    },
+    {
+      "status": "planned",
+      "name": "Kansei KNP Hyper Silver wheels"
+    },
+    {
+      "status": "planned",
+      "name": "H&R Sport lowering springs"
+    },
+    {
+      "status": "planned",
+      "name": "Bilstein B8 performance struts/shocks"
+    },
+    {
+      "status": "planned",
+      "name": "Ikon Motorsports front lip"
+    },
+    {
+      "status": "planned",
+      "name": "Vega Motorsports side skirts"
+    },
+    {
+      "status": "planned",
+      "name": "Vega V3 rear diffuser"
+    },
+    {
+      "status": "planned",
+      "name": "Hatch-mounted rear wing"
+    },
+    {
+      "status": "planned",
+      "name": "Blue HPS silicone radiator hoses"
+    },
+    {
+      "status": "planned",
+      "name": "Mishimoto hot side charge pipe"
+    }
+  ]
+}

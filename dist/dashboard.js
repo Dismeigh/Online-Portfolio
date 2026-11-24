@@ -319,6 +319,9 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    garage: { note: 'The Sojourn ST build sheet on the Garage page. Move a mod to Done when it\u2019s on the car; the progress bar updates on its own.', fields: [
+      F('status', 'Status', 'select', { options: [['planned', 'Planned'], ['done', 'Done']] }), F('name', 'Mod', 'text', { max: 80, required: true }),
+    ] },
     builder: { note: 'The "Build your project" price builder on the Work page. Base = pick one; add-on = optional extras; monthly = care plan. Prices in whole dollars.', fields: [
       F('group', 'Section', 'select', { options: [['web', 'Websites'], ['discord', 'Discord']] }), F('kind', 'Type', 'select', { options: [['base', 'Base (pick one)'], ['addon', 'Add-on'], ['monthly', 'Monthly']] }),
       F('name', 'Name', 'text', { max: 60, required: true }), F('price', 'Price in dollars', 'text', { max: 7 }),
@@ -337,7 +340,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -571,7 +574,10 @@
     $('l-mode').innerHTML = `<option value="auto">Automatic (by date)</option><option value="off">No holiday looks</option>${data.seasons.map(k => `<option value="${k}">${esc(NAMES[k] || k)}</option>`).join('')}`;
     $('n-text').value = data.now?.text || ''; $('n-until').value = toLocal(data.now?.until);
     $('now-chip').className = `dash-chip ${data.now ? 'dash-chip-ok' : ''}`; $('now-chip-text').textContent = data.now ? 'Showing' : 'Off';
-    for (const k of ['voice', 'web', 'discord']) { $(`cm-${k}`).value = data.commissions?.[k] || 'off'; $(`cm-${k}-note`).value = data.commissions?.notes?.[k] || ''; }
+    const cmSet = data.commissionsSet || data.commissions;
+    for (const k of ['voice', 'web', 'discord']) { $(`cm-${k}`).value = cmSet?.[k] || 'off'; $(`cm-${k}-note`).value = cmSet?.notes?.[k] || ''; }
+    $('cap-web').value = data.capacitySet?.web || ''; $('cap-discord').value = data.capacitySet?.discord || '';
+    $('cap-status').textContent = ['web', 'discord'].filter(k => data.capacity?.[k]).map(k => `${k === 'web' ? 'Websites' : 'Discord'}: ${data.capacity[k].used} of ${data.capacity[k].max} spots taken${data.capacity[k].full ? ' (showing as full)' : ''}`).join(' · ');
     $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
     updatePreview();
     const m = (await api('maintenance')).data.maintenance || {};
@@ -642,6 +648,7 @@
   $('n-clear').addEventListener('click', async () => { await api('site', { what: 'now', text: '' }); flash($('now-msg'), 'Cleared.'); loaders.site(); });
   $('comm-form').addEventListener('submit', async e => {
     e.preventDefault();
+    await api('site', { what: 'capacity', web: $('cap-web').value, discord: $('cap-discord').value });
     const { data } = await api('site', { what: 'commissions', voice: $('cm-voice').value, web: $('cm-web').value, discord: $('cm-discord').value,
       notes: { voice: $('cm-voice-note').value, web: $('cm-web-note').value, discord: $('cm-discord-note').value } });
     flash($('comm-msg'), data.error || 'Saved. It shows on the Voice and Work pages now.'); loaders.site();
@@ -675,9 +682,9 @@
   });
 
   // ---------- Stream overlays ----------
-  const OVERLAYS = [['goal', 'Ko-fi goal bar', '700 \u00d7 220', 'Hidden while no goal is on. Pops when a tip lands.'], ['log', 'Ship\u2019s Log messages', '700 \u00d7 150', 'Cycles through the newest five entries.'], ['arcade', 'Arcade top 5 this week', '420 \u00d7 330', 'Switches between Bounty Run and Launch Control.']];
+  const OVERLAYS = [['goal', 'Ko-fi goal bar', '700 \u00d7 220', 'Hidden while no goal is on. Pops when a tip lands.'], ['log', 'Ship\u2019s Log messages', '700 \u00d7 150', 'Cycles through the newest five entries.'], ['arcade', 'Arcade top 5 this week', '420 \u00d7 330', 'Switches between Bounty Run and Launch Control.'], ['tips', 'Ko-fi tip alerts', '800 \u00d7 260', 'See-through until a tip or membership lands, then pops for 8 seconds. Amount only, never names. Preview shows a test $5 tip.']];
   $('ovl-list').innerHTML = OVERLAYS.map(([k, name, size, note]) => `<li class="dash-row"><div class="dash-row-main"><b>${name}</b> <span class="dash-meta">${size}</span><p>${note}</p><code class="dash-code">${location.origin}/overlay/?w=${k}</code></div>
-    <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-ovl="${k}">Copy link</button><a class="dash-btn dash-small" href="/overlay/?w=${k}&bg=1" target="_blank" rel="noopener">Preview</a></div></li>`).join('');
+    <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-ovl="${k}">Copy link</button><a class="dash-btn dash-small" href="/overlay/?w=${k}&bg=1${k === 'tips' ? '&test=1' : ''}" target="_blank" rel="noopener">Preview</a></div></li>`).join('');
   $('ovl-list').addEventListener('click', async e => {
     const b = e.target.closest('[data-ovl]'); if (!b) return;
     try { await navigator.clipboard.writeText(`${location.origin}/overlay/?w=${b.dataset.ovl}`); flash($('ovl-msg'), 'Copied. Paste it into an OBS Browser source.'); } catch { flash($('ovl-msg'), 'Couldn\u2019t copy. Press and hold the link to copy it.'); }
@@ -800,10 +807,10 @@
       <h4>Referral link</h4>
       <p class="dash-hint">For happy clients to share. Quote requests that come through it show &ldquo;Referred by ${esc(j.client)}&rdquo;.</p>
       <div class="dash-actions">${j.ref_code ? `<code class="dash-code">${esc(location.origin)}/work/?ref=${esc(j.ref_code)}</code><button type="button" class="dash-btn dash-small" data-tool="copy-ref" data-id="${j.id}">Copy</button><button type="button" class="dash-btn dash-small dash-danger" data-tool="ref-off" data-id="${j.id}">Turn off</button>` : `<button type="button" class="dash-btn dash-small" data-tool="ref-on" data-id="${j.id}">Make a referral link</button>`}</div>
-      <h4>Client status link</h4>
-      <p class="dash-hint">A private page where ${esc(j.client)} can see the stage, due date and your note. No price, contact info or private notes.</p>
+      <h4>Client page</h4>
+      <p class="dash-hint">One private link for ${esc(j.client)}: stage, due date, your note, plus their agreement and invoice when those are on. Never shows contact info or your private notes.</p>
       <div class="dash-actions">${j.token ? `<button type="button" class="dash-btn dash-small dash-primary" data-tool="copy-status" data-id="${j.id}">Copy link</button><a class="dash-btn dash-small" href="/status/?s=${esc(j.token)}" target="_blank" rel="noopener noreferrer">View</a><button type="button" class="dash-btn dash-small dash-danger" data-tool="status-off" data-id="${j.id}">Turn off</button>`
-        : `<button type="button" class="dash-btn dash-small dash-primary" data-tool="status-on" data-id="${j.id}">Turn on client link</button>`}</div>
+        : `<button type="button" class="dash-btn dash-small dash-primary" data-tool="status-on" data-id="${j.id}">Turn on client page</button>`}</div>
       <label for="cn-${j.id}">Note for the client <span>(shows on their page)</span></label>
       <textarea id="cn-${j.id}" rows="2" maxlength="600" placeholder="Homepage is done. Waiting on your photos for the gallery.">${esc(j.client_note || '')}</textarea>
       <button type="button" class="dash-btn dash-small" data-tool="note" data-id="${j.id}">Save note</button>

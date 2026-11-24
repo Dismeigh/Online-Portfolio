@@ -815,6 +815,12 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       el.innerHTML = `<span class="commission-dot" aria-hidden="true"></span><b>${el.classList.contains('rate-status') ? cm[k] : `${k === 'voice' ? 'Commissions' : NAME[k]} ${cm[k]}`}</b>${cm.notes?.[k] ? `<span>${esc(cm.notes[k])}</span>` : ''}`;
       el.hidden = false;
     });
+    // Spots left (from the dashboard's Spots setting), next to the Discord/Websites headings
+    for (const k of ['web', 'discord']) {
+      const c = s.capacity?.[k], el = document.querySelector(`.rate-status[data-commissions="${k}"]`);
+      if (!c || !el || el.hidden || c.full) continue;
+      const sp = document.createElement('span'); sp.className = 'rate-spots'; sp.textContent = `${c.left} spot${c.left === 1 ? '' : 's'} left`; el.append(sp);
+    }
     // Quote button on the Work page: a waitlist when both web and discord are closed
     const qb = document.getElementById('rates-quote');
     if (qb && cm.web === 'closed' && cm.discord === 'closed') { qb.textContent = 'Join the waitlist'; qb.href = 'mailto:denizen.dismeigh@gmail.com?subject=Waitlist'; }
