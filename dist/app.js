@@ -251,7 +251,7 @@
   if (new Date().getHours() === 3) setTimeout(() => window.dismeighUnlock('nightowl'), 2000);
 
   // The ship's cat: a little pixel cat that lives on the footer of every page. Everyone feeds it together
-  // (a visit feeds it once a day, signing the Ship's Log feeds it more). It naps while Dismeigh is live.
+  // (a treat from its bubble once a day, plus the Ship's Log, Ko-fi tips, arcade runs, votes and more). It naps while Dismeigh is live.
   (() => {
     const foot = document.querySelector('.footer');
     if (!foot || /^\/(dashboard|overlay|booth|spotted)/.test(location.pathname)) return;
@@ -298,10 +298,14 @@
       const h = document.createElement('p'); h.className = 'cat-name'; h.textContent = 'The ship’s cat';
       const l = document.createElement('p'); l.textContent = extra || pick(LINES[mood]);
       const m = document.createElement('p'); m.className = 'cat-meter'; m.textContent = `Full: ${'■'.repeat(bar)}${'□'.repeat(10 - bar)} ${st.food}%`;
-      const f = document.createElement('p'); f.className = 'cat-fed'; f.textContent = st.fedToday ? `Fed by ${st.fedToday} crew member${st.fedToday === 1 ? '' : 's'} today` : 'Nobody’s fed it yet today';
+      const f = document.createElement('p'); f.className = 'cat-fed'; f.textContent = st.fedToday ? `${st.fedToday} crew member${st.fedToday === 1 ? '' : 's'} gave it a treat today` : 'Nobody’s given it a treat yet today';
+      const treat = document.createElement('button'); treat.type = 'button'; treat.className = 'cat-treat';
+      const done = treatedToday();
+      treat.textContent = done ? 'You gave a treat today' : 'Give a treat'; treat.setAttribute('aria-disabled', String(done));
+      treat.addEventListener('click', giveTreat);
       const hide = document.createElement('button'); hide.type = 'button'; hide.className = 'cat-hide'; hide.textContent = 'Shoo (hide the cat)';
       hide.addEventListener('click', () => { try { localStorage.setItem('dm-cat-hide', '1'); } catch {} wrap.remove(); });
-      bub.append(h, l, m, f, hide); bub.hidden = false;
+      bub.append(h, l, m, f, treat, hide); bub.hidden = false;
       clearTimeout(say.t); say.t = setTimeout(() => { bub.hidden = true; }, 7000);
     }
     function puff(text) {
@@ -333,16 +337,23 @@
     if (!still) setInterval(() => { if (!document.hidden) tick(); }, 220);
     addEventListener('dismeigh:live', tick);
 
-    // Feed it once per day per visitor (the server decides), otherwise just read how it's doing
-    let day = ''; try { day = localStorage.getItem('dm-cat-fed') || ''; } catch {}
+    // A treat from you, once a day (the server makes sure). Everything else that feeds it happens on the server.
     const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
-    const req = day === todayKey ? fetch('/api/cat') : fetch('/api/cat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-    req.then(r => (r.ok ? r.json() : null)).then(d => {
-      if (!d || d.food == null) return;
-      st = d; tick();
-      if ('fed' in d) { try { localStorage.setItem('dm-cat-fed', todayKey); } catch {} }
-      if (d.fed) setTimeout(() => puff('+ nom'), 1500);
-    }).catch(() => {});
+    function treatedToday() { try { return localStorage.getItem('dm-cat-fed') === todayKey; } catch { return false; } }
+    async function giveTreat(e) {
+      const b = e.currentTarget; if (b.getAttribute('aria-disabled') === 'true') return;
+      b.setAttribute('aria-disabled', 'true');
+      try {
+        const d = await (await fetch('/api/cat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
+        if (d && d.food != null) {
+          try { localStorage.setItem('dm-cat-fed', todayKey); } catch {}
+          st = d; draw();
+          if (d.fed) { wrap.classList.remove('is-hop'); void wrap.offsetWidth; wrap.classList.add('is-hop'); puff('+ nom'); window.dismeighBuzz?.([15, 40, 15]); say(live() ? 'It woke up just long enough to eat it. Back to napping.' : 'Nom. It looks very pleased with you.'); }
+          else say('It already had a treat from you today. Come back tomorrow!');
+        }
+      } catch { b.setAttribute('aria-disabled', 'false'); }
+    }
+    fetch('/api/cat').then(r => (r.ok ? r.json() : null)).then(d => { if (d && d.food != null) { st = d; tick(); } }).catch(() => {});
   })();
 
   // Link tap counts for the dashboard: only which kind of outside link (Twitch, Discord, Ko-fi...), nothing about who tapped

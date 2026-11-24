@@ -3613,3 +3613,8 @@ html:has(.dash-body) { background: var(--ink); }
 @keyframes catPuff { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -22px); } }
 .cat-callback { margin-top: 0.6rem; }
 .cat-callback button { min-height: 2rem; padding: 0; background: none; border: 0; color: var(--paper-dim); font: inherit; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
+.cat-treat { display: block; width: 100%; min-height: 2.5rem; margin: 0.3rem 0 0.2rem; background: var(--mustard); color: var(--ink); border: 2px solid var(--ink); font-family: var(--display); font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; }
+.cat-treat:hover, .cat-treat:focus-visible { background: var(--ink); color: var(--mustard); }
+.cat-treat[aria-disabled="true"] { background: transparent; color: #4a3e35; border-style: dashed; cursor: default; }
+@media (prefers-reduced-motion: no-preference) { .ship-cat.is-hop .cat-btn { animation: catHop 0.5s ease-out 2; } }
+@keyframes catHop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px); } }

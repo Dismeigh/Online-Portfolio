@@ -1,4 +1,5 @@
-import { guard, json, sameOrigin, visitorKey, cleanName, checkScore, checkReaction, boards } from '../../../lib/arcade.js';
+import { guard, json, sameOrigin, visitorKey, cleanName, checkScore, checkReaction, boards, tuning } from '../../../lib/arcade.js';
+import { feedCat } from '../../../lib/shipcat.js';
 
 // POST /api/arcade/score { run, name, score, seconds } -> { ok, boards }
 // The game comes from the run ticket, so a score can't be posted to the wrong board.
@@ -33,5 +34,7 @@ export const onRequestPost = guard(async ({ request, env }) => {
   if (!claim.meta?.changes) return json({ error: 'That run was already posted.' }, 400);
   await db.prepare('INSERT INTO scores (name, score, seconds, ip, created_at, game) VALUES (?, ?, ?, ?, ?, ?)')
     .bind(name, score, Math.round(seconds * 1000) / 1000, ip, now, game).run();
+  // Every posted run gives the ship's cat a snack; beating the master score gives it a bigger one
+  try { const t = (await tuning(db)).targets[game]; await feedCat(db, (game === 'drag' ? score <= t : score >= t) ? 'master' : 'run', now); } catch {}
   return json({ ok: true, name, boards: await boards(db, now, game) });
 });
