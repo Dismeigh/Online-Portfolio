@@ -356,6 +356,8 @@
     $('b-text').value = b?.text || ''; $('b-link').value = b?.link || ''; $('b-until').value = toLocal(b?.until);
     $('banner-chip').className = `dash-chip ${b ? 'dash-chip-ok' : ''}`; $('banner-chip-text').textContent = b ? 'Showing' : 'Off';
     $('l-mode').innerHTML = `<option value="auto">Automatic (by date)</option><option value="off">No holiday looks</option>${data.seasons.map(k => `<option value="${k}">${esc(NAMES[k] || k)}</option>`).join('')}`;
+    $('n-text').value = data.now?.text || ''; $('n-until').value = toLocal(data.now?.until);
+    $('now-chip').className = `dash-chip ${data.now ? 'dash-chip-ok' : ''}`; $('now-chip-text').textContent = data.now ? 'Showing' : 'Off';
     $('cm-voice').value = data.commissions?.voice || 'off'; $('cm-work').value = data.commissions?.work || 'off'; $('cm-note').value = data.commissions?.note || '';
     $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
     updatePreview();
@@ -369,6 +371,13 @@
     flash($('banner-msg'), data.error || 'Banner is showing on every page.'); loaders.site();
   });
   $('b-clear').addEventListener('click', async () => { await api('site', { what: 'banner', text: '' }); flash($('banner-msg'), 'Banner is off.'); loaders.site(); });
+  $('now-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!$('n-text').value.trim()) return flash($('now-msg'), 'Type something first, or use Clear.');
+    const { data } = await api('site', { what: 'now', text: $('n-text').value, until: fromLocal($('n-until').value) });
+    flash($('now-msg'), data.error || 'Saved. It shows on the home page now.'); loaders.site();
+  });
+  $('n-clear').addEventListener('click', async () => { await api('site', { what: 'now', text: '' }); flash($('now-msg'), 'Cleared.'); loaders.site(); });
   $('comm-form').addEventListener('submit', async e => {
     e.preventDefault();
     const { data } = await api('site', { what: 'commissions', voice: $('cm-voice').value, work: $('cm-work').value, note: $('cm-note').value });

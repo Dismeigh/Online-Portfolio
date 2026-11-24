@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=66">
+  <link rel="stylesheet" href="/styles.css?v=67">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -212,6 +212,17 @@
             <p class="dash-msg" id="banner-msg" role="status"></p>
           </form>
         </section>
+        <section class="dash-card dash-card-now" aria-labelledby="now-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Home page</p><h2 id="now-h">Right now</h2></div><span class="dash-chip" id="now-chip"><span class="dash-dot" aria-hidden="true"></span><span id="now-chip-text">Off</span></span></div>
+          <form id="now-form">
+            <label for="n-text">What you&rsquo;re up to</label>
+            <input id="n-text" maxlength="100" placeholder="Grinding New Vegas on hardcore">
+            <label for="n-until">Clear it after <span>(optional)</span></label>
+            <input id="n-until" type="datetime-local">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button><button type="button" class="dash-btn" id="n-clear">Clear</button></div>
+            <p class="dash-msg" id="now-msg" role="status"></p>
+          </form>
+        </section>
         <section class="dash-card dash-card-comm" aria-labelledby="comm-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Voice and Work pages</p><h2 id="comm-h">Commissions</h2></div></div>
           <form id="comm-form">
@@ -254,6 +265,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=5" defer></script>
+  <script src="/dashboard.js?v=6" defer></script>
 </body>
 </html>

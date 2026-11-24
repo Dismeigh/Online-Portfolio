@@ -761,6 +761,12 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       else { try { const old = JSON.parse(before || 'null'); if (old?.mode && root.dataset.season === old.mode) delete root.dataset.season; } catch {} }
       window.dismeighSeasonFx?.();
     }
+    // "Right now" status line on the home page
+    const rn = document.getElementById('right-now');
+    if (rn) {
+      if (s.now?.text) { rn.innerHTML = `<span class="right-now-k">Right now</span> ${esc(s.now.text)}`; rn.hidden = false; }
+      else rn.hidden = true;
+    }
     // Commissions open/closed badge on the Voice and Work pages
     document.querySelectorAll('[data-commissions]').forEach(el => {
       const st = s.commissions?.[el.dataset.commissions];
