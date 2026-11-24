@@ -1,5 +1,6 @@
 import { guard, json, sameOrigin, visitorKey } from '../../../lib/arcade.js';
 import { cleanName, cleanMessage, LOG_NAME_MAX } from '../../../lib/guestbook.js';
+import { feedByLog } from '../../../lib/shipcat.js';
 import { alert } from '../../../lib/push.js';
 
 let ready = false;
@@ -65,6 +66,7 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   if (recent?.last && now - recent.last < 60000) return json({ error: 'One entry a minute, captain. Try again shortly.' }, 429);
   if ((recent?.day || 0) >= 5) return json({ error: 'That’s plenty of log entries for today. Come back tomorrow!' }, 429);
   await db.prepare('INSERT INTO guestbook (name, message, ip, created_at, stamp, bday) VALUES (?, ?, ?, ?, ?, ?)').bind(n.name, m.message, ip, now, STAMPS.includes(body?.stamp) ? body.stamp : '', bdayYear(now)).run();
+  try { await feedByLog(db, now); } catch {}  // signing the log feeds the ship's cat
   const job = alert(env, 'log', { title: 'New Ship\u2019s Log entry', body: `${n.name}: ${m.message.slice(0, 120)}`, tab: 'guestbook' });
   if (waitUntil) waitUntil(job); else await job;
   // Now and then, clear out expired entries for good (pinned ones stay)

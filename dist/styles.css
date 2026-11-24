@@ -3589,3 +3589,27 @@ html:has(.dash-body) { background: var(--ink); }
 .map-hatch.is-open .map-hatch-panel rect { fill: var(--mustard); }
 .map-hatch:hover .map-hatch-panel rect, .map-hatch:focus-visible .map-hatch-panel rect { stroke: var(--mustard); }
 .map-hatch:focus-visible .map-hatch-hit { stroke: var(--mustard); stroke-width: 2; stroke-dasharray: 4 3; }
+
+/* The ship's cat */
+.footer { position: relative; }
+.ship-cat { position: absolute; left: var(--x, 12%); top: 0; z-index: 3; transform: translateY(-100%); transition: left 0.22s linear; }
+.cat-btn { display: block; padding: 0; margin: 0; background: none; border: 0; cursor: pointer; line-height: 0; }
+.cat-btn svg { display: block; }
+.ship-cat.is-left .cat-btn svg { transform: scaleX(-1); }
+.cat-btn:focus-visible { outline: 3px solid var(--mustard); outline-offset: 3px; }
+.ship-cat[data-mood="nap"] .cat-btn::after { content: "z"; position: absolute; top: -0.6rem; right: -0.4rem; font: 700 0.9rem var(--typed); color: var(--paper-dim); }
+@media (prefers-reduced-motion: no-preference) { .ship-cat[data-mood="nap"] .cat-btn::after { animation: catZ 2.4s ease-in-out infinite; } }
+@keyframes catZ { 0% { opacity: 0; transform: translate(0, 0); } 40% { opacity: 1; } 100% { opacity: 0; transform: translate(6px, -12px); } }
+.cat-bubble { position: absolute; bottom: calc(100% + 10px); left: -0.5rem; width: min(17rem, 80vw); padding: 0.7rem 0.8rem; background: var(--paper); color: var(--ink); border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--mustard); text-align: left; font-size: 0.9rem; }
+.ship-cat.is-far .cat-bubble { left: auto; right: -0.5rem; }
+.ship-cat.is-far .cat-bubble::after { left: auto; right: 1.2rem; }
+.cat-bubble::after { content: ""; position: absolute; top: 100%; left: 1.2rem; border: 8px solid transparent; border-top-color: var(--ink); }
+.ship-cat .cat-bubble p { margin: 0 0 0.3rem; color: var(--ink); }
+.ship-cat .cat-name { font-family: var(--display); letter-spacing: 0.04em; text-transform: uppercase; color: var(--red); }
+.ship-cat .cat-meter { font-family: var(--typed); font-size: 0.85rem; }
+.ship-cat .cat-fed { font-size: 0.8rem; color: #4a3e35; }
+.cat-hide { min-height: 2rem; padding: 0; background: none; border: 0; color: var(--red); font: inherit; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
+.cat-puff { position: absolute; left: 50%; top: -0.4rem; font-family: var(--typed); font-weight: 700; color: var(--mustard); pointer-events: none; animation: catPuff 1.6s ease-out forwards; }
+@keyframes catPuff { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -22px); } }
+.cat-callback { margin-top: 0.6rem; }
+.cat-callback button { min-height: 2rem; padding: 0; background: none; border: 0; color: var(--paper-dim); font: inherit; font-size: 0.8rem; text-decoration: underline; cursor: pointer; }

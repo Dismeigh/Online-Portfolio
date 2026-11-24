@@ -250,6 +250,101 @@
   // Secret: visit between 3 and 4 in the morning (your own time)
   if (new Date().getHours() === 3) setTimeout(() => window.dismeighUnlock('nightowl'), 2000);
 
+  // The ship's cat: a little pixel cat that lives on the footer of every page. Everyone feeds it together
+  // (a visit feeds it once a day, signing the Ship's Log feeds it more). It naps while Dismeigh is live.
+  (() => {
+    const foot = document.querySelector('.footer');
+    if (!foot || /^\/(dashboard|overlay|booth|spotted)/.test(location.pathname)) return;
+    let hidden = false; try { hidden = localStorage.getItem('dm-cat-hide') === '1'; } catch {}
+    if (hidden) {
+      const back = document.createElement('p'); back.className = 'cat-callback';
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Call the ship’s cat back';
+      b.addEventListener('click', () => { try { localStorage.removeItem('dm-cat-hide'); } catch {} location.reload(); });
+      back.append(b); foot.append(back); return;
+    }
+    // Sprites: o fur, s stripes, e eyes, p nose, w belly, - closed eyes
+    const SPRITES = {
+      sit: ['.........o...o..', '.........oo.oo..', '.........ooooo..', '........ooeooeo.', '........oooopoo.', '.........ooooo..', '....ooooooooo...', '...oossosssoo...', '..ooosossooooo..', 'o.oooooooowooo..', 'o.oooooooowwoo..', '.oooooooooowoo..', '..oo.oo..oo.oo..'],
+      walkA: ['............o.o.', '............ooo.', '...........ooeoo', 'o..........oooop', 'o.ooooooooooooo.', '.oosossossoooo..', '..oooooooowwoo..', '..oooooooowwoo..', '..o..o.....o..o.', '.o...o.....o...o'],
+      walkB: ['............o.o.', '............ooo.', '...........ooeoo', '.o.........oooop', '.oooooooooooooo.', '..osossossoooo..', '..oooooooowwoo..', '..oooooooowwoo..', '...oo.......oo..', '...o.o.....o.o..'],
+      sleep: ['..........o.o...', '...ooooooooooo..', '..oossossoo--oo.', '.ooooooooooopoo.', 'ooooooooooooooo.', 'oooowwwwoooooo..', '.oooooooooooo...'],
+    };
+    const COL = { o: '#c9772f', s: '#8f4f1d', e: '#14110f', p: '#e58a9b', w: '#efe6d2', '-': '#14110f' };
+    const svg = name => {
+      const rows = SPRITES[name], w = 16, h = rows.length; let r = '';
+      rows.forEach((row, y) => [...row].forEach((c, x) => { if (COL[c]) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${COL[c]}"/>`; }));
+      return `<svg viewBox="0 0 ${w} ${h}" width="${w * 3}" height="${h * 3}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+    };
+    const wrap = document.createElement('div'); wrap.className = 'ship-cat';
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cat-btn'; btn.setAttribute('aria-label', 'The ship’s cat. Tap to check on it.');
+    const bub = document.createElement('div'); bub.className = 'cat-bubble'; bub.hidden = true; bub.setAttribute('role', 'status');
+    wrap.append(bub, btn); foot.prepend(wrap);
+
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let st = { food: 60, mood: 'content', fedToday: 0 }, pose = 'sit', pos = 12, dir = 1, walking = false, frame = 0;
+    const live = () => !!window.dismeighLive;
+    const draw = () => { btn.innerHTML = svg(pose); wrap.style.setProperty('--x', `${pos}%`); wrap.classList.toggle('is-left', dir < 0); wrap.dataset.mood = live() ? 'nap' : st.mood; wrap.classList.toggle('is-far', pos > 50); };
+    const LINES = {
+      happy: ['Purring loudly. The crew’s been taking good care of it.', 'Tail up, belly full. Life on the ship is good.'],
+      content: ['Content. Could go for a snack, though.', 'Doing a lap of the deck.'],
+      hungry: ['Meowing at the galley door. It could use more visitors.', 'Staring at you. Hungrily.'],
+      sulky: ['Sulking with its back to everyone. It’s been a quiet week on the ship.', 'Ignoring you. Visit more often and it might forgive the crew.'],
+      nap: ['Napping while the captain’s live. Shh.', 'Curled up asleep. The stream’s on, so it’s off duty.'],
+    };
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    function say(extra = '') {
+      const mood = live() ? 'nap' : st.mood, bar = Math.round(st.food / 10);
+      bub.replaceChildren();
+      const h = document.createElement('p'); h.className = 'cat-name'; h.textContent = 'The ship’s cat';
+      const l = document.createElement('p'); l.textContent = extra || pick(LINES[mood]);
+      const m = document.createElement('p'); m.className = 'cat-meter'; m.textContent = `Full: ${'■'.repeat(bar)}${'□'.repeat(10 - bar)} ${st.food}%`;
+      const f = document.createElement('p'); f.className = 'cat-fed'; f.textContent = st.fedToday ? `Fed by ${st.fedToday} crew member${st.fedToday === 1 ? '' : 's'} today` : 'Nobody’s fed it yet today';
+      const hide = document.createElement('button'); hide.type = 'button'; hide.className = 'cat-hide'; hide.textContent = 'Shoo (hide the cat)';
+      hide.addEventListener('click', () => { try { localStorage.setItem('dm-cat-hide', '1'); } catch {} wrap.remove(); });
+      bub.append(h, l, m, f, hide); bub.hidden = false;
+      clearTimeout(say.t); say.t = setTimeout(() => { bub.hidden = true; }, 7000);
+    }
+    function puff(text) {
+      const p = document.createElement('span'); p.className = 'cat-puff'; p.textContent = text; p.setAttribute('aria-hidden', 'true');
+      wrap.append(p); setTimeout(() => p.remove(), 1600);
+    }
+    btn.addEventListener('click', () => {
+      if (!bub.hidden) { bub.hidden = true; return; }
+      say(); if (!live() && st.mood === 'happy') puff('♥'); window.dismeighBuzz?.(15);
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') bub.hidden = true; });
+
+    // Behavior loop: nap while live, sulk in place when very hungry, otherwise wander along the footer now and then
+    function tick() {
+      if (live()) { pose = 'sleep'; walking = false; draw(); return; }
+      if (walking) {
+        frame++; pose = frame % 2 ? 'walkA' : 'walkB'; pos += dir * (st.mood === 'happy' ? 1.4 : 0.9);
+        if (pos > 86 || pos < 4) { dir = -dir; pos = Math.max(4, Math.min(86, pos)); }
+        if (Math.random() < 0.03) { walking = false; pose = 'sit'; }
+      } else {
+        pose = 'sit';
+        if (st.mood === 'sulky') dir = -1;
+        const chance = { happy: 0.06, content: 0.035, hungry: 0.012, sulky: 0 }[st.mood];
+        if (!still && Math.random() < chance) { walking = true; if (Math.random() < 0.4) dir = -dir; }
+      }
+      draw();
+    }
+    draw();
+    if (!still) setInterval(() => { if (!document.hidden) tick(); }, 220);
+    addEventListener('dismeigh:live', tick);
+
+    // Feed it once per day per visitor (the server decides), otherwise just read how it's doing
+    let day = ''; try { day = localStorage.getItem('dm-cat-fed') || ''; } catch {}
+    const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    const req = day === todayKey ? fetch('/api/cat') : fetch('/api/cat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    req.then(r => (r.ok ? r.json() : null)).then(d => {
+      if (!d || d.food == null) return;
+      st = d; tick();
+      if ('fed' in d) { try { localStorage.setItem('dm-cat-fed', todayKey); } catch {} }
+      if (d.fed) setTimeout(() => puff('+ nom'), 1500);
+    }).catch(() => {});
+  })();
+
   // Link tap counts for the dashboard: only which kind of outside link (Twitch, Discord, Ko-fi...), nothing about who tapped
   if (!/^\/(dashboard|overlay|booth)/.test(location.pathname)) {
     document.addEventListener('click', e => {
