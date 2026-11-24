@@ -479,6 +479,7 @@
     const b = data.banner;
     $('b-text').value = b?.text || ''; $('b-link').value = b?.link || ''; $('b-until').value = toLocal(b?.until);
     $('banner-chip').className = `dash-chip ${b ? 'dash-chip-ok' : ''}`; $('banner-chip-text').textContent = b ? 'Showing' : 'Off';
+    presets = data.presets || []; drawPresets(b);
     $('l-mode').innerHTML = `<option value="auto">Automatic (by date)</option><option value="off">No holiday looks</option>${data.seasons.map(k => `<option value="${k}">${esc(NAMES[k] || k)}</option>`).join('')}`;
     $('n-text').value = data.now?.text || ''; $('n-until').value = toLocal(data.now?.until);
     $('now-chip').className = `dash-chip ${data.now ? 'dash-chip-ok' : ''}`; $('now-chip-text').textContent = data.now ? 'Showing' : 'Off';
@@ -496,6 +497,30 @@
     if (!shopOn && !confirm('Close the public site? Visitors will see the "back soon" page until you turn this off.')) return;
     const { data } = await api('maintenance', { on: !shopOn, note: $('s-note').value, until: fromLocal($('s-until').value) });
     flash($('shop-msg'), data.error || (data.maintenance?.on ? 'Site is closed for maintenance.' : 'Site is open again.')); loaders.site();
+  });
+  // One-tap banners
+  let presets = [], editPresets = false;
+  function drawPresets(current) {
+    $('b-presets').innerHTML = presets.map((p, i) => `<div class="dash-preset${current && current.text === p.text ? ' is-on' : ''}">
+      <button type="button" class="dash-btn" data-preset="${i}">${esc(p.text)}<small>${p.hours ? `clears after ${p.hours < 48 ? `${p.hours}h` : `${Math.round(p.hours / 24)} days`}` : 'stays until you turn it off'}</small></button>
+      ${editPresets ? `<button type="button" class="dash-btn dash-small dash-danger" data-preset-del="${i}" aria-label="Delete this one-tap banner">Delete</button>` : ''}</div>`).join('')
+      + `<button type="button" class="dash-btn dash-small" id="b-edit-presets">${editPresets ? 'Done' : 'Edit one-taps'}</button>`;
+  }
+  $('b-presets').addEventListener('click', async e => {
+    if (e.target.closest('#b-edit-presets')) { editPresets = !editPresets; return drawPresets(null); }
+    const del = e.target.closest('[data-preset-del]');
+    if (del && !confirm('Delete this one-tap banner?')) return;
+    if (del) { presets.splice(Number(del.dataset.presetDel), 1); await api('site', { what: 'presets', presets }); return loaders.site(); }
+    const b = e.target.closest('[data-preset]'); if (!b) return;
+    const p = presets[Number(b.dataset.preset)];
+    const { data } = await api('site', { what: 'banner', text: p.text, link: p.link, until: p.hours ? Date.now() + p.hours * 3600000 : null });
+    flash($('banner-msg'), data.error || 'Banner is up on every page.'); loaders.site();
+  });
+  $('b-save-preset').addEventListener('click', async () => {
+    const t = $('b-text').value.trim(); if (!t) return flash($('banner-msg'), 'Type a message first.');
+    const until = fromLocal($('b-until').value), hours = until && until > Date.now() ? Math.round((until - Date.now()) / 3600000) : 0;
+    const { data } = await api('site', { what: 'presets', presets: [...presets, { text: t, link: $('b-link').value, hours }] });
+    flash($('banner-msg'), data.error || 'Saved as a one-tap banner.'); loaders.site();
   });
   const updatePreview = () => { const m = $('l-mode').value; $('l-preview').href = m === 'auto' ? '/' : `/?season=${encodeURIComponent(m)}`; };
   $('l-mode').addEventListener('change', updatePreview);

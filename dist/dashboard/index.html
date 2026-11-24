@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=78">
+  <link rel="stylesheet" href="/styles.css?v=79">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -327,6 +327,8 @@
       <div data-panel="site" hidden>
         <section class="dash-card dash-card-banner" aria-labelledby="banner-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Every page</p><h2 id="banner-h">Site banner</h2></div><span class="dash-chip" id="banner-chip"><span class="dash-dot" aria-hidden="true"></span><span id="banner-chip-text">Off</span></span></div>
+          <p class="dash-label-like">One tap</p>
+          <div class="dash-presets" id="b-presets"></div>
           <form id="banner-form">
             <label for="b-text">Message</label>
             <input id="b-text" maxlength="140" placeholder="No stream tonight, back Friday at 8 PM!">
@@ -334,7 +336,7 @@
             <input id="b-link" maxlength="200" placeholder="/#schedule">
             <label for="b-until">Show until <span>(optional)</span></label>
             <input id="b-until" type="datetime-local">
-            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Show banner</button><button type="button" class="dash-btn" id="b-clear">Turn banner off</button></div>
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Show banner</button><button type="button" class="dash-btn" id="b-clear">Turn banner off</button><button type="button" class="dash-btn" id="b-save-preset">Save as one-tap</button></div>
             <p class="dash-msg" id="banner-msg" role="status"></p>
           </form>
         </section>
@@ -423,6 +425,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=16" defer></script>
+  <script src="/dashboard.js?v=17" defer></script>
 </body>
 </html>
