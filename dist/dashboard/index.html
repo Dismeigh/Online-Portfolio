@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=86">
+  <link rel="stylesheet" href="/styles.css?v=87">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -89,6 +89,11 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">Private</p><h2 id="stats-h">Site stats</h2></div><button type="button" class="dash-btn dash-small" data-refresh="stats">Refresh</button></div>
           <div id="stats-body"><p class="dash-note">Loading&hellip;</p></div>
           <p class="dash-hint">Page views are counted per page per day only. Nothing about who visited is kept.</p>
+        </section>
+        <section class="dash-card dash-card-health" aria-labelledby="hl-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Ship systems</p><h2 id="hl-h">Site health</h2></div><button type="button" class="dash-btn dash-small" id="hl-refresh">Check now</button></div>
+          <ul class="dash-health" id="hl-body"><li class="dash-note">Checking&hellip;</li></ul>
+          <p class="dash-hint" id="hl-note"></p>
         </section>
         <section class="dash-card dash-card-activity" aria-labelledby="act-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Last 30 days</p><h2 id="act-h">Activity</h2></div><button type="button" class="dash-btn dash-small" id="act-refresh">Refresh</button></div>
@@ -319,6 +324,7 @@
             <label><input type="checkbox" value="kofi" checked> <span>Ko-fi tips and payments <small>(amount only)</small></span></label>
             <label><input type="checkbox" value="goal" checked> <span>Goal milestones <small>(25, 50, 75, 100%)</small></span></label>
             <label><input type="checkbox" value="login" checked> <span>Failed dashboard logins <small>(at most every 10 min)</small></span></label>
+            <label><input type="checkbox" value="health" checked> <span>Something on the site breaks <small>(YouTube feed, stream calendar, Twitch check)</small></span></label>
             <label><input type="checkbox" value="recap" checked> <span>Weekly recap <small>(Monday mornings: views, visitors, log signs, tips, arcade plays)</small></span></label>
           </fieldset>
           <div class="dash-actions">
@@ -450,6 +456,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=23" defer></script>
+  <script src="/dashboard.js?v=24" defer></script>
 </body>
 </html>

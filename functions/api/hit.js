@@ -3,6 +3,7 @@
 import { sameOrigin } from '../../lib/arcade.js';
 import { statsTables, countView, countSource, siteStats } from '../../lib/stats.js';
 import { maybeWeeklyRecap } from '../../lib/push.js';
+import { maybeHealthCheck } from '../../lib/health.js';
 export async function onRequestPost({ request, env, waitUntil }) {
   if (!env.ARCADE || !sameOrigin(request)) return new Response(null, { status: 204 });
   try {
@@ -10,7 +11,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
     let p = '/', r = null; try { ({ p, r } = JSON.parse(body)); } catch {}
     await statsTables(env.ARCADE); await countView(env.ARCADE, p);
     if (r) await countSource(env.ARCADE, r);
-    const recap = maybeWeeklyRecap(env, siteStats);
+    const recap = Promise.all([maybeWeeklyRecap(env, siteStats), maybeHealthCheck(env)]);
     if (waitUntil) waitUntil(recap); else await recap;
   } catch {}
   return new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } });

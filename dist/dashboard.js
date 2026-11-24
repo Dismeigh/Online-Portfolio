@@ -195,6 +195,17 @@
   });
 
   // ---------- Overview: site stats ----------
+  // Site health lights
+  const HL = { ok: 'Working', warn: 'Heads up', down: 'Down' };
+  async function loadHealth() {
+    $('hl-body').innerHTML = '<li class="dash-note">Checking&hellip;</li>';
+    const { data } = await api('health');
+    $('hl-body').innerHTML = (data.checks || []).map(c => `<li class="hl-${esc(c.state)}"><span class="hl-dot" aria-hidden="true"></span><div><b>${esc(c.name)}</b> <span class="hl-state">${HL[c.state] || ''}</span><p>${esc(c.detail)}</p></div></li>`).join('');
+    const bad = (data.checks || []).filter(c => c.state === 'down').length;
+    $('hl-note').textContent = `${bad ? `${bad} thing${bad === 1 ? ' is' : 's are'} down. ` : ''}The site also checks itself every 30 minutes and can alert your phone (Alerts tab).`;
+  }
+  $('hl-refresh').addEventListener('click', loadHealth);
+
   // Activity feed
   let acts = [], actK = 'all';
   const ICON = { log: '\u270e', kofi: '$', arcade: '\u2605', secret: '?' };
@@ -208,7 +219,7 @@
     actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
   }));
   loaders.overview = async () => {
-    loadActs();
+    loadActs(); loadHealth();
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
     const pageName = p => ({ '/': 'Home', other: 'Other' }[p] || p.replace(/\//g, ' ').trim().replace(/^\w/, c => c.toUpperCase()));
@@ -681,7 +692,7 @@
   // ---------- Phone alerts (Web Push) ----------
   const alertKinds = () => [...document.querySelectorAll('#al-kinds input:checked')].map(i => i.value);
   const deviceName = () => { const u = navigator.userAgent; return /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? 'Android phone' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows PC' : 'Device'; };
-  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins', recap: 'Weekly recap' };
+  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins', recap: 'Weekly recap', health: 'Site health' };
   const toKey = s => { const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4)); return Uint8Array.from(b, c => c.charCodeAt(0)); };
   let pushKey = '', mySub = null;
   const pushOk = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;

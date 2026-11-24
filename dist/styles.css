@@ -2933,3 +2933,16 @@ html:has(.dash-body) { background: var(--ink); }
 .feed-ic { display: grid; place-items: center; width: 2rem; height: 2rem; border: 2px solid currentColor; font-family: var(--display); font-size: 1rem; }
 .feed-log .feed-ic { color: var(--teal); } .feed-kofi .feed-ic { color: var(--mustard); } .feed-arcade .feed-ic { color: #d85fa0; } .feed-secret .feed-ic { color: #8fb8ff; }
 .dash-feed .dash-meta { display: block; margin-top: 0.1rem; }
+
+/* Dashboard site health */
+.dash-health { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+@media (min-width: 760px) { .dash-health { grid-template-columns: 1fr 1fr; } }
+.dash-health li { display: grid; grid-template-columns: 1rem minmax(0, 1fr); gap: 0.7rem; align-items: start; padding: 0.7rem 0.8rem; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.25); }
+.dash-health b { color: var(--paper); }
+.dash-health p { margin: 0.15rem 0 0; color: var(--paper-dim); font-size: 0.92rem; overflow-wrap: anywhere; }
+.hl-dot { width: 0.9rem; height: 0.9rem; margin-top: 0.3rem; border-radius: 50%; background: #6fbf73; box-shadow: 0 0 8px #6fbf73; }
+.hl-warn .hl-dot { background: var(--mustard); box-shadow: 0 0 8px var(--mustard); }
+.hl-down .hl-dot { background: #e0604a; box-shadow: 0 0 8px #e0604a; }
+.hl-state { font-family: var(--typed); font-size: 0.85rem; color: #8fd393; }
+.hl-warn .hl-state { color: var(--mustard); } .hl-down .hl-state { color: #f08a75; }
+.hl-down { border-color: #e0604a !important; }
