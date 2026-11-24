@@ -752,7 +752,12 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       // Where they came from: just the other site's name, once per visit (not when clicking around this site)
       let r = null;
       try {
-        if (!sessionStorage.getItem('dm-src')) {
+        const qs = new URLSearchParams(location.search);
+        if (qs.get('src') === 'card') {
+          // Scanned from the business card QR: count it once, then drop ?src=card so shared links don't count as scans
+          r = 'qr-card'; sessionStorage.setItem('dm-src', '1');
+          qs.delete('src'); history.replaceState(history.state, '', location.pathname + (qs.toString() ? `?${qs}` : '') + location.hash);
+        } else if (!sessionStorage.getItem('dm-src')) {
           const ref = document.referrer ? new URL(document.referrer).hostname : '';
           if (ref !== location.hostname) { r = ref || 'direct'; sessionStorage.setItem('dm-src', '1'); }
         }

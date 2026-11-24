@@ -2994,3 +2994,9 @@ html:has(.dash-body) { background: var(--ink); }
 .rate-status { margin: 0 0 0 0.5rem; padding: 0.1rem 0.6rem; font-size: 0.8rem; vertical-align: 0.1em; letter-spacing: 0; text-transform: none; }
 .rate-status[hidden] { display: none; }
 .rate-status b { font-size: 0.95rem; }
+
+/* Dashboard: business card QR */
+.dash-qr-wrap { display: grid; gap: 0.5rem; justify-items: start; margin: 1rem 0 0.4rem; }
+.dash-qr { width: min(220px, 100%); line-height: 0; }
+.dash-qr svg { width: 100%; height: auto; display: block; }
+#qr-url { overflow-wrap: anywhere; }

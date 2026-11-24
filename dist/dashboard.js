@@ -629,6 +629,47 @@
     try { await navigator.clipboard.writeText(`${location.origin}/overlay/?w=${b.dataset.ovl}`); flash($('ovl-msg'), 'Copied. Paste it into an OBS Browser source.'); } catch { flash($('ovl-msg'), 'Couldn\u2019t copy. Press and hold the link to copy it.'); }
   });
 
+  // ---------- Business card QR ----------
+  // Everything is drawn in the browser. The link is built only from the fixed page list, never from typed text.
+  const QR_PAGES = ['/', '/work/', '/voice/'];
+  const qrUrl = () => { const pg = QR_PAGES.includes($('qr-page').value) ? $('qr-page').value : '/'; return `https://denizen-dismeigh.com${pg}${$('qr-count').checked ? '?src=card' : ''}`; };
+  const qrPrefs = () => { try { return JSON.parse(localStorage.getItem('dm-qr') || '{}'); } catch { return {}; } };
+  (p => { if (QR_PAGES.includes(p.page)) $('qr-page').value = p.page; if (typeof p.count === 'boolean') $('qr-count').checked = p.count; if (typeof p.l1 === 'string') $('qr-line1').value = p.l1.slice(0, 40); if (typeof p.l2 === 'string') $('qr-line2').value = p.l2.slice(0, 40); })(qrPrefs());
+  const qrDraw = () => {
+    const url = qrUrl();
+    $('qr-url').textContent = url;
+    $('qr-box').innerHTML = window.dismeighQrSvg ? window.dismeighQrSvg(url, 'H', 'QR code that opens denizen-dismeigh.com') : '';
+    try { localStorage.setItem('dm-qr', JSON.stringify({ page: $('qr-page').value, count: $('qr-count').checked, l1: $('qr-line1').value, l2: $('qr-line2').value })); } catch {}
+  };
+  $('qr-form').addEventListener('input', qrDraw); $('qr-form').addEventListener('change', qrDraw); $('qr-form').addEventListener('submit', e => e.preventDefault());
+  qrDraw();
+  const qrPaint = (ctx, x, y, size) => {
+    const m = window.dismeighQrMatrix(qrUrl(), 'H'), q = 4, cell = size / (m.n + q * 2);
+    ctx.fillStyle = '#fff'; ctx.fillRect(x, y, size, size); ctx.fillStyle = '#000';
+    for (let r = 0; r < m.n; r++) for (let c = 0; c < m.n; c++) if (m.dark(r, c)) ctx.fillRect(Math.floor(x + (c + q) * cell), Math.floor(y + (r + q) * cell), Math.ceil(cell), Math.ceil(cell));
+  };
+  const qrSave = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
+  const qrCanvas = (w, h) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; return [cv, cv.getContext('2d')]; };
+  const qrDone = (cv, name) => cv.toBlob(b => { if (b) { qrSave(b, name); flash($('qr-msg'), 'Downloaded.'); } else flash($('qr-msg'), 'Couldn’t make the image. Try another browser.'); }, 'image/png');
+  $('qr-png').addEventListener('click', () => { if (!window.dismeighQrMatrix) return; const [cv, ctx] = qrCanvas(1200, 1200); qrPaint(ctx, 0, 0, 1200); qrDone(cv, 'dismeigh-qr.png'); });
+  $('qr-svg').addEventListener('click', () => { if (!window.dismeighQrSvg) return; qrSave(new Blob([window.dismeighQrSvg(qrUrl(), 'H', 'QR code that opens denizen-dismeigh.com')], { type: 'image/svg+xml' }), 'dismeigh-qr.svg'); flash($('qr-msg'), 'Downloaded.'); });
+  $('qr-card').addEventListener('click', async () => {
+    if (!window.dismeighQrMatrix) return;
+    try { await Promise.all([document.fonts.load('80px Anton'), document.fonts.load('32px "Work Sans"'), document.fonts.load('600 32px "Work Sans"')]); } catch {}
+    const W = 1050, H = 600, [cv, ctx] = qrCanvas(W, H), fit = (t, max, font) => { ctx.font = font; let s = String(t); while (s && ctx.measureText(s).width > max) s = s.slice(0, -1); return s; };
+    ctx.fillStyle = '#141414'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#e0a526'; ctx.fillRect(0, 0, 18, H);
+    qrPaint(ctx, W - 440 - 50, 80, 440);
+    const tx = 64, max = W - 440 - 50 - tx - 30;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#e0a526'; ctx.fillText(fit('DISMEIGH', max, '84px Anton, Impact, sans-serif'), tx, 225);
+    ctx.fillStyle = '#eeeeee'; ctx.fillText(fit($('qr-line1').value, max, '30px "Work Sans", sans-serif'), tx, 290);
+    ctx.fillText(fit($('qr-line2').value, max, '30px "Work Sans", sans-serif'), tx, 336);
+    ctx.fillStyle = '#4fb3a9'; ctx.fillText(fit('denizen-dismeigh.com', max, '600 30px "Work Sans", sans-serif'), tx, 450);
+    ctx.fillStyle = '#9a9a9a'; ctx.fillText(fit('Scan to visit →', max, '24px "Work Sans", sans-serif'), tx, 494);
+    qrDone(cv, 'dismeigh-business-card.png');
+  });
+
   // ---------- Backup and restore ----------
   const saveFile = (obj, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
   $('bk-form').addEventListener('submit', async e => {

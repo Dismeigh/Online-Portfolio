@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=92">
+  <link rel="stylesheet" href="/styles.css?v=93">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -414,6 +414,34 @@
           <ul class="dash-list" id="ovl-list"></ul>
           <p class="dash-msg" id="ovl-msg" role="status"></p>
         </section>
+        <section class="dash-card dash-card-qr" aria-labelledby="qr-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Business card</p><h2 id="qr-h">QR code</h2></div></div>
+          <p class="dash-note">Scanning it opens your site. Made right here in your browser, nothing is sent to an outside QR service.</p>
+          <form id="qr-form">
+            <label for="qr-page">Opens</label>
+            <select id="qr-page">
+              <option value="/">Home page</option>
+              <option value="/work/">Work page (websites and Discord servers)</option>
+              <option value="/voice/">Voice page</option>
+            </select>
+            <fieldset class="dash-checks">
+              <legend>Scans</legend>
+              <label><input type="checkbox" id="qr-count" checked> <span>Count scans <small>(shows as &ldquo;Business card QR&rdquo; in Where visitors come from)</small></span></label>
+            </fieldset>
+            <label for="qr-line1">Card line 1</label>
+            <input id="qr-line1" maxlength="40" value="Streamer &middot; VTuber">
+            <label for="qr-line2">Card line 2</label>
+            <input id="qr-line2" maxlength="40" value="Websites &amp; Discord servers">
+          </form>
+          <div class="dash-qr-wrap"><div class="dash-qr" id="qr-box"></div><code class="dash-code" id="qr-url"></code></div>
+          <div class="dash-actions">
+            <button type="button" class="dash-btn dash-primary" id="qr-card">Download card</button>
+            <button type="button" class="dash-btn" id="qr-png">QR as PNG</button>
+            <button type="button" class="dash-btn" id="qr-svg">QR as SVG</button>
+          </div>
+          <p class="dash-note">The card is business-card size (3.5 &times; 2 in) at print quality. The SVG stays sharp at any size, for stickers or banners.</p>
+          <p class="dash-msg" id="qr-msg" role="status"></p>
+        </section>
         <section class="dash-card dash-card-backup" aria-labelledby="bk-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Just in case</p><h2 id="bk-h">Backup and restore</h2></div></div>
           <p class="dash-note">One file with everything you&rsquo;ve typed in here: content, site settings, Ko-fi goals, arcade targets, notes and Ship&rsquo;s Log entries. No passwords, login codes or visitor info.</p>
@@ -462,7 +490,7 @@
       </div>
     </div>
   </main>
-  <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=26" defer></script>
+  <script src="/qr.js?v=2" defer></script>
+  <script src="/dashboard.js?v=27" defer></script>
 </body>
 </html>
