@@ -3173,3 +3173,6 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-help-item p { margin: 0 0 0.9rem; color: var(--paper-dim); line-height: 1.55; }
 .dash-help-item b { color: var(--paper); }
 .dash-help-item[hidden], .dash-help h3[hidden] { display: none; }
+
+/* Bigger tap area on video titles */
+.yt-card h4 a { display: inline-block; padding: 0.2rem 0; }

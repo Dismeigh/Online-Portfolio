@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=102">
+  <link rel="stylesheet" href="styles.css?v=103">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -1237,7 +1237,7 @@
           play.className = 'yt-thumb';
           play.setAttribute('aria-label', `Play: ${v.title}`);
           const img = document.createElement('img');
-          img.src = v.thumb; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+          img.src = v.thumb; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.width = 480; img.height = 360;
           play.append(img);
           const badge = document.createElement('span');
           badge.className = 'yt-badge';
