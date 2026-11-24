@@ -250,6 +250,27 @@
   // Secret: visit between 3 and 4 in the morning (your own time)
   if (new Date().getHours() === 3) setTimeout(() => window.dismeighUnlock('nightowl'), 2000);
 
+  // "What's new" dot: shows on the menu button and the What's new link when there's a post this visitor hasn't seen.
+  // It goes away when they open /new/, or on its own 14 days after the newest post.
+  (() => {
+    const more = document.querySelector('.nav-more'), link = document.querySelector('.nav-new-link');
+    if (!more || !link) return;
+    const show = latest => {
+      let seen = ''; try { seen = localStorage.getItem('dm-seen-new') || ''; } catch {}
+      const fresh = latest && latest > seen && Date.now() - Date.parse(`${latest}T12:00:00`) < 14 * 86400000 && location.pathname !== '/new/';
+      more.classList.toggle('has-new', !!fresh); link.classList.toggle('has-new', !!fresh);
+      if (fresh) link.setAttribute('aria-label', 'What’s new (new update)'); else link.removeAttribute('aria-label');
+    };
+    window.dismeighNewSeen = () => show('');
+    let cached = null; try { cached = JSON.parse(sessionStorage.getItem('dm-new-latest') || 'null'); } catch {}
+    if (cached && Date.now() - cached.at < 30 * 60000) return show(cached.date);
+    fetch('/api/content/updates').then(r => (r.ok ? r.json() : null)).then(d => {
+      const date = d?.updates?.[0]?.date || '';
+      try { sessionStorage.setItem('dm-new-latest', JSON.stringify({ date, at: Date.now() })); } catch {}
+      show(date);
+    }).catch(() => {});
+  })();
+
   // Haptic buzz on Android phones (iPhones don't allow websites to vibrate)
   function buzz(pattern) {
     try { if (!reduceMotion && navigator.vibrate) navigator.vibrate(pattern); } catch {}
@@ -472,6 +493,8 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     ['Wallpapers', '/wallpapers/', 'Page', 'Free phone wallpapers with Dismeigh\u2019s art.', 'wallpaper wallpapers lock screen background download free phone'],
     ['Wanted poster maker', '/wallpapers/#poster', 'Page', 'Make your own Bebop-style wanted poster.', 'wanted poster maker bounty profile picture pfp woolongs make generator'],
     ['Ask the Captain', '/ask/', 'Page', 'Send Dismeigh a question and read the answers.', 'ask question questions q&a qa answer captain faq'],
+    ['What\u2019s new', '/new/', 'Page', 'The latest upgrades to the site.', 'new whats news updates changelog changes latest'],
+    ['Car meets', '/garage/#meets', 'Page', 'Where the Sojourn ST will be next.', 'car meet meets meetup event cars and coffee show'],
     ['Secret hints', '/secrets/', 'Page', 'Clues for the hidden secrets around the site.', 'secret secrets hint hints achievements easter eggs clue clues license bounty hunter'],
     ['Ship map', '/map/', 'Page', 'A deck plan of the ship: every room is a page.', 'map ship deck plan rooms directory sitemap navigate'],
     ['Clip of the Month', '/#highlights', 'Page', 'Vote for your favorite home page clip.', 'clip of the month vote voting favorite clips'],

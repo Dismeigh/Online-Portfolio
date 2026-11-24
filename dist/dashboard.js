@@ -331,6 +331,14 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    meets: { note: 'Car meets on the Garage page. Past ones hide themselves the day after. Use the meet\u2019s public spot or city, never your home.', fields: [
+      F('name', 'Meet', 'text', { max: 80, required: true }), F('date', 'Date', 'date', { required: true }), F('time', 'Time (like 18:30, optional)', 'text', { max: 5 }),
+      F('place', 'Where (venue or city)', 'text', { max: 80 }), F('link', 'Event link (https://..., optional)', 'text', { max: 300 }), F('note', 'Note (optional)', 'text', { max: 160 }),
+    ] },
+    updates: { note: 'The What\u2019s new page. Visitors see a small \u201cNew\u201d dot in the menu until they open the page, and it goes away on its own 2 weeks after your newest post.', fields: [
+      F('date', 'Date', 'date', { required: true }), F('title', 'Title', 'text', { max: 80, required: true }), F('text', 'What changed', 'textarea', { max: 400 }),
+      F('link', 'Link (like /garage/, optional)', 'text', { max: 120 }),
+    ] },
     collabs: { note: 'Past collabs on the press kit page: who you worked with and what you made together. Newest first looks best.', fields: [
       F('name', 'Who (name or channel)', 'text', { max: 60, required: true }), F('link', 'Their link (https://...)', 'text', { max: 300 }),
       F('what', 'What you did', 'text', { max: 120 }), F('when', 'When (like Oct 2026)', 'text', { max: 30 }),
@@ -360,7 +368,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');

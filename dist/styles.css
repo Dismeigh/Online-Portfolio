@@ -3479,3 +3479,38 @@ html:has(.dash-body) { background: var(--ink); }
 .sh-stamp { display: none; position: absolute; top: 0.8rem; right: 0.8rem; margin: 0; padding: 0.1rem 0.5rem; border: 3px solid var(--red); color: var(--red); font-family: var(--display); font-size: 1.1rem; letter-spacing: 0.06em; text-transform: uppercase; transform: rotate(8deg); }
 .sh-card.is-found .sh-stamp { display: block; }
 .footer-secrets a { color: var(--mustard); margin-left: 0.2rem; }
+
+/* Ship's Log stamps */
+.log-stamps { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.log-stamp-pick { min-width: 2.75rem; min-height: 2.75rem; padding: 0 0.5rem; border: 3px solid var(--ink); background: #fffaf0; color: var(--ink); font: inherit; font-size: 1.3rem; cursor: pointer; }
+.log-stamp-pick[data-stamp=""] { font-size: 0.85rem; font-family: var(--typed); }
+.log-stamp-pick[aria-pressed="true"] { background: var(--mustard); box-shadow: 3px 3px 0 var(--red); }
+.log-stamp-pick:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.log-stamp { display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; margin-right: 0.45rem; border: 2px solid var(--mustard); border-radius: 50%; font-size: 0.95rem; vertical-align: middle; transform: rotate(-8deg); }
+
+/* Garage: car meets */
+.meets-lede { max-width: 40rem; color: var(--paper-dim); }
+.meets-list { list-style: none; margin: 1.2rem 0 0; padding: 0; display: grid; gap: 0.9rem; max-width: 44rem; }
+.meet { display: flex; gap: 1rem; align-items: flex-start; padding: 0.9rem 1rem; background: var(--ink-2); border-left: 5px solid var(--mustard); }
+.meet.is-today { border-left-color: var(--red); }
+.meet-date { flex: none; display: grid; justify-items: center; width: 4.2rem; margin: 0; padding: 0.4rem 0; background: var(--paper); color: var(--ink); box-shadow: 4px 4px 0 var(--red); }
+.meet-mon, .meet-dow { font-family: var(--typed); font-size: 0.8rem; text-transform: uppercase; }
+.meet-day { font-family: var(--display); font-weight: 400; font-size: 1.8rem; line-height: 1; }
+.meet-body h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.4rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--paper); }
+.split-main .meet-where, .meet-where { margin: 0.2rem 0 0; font-family: var(--typed); color: var(--mustard); }
+.split-main .meet-note, .meet-note { margin: 0.3rem 0 0; color: var(--paper); }
+.meet-link { display: inline-flex; align-items: center; min-height: 2.25rem; margin-top: 0.2rem; color: var(--mustard); }
+.meet-today { display: inline-block; margin: 0 0 0.3rem; padding: 0.05rem 0.5rem; background: var(--red); color: var(--paper); font-family: var(--typed); font-size: 0.8rem; text-transform: uppercase; }
+
+/* What's new */
+.nav-more.has-new, .nav-new-link.has-new { position: relative; }
+.nav-more.has-new::after, .nav-new-link.has-new::after { content: ""; position: absolute; top: 0.35rem; right: -0.15rem; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 2px var(--ink); }
+.nav-new-link.has-new::after { position: static; display: inline-block; margin-left: 0.45rem; vertical-align: middle; }
+.new-list { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; gap: 1rem; max-width: 44rem; }
+.new-item { padding: 0.9rem 1.1rem; background: var(--ink-2); border-left: 5px solid var(--teal); }
+.new-item.is-fresh { border-left-color: var(--red); }
+.new-date { font-family: var(--typed); font-size: 0.85rem; color: var(--paper-dim); }
+.new-title { margin: 0.2rem 0 0.3rem; font-family: var(--display); font-weight: 400; font-size: 1.5rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--mustard); }
+.split-main .new-text { margin: 0; color: var(--paper); }
+.new-link { display: inline-flex; align-items: center; min-height: 2.25rem; margin-top: 0.2rem; color: var(--mustard); }
+.split-main .meet-date, .split-main .meet-date span, .split-main .meet-date b { color: var(--ink); }

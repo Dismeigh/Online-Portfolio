@@ -12,27 +12,29 @@ export async function ensureTable(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS log_reactions (entry_id INTEGER NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (entry_id, kind))'),
     db.prepare('CREATE TABLE IF NOT EXISTS log_reacted (entry_id INTEGER NOT NULL, visitor TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (entry_id, visitor))'),
   ]);
+  try { await db.prepare("ALTER TABLE guestbook ADD COLUMN stamp TEXT NOT NULL DEFAULT ''").run(); } catch {}  // already there
   ready = true;
 }
+export const STAMPS = ['rocket', 'cowboy', 'wrench', 'car', 'controller', 'moon', 'star', 'alien', 'mic', 'coffee'];
 // Entries expire after 60 days unless pinned (pinned = 1 keeps one forever and puts it on top).
 export const KEEP_DAYS = 60;
 const cutoff = () => Date.now() - KEEP_DAYS * 86400000;
 export const REACTIONS = ['fire', 'lol', 'rocket', 'cowboy'];
 export const latest = async db => {
   const rows = (await db.prepare(
-    'SELECT id, name, message, created_at, pinned FROM guestbook WHERE hidden = 0 AND (pinned = 1 OR created_at > ?) ORDER BY pinned DESC, created_at DESC LIMIT 50').bind(cutoff()).all()).results;
+    'SELECT id, name, message, created_at, pinned, stamp FROM guestbook WHERE hidden = 0 AND (pinned = 1 OR created_at > ?) ORDER BY pinned DESC, created_at DESC LIMIT 50').bind(cutoff()).all()).results;
   const counts = {};
   if (rows.length) {
     const r = await db.prepare(`SELECT entry_id, kind, n FROM log_reactions WHERE entry_id IN (${rows.map(() => '?').join(',')})`).bind(...rows.map(x => x.id)).all();
     for (const x of r.results) (counts[x.entry_id] ||= {})[x.kind] = x.n;
   }
-  return rows.map(r => ({ id: r.id, name: r.name, message: r.message, at: new Date(r.created_at).toISOString(), pinned: !!r.pinned, reactions: counts[r.id] || {} }));
+  return rows.map(r => ({ id: r.id, name: r.name, message: r.message, at: new Date(r.created_at).toISOString(), pinned: !!r.pinned, stamp: STAMPS.includes(r.stamp) ? r.stamp : '', reactions: counts[r.id] || {} }));
 };
 
 // GET /api/log -> { entries: [{ id, name, message, at, pinned }] } (pinned first, then newest, up to 50)
 export const onRequestGet = guard(async ({ env }) => { await ensureTable(env.ARCADE); return json({ entries: await latest(env.ARCADE) }); });
 
-// POST /api/log { name, message, elapsed, website } -> { ok, entries }
+// POST /api/log { name, message, stamp, elapsed, website } -> { ok, entries }
 export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   if (!sameOrigin(request)) return json({ error: 'Not allowed.' }, 403);
   const db = env.ARCADE; await ensureTable(db);
@@ -46,7 +48,7 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   const recent = await db.prepare('SELECT COUNT(*) AS day, MAX(created_at) AS last FROM guestbook WHERE ip = ? AND created_at > ?').bind(ip, now - 86400000).first();
   if (recent?.last && now - recent.last < 60000) return json({ error: 'One entry a minute, captain. Try again shortly.' }, 429);
   if ((recent?.day || 0) >= 5) return json({ error: 'That’s plenty of log entries for today. Come back tomorrow!' }, 429);
-  await db.prepare('INSERT INTO guestbook (name, message, ip, created_at) VALUES (?, ?, ?, ?)').bind(n.name, m.message, ip, now).run();
+  await db.prepare('INSERT INTO guestbook (name, message, ip, created_at, stamp) VALUES (?, ?, ?, ?, ?)').bind(n.name, m.message, ip, now, STAMPS.includes(body?.stamp) ? body.stamp : '').run();
   const job = alert(env, 'log', { title: 'New Ship\u2019s Log entry', body: `${n.name}: ${m.message.slice(0, 120)}`, tab: 'guestbook' });
   if (waitUntil) waitUntil(job); else await job;
   // Now and then, clear out expired entries for good (pinned ones stay)

@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=117">
+  <link rel="stylesheet" href="/styles.css?v=118">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "The Garage", "item": "https://www.denizen-dismeigh.com/garage/"}]}</script>
 </head>
@@ -140,6 +140,7 @@
       <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
     </nav>
     <div class="nav-menu" id="nav-menu" hidden>
+      <a href="/new/" class="nav-new-link">What&rsquo;s new</a>
       <a href="/#support-heading">Support &amp; Shop</a>
       <a href="/guide/">New Viewer Guide</a>
       <a href="/map/">Ship map</a>
@@ -246,6 +247,13 @@
             </section>
           </div>
         </article>
+      </section>
+
+      <section id="meets" class="content-section meets-section sweep" aria-labelledby="meets-heading" hidden>
+        <div class="section-kicker"><span>Out on the road</span> Car meets</div>
+        <h2 id="meets-heading">Where the ST will be</h2>
+        <p class="meets-lede">Come say hi. If you spot the Sojourn ST at a meet, that&rsquo;s your chance at a secret.</p>
+        <ul class="meets-list" id="meets-list"></ul>
       </section>
 
       <section id="launch-control" class="content-section launch-section sweep" aria-labelledby="launch-heading">
@@ -368,7 +376,7 @@
       <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
       <p class="footer-est">Est. June 10, 2021</p>
-      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/ask/">Ask the Captain</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/ask/">Ask the Captain</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/new/">What&rsquo;s new</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -449,6 +457,24 @@
       io.observe(bar);
     };
     buildMeter();
+    // Car meets (dashboard: Content, Car meets). Past ones drop off the day after.
+    fetch('/api/content/meets').then(r => (r.ok ? r.json() : null)).then(d => {
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+      const list = (d?.meets || []).filter(m => m.date >= today).slice(0, 8); if (!list.length) return;
+      const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+      document.getElementById('meets-list').replaceChildren(...list.map(m => {
+        const li = el('li', 'meet'), dt = new Date(`${m.date}T12:00:00`);
+        const cal = el('p', 'meet-date'); cal.append(el('span', 'meet-mon', dt.toLocaleDateString('en-US', { month: 'short' })), el('b', 'meet-day', String(dt.getDate())), el('span', 'meet-dow', dt.toLocaleDateString('en-US', { weekday: 'short' })));
+        const body = el('div', 'meet-body'), h = el('h3', '', m.name); body.append(h);
+        const bits = [m.time ? new Date(`2000-01-01T${m.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }).replace(':00', '') : '', m.place].filter(Boolean).join(' \u00b7 ');
+        if (bits) body.append(el('p', 'meet-where', bits));
+        if (m.note) body.append(el('p', 'meet-note', m.note));
+        if (/^https:\/\//.test(m.link || '')) { const a = el('a', 'meet-link', 'Event details'); a.href = m.link; a.target = '_blank'; a.rel = 'noopener noreferrer nofollow'; body.append(a); }
+        if (m.date === today) li.classList.add('is-today'), body.prepend(el('p', 'meet-today', 'Today'));
+        li.append(cal, body); return li;
+      }));
+      document.getElementById('meets').hidden = false;
+    }).catch(() => {});
     fetch('/api/content/garage').then(r => (r.ok ? r.json() : null)).then(d => {
       const list = d?.garage; if (!Array.isArray(list) || !list.length) return;
       const fill = (sel, st) => { const ul = document.querySelector(`${sel} ul`); ul.replaceChildren(...list.filter(m => m.status === st).map(m => { const li = document.createElement('li'); li.textContent = m.name; return li; })); };
@@ -473,7 +499,7 @@
   }
   </script>
   <script src="/drag-race.js?v=40" defer></script>
-  <script src="/app.js?v=64" defer></script>
+  <script src="/app.js?v=65" defer></script>
   <script src="/goal.js?v=2" defer></script>
 </body>
 </html>

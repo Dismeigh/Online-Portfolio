@@ -8,12 +8,17 @@
     if (s < 7 * 86400) return `${Math.floor(s / 86400)}d ago`;
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: d.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' });
   };
+  // Stamps visitors can sign with (keys match functions/api/log/index.js)
+  const STAMPS = { rocket: ['\u{1F680}', 'Rocket'], cowboy: ['\u{1F920}', 'Space cowboy'], wrench: ['\u{1F527}', 'Wrench'], car: ['\u{1F3CE}\uFE0F', 'Race car'], controller: ['\u{1F3AE}', 'Controller'],
+    moon: ['\u{1F319}', 'Moon'], star: ['\u2B50', 'Star'], alien: ['\u{1F47E}', 'Space invader'], mic: ['\u{1F399}\uFE0F', 'Mic'], coffee: ['\u2615', 'Coffee'] };
+  window.dismeighLogStamps = STAMPS;
   const render = (list, entries, emptyEl, emptyText, limit) => {
     const rows = entries.slice(0, limit);
     list.replaceChildren(...rows.map(e => {
       const li = document.createElement('li'); li.className = `log-entry${e.pinned ? ' is-pinned' : ''}`;
       const head = document.createElement('p'); head.className = 'log-entry-head';
       const name = document.createElement('strong'); name.textContent = e.name;
+      if (STAMPS[e.stamp]) { const st = document.createElement('span'); st.className = 'log-stamp'; st.textContent = STAMPS[e.stamp][0]; st.title = STAMPS[e.stamp][1]; st.setAttribute('aria-hidden', 'true'); name.prepend(st); }
       const when = document.createElement('time'); when.dateTime = e.at; when.textContent = fmt(e.at);
       if (e.pinned) { const tag = document.createElement('span'); tag.className = 'log-pin'; tag.textContent = 'Pinned'; head.append(name, tag); }
       else head.append(name, when);
@@ -68,6 +73,16 @@
     const nameIn = document.getElementById('log-name'), msgIn = document.getElementById('log-message'), trap = document.getElementById('log-website');
     const msg = document.getElementById('log-msg'), btn = document.getElementById('log-submit'), count = document.getElementById('log-count');
     const shownAt = Date.now();
+    const picker = document.getElementById('log-stamps');
+    let stamp = ''; try { stamp = localStorage.getItem('dm-log-stamp') || ''; } catch {}
+    if (picker) {
+      picker.replaceChildren(...['', ...Object.keys(STAMPS)].map(k => {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.stamp = k; b.className = 'log-stamp-pick';
+        b.textContent = k ? STAMPS[k][0] : 'None'; b.setAttribute('aria-label', k ? STAMPS[k][1] : 'No stamp'); b.setAttribute('aria-pressed', String(k === stamp));
+        return b;
+      }));
+      picker.addEventListener('click', e => { const b = e.target.closest('[data-stamp]'); if (!b) return; stamp = b.dataset.stamp; picker.querySelectorAll('[data-stamp]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
+    }
     try { nameIn.value = localStorage.getItem('dismeigh-arcade-name') || ''; } catch {}
     const updateCount = () => { count.textContent = `${[...msgIn.value].length} / 140`; };
     msgIn.addEventListener('input', updateCount); updateCount();
@@ -81,10 +96,10 @@
       btn.disabled = true; msg.textContent = 'Signing…';
       try {
         const r = await fetch('/api/log', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, message, website: trap.value, elapsed: Date.now() - shownAt }) });
+          body: JSON.stringify({ name, message, stamp, website: trap.value, elapsed: Date.now() - shownAt }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) { msg.textContent = d.error || 'Couldn’t sign the log.'; if (d.field === 'name') nameIn.focus(); else if (d.field === 'message') msgIn.focus(); return; }
-        try { localStorage.setItem('dismeigh-arcade-name', name); } catch {}
+        try { localStorage.setItem('dismeigh-arcade-name', name); localStorage.setItem('dm-log-stamp', stamp); } catch {}
         msgIn.value = ''; updateCount();
         msg.textContent = 'Signed! Thanks for stopping by.';
         render(list, d.entries || [], empty, 'No entries yet.', 50);
