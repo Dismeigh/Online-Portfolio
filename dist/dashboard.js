@@ -415,6 +415,45 @@
     flash($('look-msg'), data.error || ($('l-mode').value === 'auto' ? 'Back to automatic.' : 'Saved. Visitors see it on their next page load.')); loaders.site();
   });
 
+  // ---------- Private notes ----------
+  const CAT = { stream: 'Stream idea', bounty: 'Bounty idea', quote: 'Future quote', other: 'Other' };
+  let notes = [], noteFilter = 'all', editing = null;
+  function drawNotes() {
+    const list = notes.filter(n => (noteFilter === 'done' ? n.done : !n.done && (noteFilter === 'all' || n.cat === noteFilter)));
+    $('notes-body').innerHTML = list.length ? `<ul class="dash-list">${list.map(n => `
+      <li class="dash-row dash-noterow cat-${esc(n.cat)}${n.done ? ' is-hidden' : ''}">
+        <div class="dash-row-main"><span class="dash-meta">${esc(CAT[n.cat] || 'Other')} · ${esc(when(new Date(n.at).toISOString()))}${n.edited ? ' · edited' : ''}</span>
+          ${editing === n.id ? `<label class="sr-only" for="ne-${n.id}">Edit note</label><textarea id="ne-${n.id}" rows="4" maxlength="1000">${esc(n.text)}</textarea>` : `<p class="dash-note-text">${esc(n.text)}</p>`}</div>
+        <div class="dash-row-actions">
+          ${editing === n.id ? `<button type="button" class="dash-btn dash-small dash-primary" data-note="save" data-id="${n.id}">Save</button><button type="button" class="dash-btn dash-small" data-note="cancel" data-id="${n.id}">Cancel</button>`
+            : `<button type="button" class="dash-btn dash-small" data-note="${n.done ? 'undo' : 'done'}" data-id="${n.id}">${n.done ? 'Not done' : 'Done'}</button><button type="button" class="dash-btn dash-small" data-note="edit" data-id="${n.id}">Edit</button>`}
+          <button type="button" class="dash-btn dash-small dash-danger" data-note="delete" data-id="${n.id}">Delete</button>
+        </div></li>`).join('')}</ul>` : `<p class="dash-note">${noteFilter === 'done' ? 'Nothing marked done yet.' : 'No notes here yet.'}</p>`;
+  }
+  loaders.notes = async () => { const { data } = await api('notes'); notes = data.notes || []; drawNotes(); };
+  $('note-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { status, data } = await api('notes', { action: 'add', cat: $('nt-cat').value, text: $('nt-text').value });
+    if (status !== 200) return flash($('note-msg'), data.error || 'Couldn\u2019t add it.');
+    $('nt-text').value = ''; notes = data.notes; drawNotes(); flash($('note-msg'), 'Added.');
+  });
+  document.querySelectorAll('#note-filter [data-cat]').forEach(b => b.addEventListener('click', () => {
+    noteFilter = b.dataset.cat;
+    document.querySelectorAll('#note-filter [data-cat]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    drawNotes();
+  }));
+  $('notes-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-note]'); if (!b) return;
+    const id = Number(b.dataset.id), act = b.dataset.note;
+    if (act === 'edit') { editing = id; drawNotes(); $(`ne-${id}`)?.focus(); return; }
+    if (act === 'cancel') { editing = null; drawNotes(); return; }
+    if (act === 'delete' && !confirm('Delete this note?')) return;
+    const body = act === 'delete' ? { action: 'delete', id } : act === 'save' ? { action: 'update', id, text: $(`ne-${id}`).value } : { action: 'update', id, done: act === 'done' };
+    const { status, data } = await api('notes', body);
+    if (status !== 200) return alert(data.error || 'Couldn\u2019t save that.');
+    editing = null; notes = data.notes; drawNotes();
+  });
+
   // ---------- Login history ----------
   loaders.security = async () => {
     const { data } = await api('history');

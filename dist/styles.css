@@ -2855,3 +2855,11 @@ html:has(.dash-body) { background: var(--ink); }
 .site-nav > .site-banner { order: -1; flex: 0 0 calc(100% + 2 * var(--nav-pad)); margin: -0.55rem calc(-1 * var(--nav-pad)) 0.1rem; }
 @media (max-width: 900px) { .site-nav.has-menu { --nav-pad: 0.75rem; } }
 .site-banner.is-loose { padding-top: max(0.45rem, env(safe-area-inset-top)); }
+
+/* Dashboard notes */
+.dash-note-form { margin-bottom: 0.6rem; }
+.dash-note-form .dash-end-row { margin-top: 0.6rem; }
+.dash-note-text { white-space: pre-wrap; color: var(--paper) !important; }
+.dash-noterow.cat-stream { border-left-color: #3f8f8c; }
+.dash-noterow.cat-bounty { border-left-color: var(--mustard); }
+.dash-noterow.cat-quote { border-left-color: #d85fa0; }
