@@ -332,7 +332,50 @@
     items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
     flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (a link or Twitch name wasn’t valid).` : 'Saved. It’s live on the site now.');
   });
-  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); };
+  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); };
+
+  // ---------- YouTube row ----------
+  let clips = { count: 3, pinned: [], hidden: [] }, feed = [];
+  const ytDate = iso => (iso ? new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : '');
+  function drawClips() {
+    $('cl-count').value = String(clips.count);
+    $('cl-pinned').innerHTML = clips.pinned.length ? `<ol class="dash-list">${clips.pinned.map((v, i) => `
+      <li class="dash-row is-pinned"><div class="dash-row-main"><b>${esc(v.title)}</b> <span class="dash-meta">${v.short ? 'Short' : 'Video'} · ${esc(ytDate(v.published))}</span></div>
+        <div class="dash-row-actions">
+          <button type="button" class="dash-btn dash-small" data-cl="up" data-i="${i}" ${i ? '' : 'disabled'}>Up</button>
+          <button type="button" class="dash-btn dash-small" data-cl="down" data-i="${i}" ${i < clips.pinned.length - 1 ? '' : 'disabled'}>Down</button>
+          <button type="button" class="dash-btn dash-small" data-cl="unpin" data-i="${i}">Unfeature</button>
+        </div></li>`).join('')}</ol>` : '<p class="dash-note">Nothing featured. The newest uploads show.</p>';
+    const pinnedIds = new Set(clips.pinned.map(p => p.id)), hidden = new Set(clips.hidden);
+    $('cl-feed').innerHTML = feed.length ? `<ul class="dash-list">${feed.map((v, i) => `
+      <li class="dash-row${hidden.has(v.id) ? ' is-hidden' : ''}"><div class="dash-row-main"><b>${esc(v.title)}</b> <span class="dash-meta">${v.short ? 'Short' : 'Video'} · ${esc(ytDate(v.published))}${hidden.has(v.id) ? ' · hidden' : ''}${pinnedIds.has(v.id) ? ' · featured' : ''}</span></div>
+        <div class="dash-row-actions">
+          <a class="dash-btn dash-small" href="${esc(v.url)}" target="_blank" rel="noopener noreferrer">Watch</a>
+          ${pinnedIds.has(v.id) ? '' : `<button type="button" class="dash-btn dash-small" data-cl="pin" data-i="${i}" ${clips.pinned.length >= 6 ? 'disabled' : ''}>Feature</button>`}
+          ${pinnedIds.has(v.id) ? '' : `<button type="button" class="dash-btn dash-small${hidden.has(v.id) ? '' : ' dash-danger'}" data-cl="${hidden.has(v.id) ? 'unhide' : 'hide'}" data-i="${i}">${hidden.has(v.id) ? 'Show' : 'Hide'}</button>`}
+        </div></li>`).join('')}</ul>` : '<p class="dash-note">Couldn\u2019t reach YouTube right now. Try Refresh in a bit.</p>';
+  }
+  async function loadClips() {
+    const { data } = await api('clips'); clips = data.settings; feed = data.feed || []; drawClips();
+  }
+  const clipsDirty = () => { $('cl-msg').textContent = 'Unsaved changes'; };
+  $('cl-reload').addEventListener('click', loadClips);
+  $('cl-count').addEventListener('change', () => { clips.count = Number($('cl-count').value); clipsDirty(); });
+  document.querySelector('.dash-card-clips').addEventListener('click', e => {
+    const b = e.target.closest('[data-cl]'); if (!b) return;
+    const i = Number(b.dataset.i), act = b.dataset.cl, P = clips.pinned;
+    if (act === 'up') [P[i - 1], P[i]] = [P[i], P[i - 1]];
+    if (act === 'down') [P[i + 1], P[i]] = [P[i], P[i + 1]];
+    if (act === 'unpin') P.splice(i, 1);
+    if (act === 'pin') { const v = feed[i]; P.push({ id: v.id, title: v.title, published: v.published, short: v.short }); clips.hidden = clips.hidden.filter(x => x !== v.id); }
+    if (act === 'hide') clips.hidden.push(feed[i].id);
+    if (act === 'unhide') clips.hidden = clips.hidden.filter(x => x !== feed[i].id);
+    clipsDirty(); drawClips();
+  });
+  $('cl-save').addEventListener('click', async () => {
+    const { data } = await api('clips', clips); clips = data.settings; drawClips();
+    flash($('cl-msg'), 'Saved. The home page updates within a couple of minutes.');
+  });
 
   // ---------- Special event ----------
   const evLocal = iso => { if (!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };

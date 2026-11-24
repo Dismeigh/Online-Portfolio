@@ -1238,7 +1238,7 @@
           play.append(img);
           const badge = document.createElement('span');
           badge.className = 'yt-badge';
-          badge.textContent = i === 0 ? 'Latest' : (v.short ? 'Short' : 'Video');
+          badge.textContent = v.pinned ? 'Featured' : i === videos.findIndex(x => !x.pinned) ? 'Latest' : (v.short ? 'Short' : 'Video');
           play.append(badge);
           const title = document.createElement('h4');
           const link = document.createElement('a');
@@ -1246,7 +1246,7 @@
           title.append(link);
           const date = document.createElement('p');
           date.className = 'yt-date';
-          date.textContent = fmt.format(new Date(v.published));
+          date.textContent = Date.parse(v.published) ? fmt.format(new Date(v.published)) : '';
           play.addEventListener('click', () => {
             const frame = document.createElement('iframe');
             frame.src = `https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`;
