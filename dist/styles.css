@@ -2852,7 +2852,11 @@ html:has(.dash-body) { background: var(--ink); }
 /* Banner lives inside the sticky top bar: full width, above the links */
 .site-nav.has-banner { flex-wrap: wrap; row-gap: 0.4rem; }
 .site-nav { --nav-pad: max(4vw, 1rem); }
-.site-nav > .site-banner { order: -1; flex: 0 0 calc(100% + 2 * var(--nav-pad)); margin: -0.55rem calc(-1 * var(--nav-pad)) 0.1rem; }
+.site-nav > .site-banner { order: 99; flex: 0 0 calc(100% + 2 * var(--nav-pad)); margin: 0.1rem calc(-1 * var(--nav-pad)) -0.55rem; }
+/* iPhone (iOS 26) softens and blurs whatever sits right under the status bar, so the banner sits below the nav row,
+   the nav is fully opaque, and the home-screen app gets a little extra room at the top. */
+.site-nav.has-banner { background: #14110f; }
+@media (display-mode: standalone) { .site-nav { padding-top: calc(env(safe-area-inset-top) + 0.4rem); } }
 @media (max-width: 900px) { .site-nav.has-menu { --nav-pad: 0.75rem; } }
 .site-banner.is-loose { padding-top: max(0.45rem, env(safe-area-inset-top)); }
 
