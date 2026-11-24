@@ -455,7 +455,7 @@
     items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
     flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (something was missing or not valid${kind === 'captions' ? ', like an end time before the start time' : ''}).` : 'Saved. It’s live on the site now.');
   });
-  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); loadVotes(); };
+  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); loadVotes(); loadSug(); };
 
   // ---------- YouTube row ----------
   let clips = { count: 3, pinned: [], hidden: [] }, feed = [];
@@ -478,6 +478,29 @@
           ${pinnedIds.has(v.id) ? '' : `<button type="button" class="dash-btn dash-small${hidden.has(v.id) ? '' : ' dash-danger'}" data-cl="${hidden.has(v.id) ? 'unhide' : 'hide'}" data-i="${i}">${hidden.has(v.id) ? 'Show' : 'Hide'}</button>`}
         </div></li>`).join('')}</ul>` : '<p class="dash-note">Couldn\u2019t reach YouTube right now. Try Refresh in a bit.</p>';
   }
+  // Viewer suggestions (quotes and clips)
+  let sugRows = [];
+  function drawSug() {
+    $('sug-body').innerHTML = sugRows.length ? `<ul class="dash-list">${sugRows.map(r => r.kind === 'quote' ? `
+      <li class="dash-row" data-focus="sg-${r.id}"><div class="dash-row-main"><b>Quote</b> <span class="dash-meta">${esc(r.name || 'Anonymous')} · ${esc(when(r.at))}</span>
+        <label class="sr-only" for="sgt-${r.id}">Quote</label><textarea id="sgt-${r.id}" rows="2" maxlength="200">${esc(r.text)}</textarea>
+        <div class="dash-two"><div><label for="sgg-${r.id}">Game</label><input id="sgg-${r.id}" maxlength="60" value="${esc(r.game)}"></div><div><label for="sgc-${r.id}">What was happening</label><input id="sgc-${r.id}" maxlength="160" value="${esc(r.context)}"></div></div></div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small dash-primary" data-sug="approve" data-id="${r.id}">Add to Quote Board</button><button type="button" class="dash-btn dash-small dash-danger" data-sug="delete" data-id="${r.id}">Delete</button></div></li>` : `
+      <li class="dash-row" data-focus="sg-${r.id}"><div class="dash-row-main"><b>Clip</b> <span class="dash-meta">${esc(r.name || 'Anonymous')} · ${esc(when(r.at))}</span>
+        <p class="dash-req-links"><a href="${esc(r.link)}" target="_blank" rel="noopener noreferrer nofollow">${esc(r.link.replace(/^https:\/\/(www\.)?/, ''))}</a></p>${r.text ? `<p class="dash-note-text">${esc(r.text)}</p>` : ''}</div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-sug="approve" data-id="${r.id}">Mark done</button><button type="button" class="dash-btn dash-small dash-danger" data-sug="delete" data-id="${r.id}">Delete</button></div></li>`).join('')}</ul>` : '<p class="dash-note">No suggestions waiting.</p>';
+  }
+  const loadSug = async () => { sugRows = (await api('suggest')).data.suggestions || []; drawSug(); };
+  $('sug-refresh').addEventListener('click', loadSug);
+  $('sug-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-sug]'); if (!b) return;
+    const id = Number(b.dataset.id), body = { action: b.dataset.sug, id };
+    if (body.action === 'delete' && !confirm('Delete this suggestion?')) return;
+    if (body.action === 'approve' && $(`sgt-${id}`)) Object.assign(body, { text: $(`sgt-${id}`).value, game: $(`sgg-${id}`).value, context: $(`sgc-${id}`).value });
+    const { status, data } = await api('suggest', body);
+    flash($('sug-msg'), status === 200 ? data.msg : (data.error || 'Couldn’t save.'));
+    if (status === 200) { sugRows = data.suggestions || []; drawSug(); if (body.action === 'approve' && kind === 'quotes' && !dirty) loadContent(kind); }
+  });
   // Clip of the Month counts
   const monthName = k => new Date(k + '-15T12:00:00').toLocaleDateString([], { month: 'long', year: 'numeric' });
   async function loadVotes() {

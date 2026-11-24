@@ -3618,3 +3618,28 @@ html:has(.dash-body) { background: var(--ink); }
 .cat-treat[aria-disabled="true"] { background: transparent; color: #4a3e35; border-style: dashed; cursor: default; }
 @media (prefers-reduced-motion: no-preference) { .ship-cat.is-hop .cat-btn { animation: catHop 0.5s ease-out 2; } }
 @keyframes catHop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px); } }
+.ship-cat .cat-diary { margin-top: 0.4rem; font-size: 0.82rem; color: #4a3e35; }
+.ship-cat .cat-diary b { color: var(--ink); }
+.cat-diary-link { display: inline-flex; align-items: center; min-height: 2rem; margin-right: 0.8rem; font-size: 0.8rem; color: var(--red); }
+.cat-hide { display: inline-flex; align-items: center; }
+
+/* The cat's diary */
+.diary-today { max-width: 40rem; margin: 1.2rem 0; padding: 0.9rem 1.1rem; background: var(--paper); color: var(--ink); box-shadow: 6px 6px 0 var(--mustard); }
+.split-main .diary-today .diary-text, .split-main .diary-today .diary-day { color: var(--ink); }
+.diary-list { list-style: none; margin: 1rem 0 0; padding: 0; max-width: 40rem; display: grid; gap: 0.2rem; }
+.diary-entry { padding: 0.7rem 0 0.7rem 1rem; border-left: 3px dashed var(--paper-dim); }
+.split-main .diary-day, .diary-day { margin: 0; font-family: var(--typed); font-size: 0.85rem; color: var(--mustard); }
+.split-main .diary-text, .diary-text { margin: 0.2rem 0 0; font-family: var(--typed); color: var(--paper); }
+
+/* Viewer suggestions (Quote Board, clips) */
+.suggest-box { max-width: 40rem; margin: 1.4rem auto 0; text-align: left; }
+.suggest-box summary { min-height: 2.75rem; display: flex; align-items: center; justify-content: center; font-family: var(--typed); color: var(--mustard); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.suggest-box form { display: grid; gap: 0.35rem; margin-top: 0.6rem; padding: 1rem 1.1rem; background: var(--paper); color: var(--ink); box-shadow: 6px 6px 0 var(--red); }
+.suggest-box label { margin-top: 0.4rem; font-family: var(--typed); color: #4a3e35; }
+.suggest-box label span { font-size: 0.8rem; }
+.suggest-box input, .suggest-box textarea { width: 100%; min-height: 2.75rem; padding: 0.5rem 0.7rem; border: 3px solid var(--ink); border-radius: 0; background: #fffaf0; color: var(--ink); font: inherit; font-size: 1rem; }
+.suggest-box input:focus, .suggest-box textarea:focus { outline: 3px solid var(--mustard); outline-offset: 1px; }
+.suggest-box button[type="submit"] { justify-self: start; min-height: 2.75rem; margin-top: 0.7rem; padding: 0 1.2rem; background: var(--ink); color: var(--mustard); border: 0; font-family: var(--display); font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; }
+.suggest-box button[type="submit"]:hover, .suggest-box button[type="submit"]:focus-visible { background: var(--red); color: var(--paper); }
+.suggest-box .suggest-msg { margin: 0.2rem 0 0; font-weight: 700; color: #9e3326; }
+.suggest-box .suggest-fine { margin: 0; font-size: 0.8rem; color: #4a3e35; }

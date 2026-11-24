@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=123">
+  <link rel="stylesheet" href="styles.css?v=124">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -575,6 +575,18 @@
           </div>
           <p class="clip-swipe-hint">Swipe clips</p>
           <div class="clip-vote" id="clip-vote" hidden><button type="button" class="clip-vote-btn" id="clip-vote-btn" aria-pressed="false">Vote for Clip of the Month</button><span class="clip-vote-msg" id="clip-vote-msg" role="status"></span></div>
+          <details class="suggest-box suggest-clip">
+            <summary>Got a clip that belongs here? Suggest it</summary>
+            <form data-suggest="clip" novalidate>
+              <label for="sc-link">Clip link</label><input id="sc-link" name="link" type="url" maxlength="300" required placeholder="https://clips.twitch.tv/...">
+              <label for="sc-note">Why it&rsquo;s a banger <span>(optional)</span></label><input id="sc-note" name="note" maxlength="160">
+              <label for="sc-name">Your name <span>(optional, only Dismeigh sees it)</span></label><input id="sc-name" name="name" maxlength="20" autocomplete="nickname">
+              <label class="log-trap" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+              <button type="submit">Send it in</button>
+              <p class="suggest-msg" role="alert"></p>
+              <p class="suggest-fine">Twitch clips, YouTube and TikTok links work. Dismeigh picks the ones that make it.</p>
+            </form>
+          </details>
         </div>
 
         <div class="yt-latest" id="yt-latest" hidden>
@@ -1543,7 +1555,8 @@
   <script src="/log.js?v=6" defer></script>
   <script src="/crew.js?v=6" defer></script>
   <script src="/bounty-run.js?v=38" defer></script>
-  <script src="/app.js?v=68" defer></script>
+  <script src="/suggest.js?v=1" defer></script>
+  <script src="/app.js?v=69" defer></script>
   <script src="/goal.js?v=2" defer></script>
   <script>
   // Clip captions (typed in the dashboard: Content, Clip captions) become a CC track on each clip

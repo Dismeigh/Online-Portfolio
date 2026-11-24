@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=123">
+  <link rel="stylesheet" href="/styles.css?v=124">
   <link rel="canonical" href="https://www.denizen-dismeigh.com/lore/">
   <meta property="og:url" content="https://www.denizen-dismeigh.com/lore/">
   <meta property="og:type" content="website">
@@ -52,6 +52,19 @@
       <h2 id="quotes-heading" class="quote-title">Quote Board</h2>
       <p class="quote-lede">Things that were said out loud, on purpose, in front of chat.</p>
       <ol class="quote-list" id="quote-list" aria-live="polite"></ol>
+      <details class="suggest-box">
+        <summary>Heard something quote-worthy? Suggest it</summary>
+        <form data-suggest="quote" novalidate>
+          <label for="sq-text">The quote</label><textarea id="sq-text" name="text" rows="3" maxlength="200" required placeholder="Exactly what was said"></textarea>
+          <label for="sq-game">Game <span>(optional)</span></label><input id="sq-game" name="game" maxlength="60">
+          <label for="sq-context">What was happening <span>(optional)</span></label><input id="sq-context" name="context" maxlength="160">
+          <label for="sq-name">Your name <span>(optional, only Dismeigh sees it)</span></label><input id="sq-name" name="name" maxlength="20" autocomplete="nickname">
+          <label class="log-trap" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+          <button type="submit">Send it in</button>
+          <p class="suggest-msg" role="alert"></p>
+          <p class="suggest-fine">Dismeigh reads every one. Only approved quotes go on the board.</p>
+        </form>
+      </details>
     </section>
   </main>
   <footer class="footer">
@@ -60,7 +73,8 @@
       <p class="footer-est">Est. June 10, 2021</p>
     <p class="footer-links"><a href="/">Home</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/new/">What&rsquo;s new</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
   </footer>
-  <script src="/app.js?v=68" defer></script>
+  <script src="/suggest.js?v=1" defer></script>
+  <script src="/app.js?v=69" defer></script>
   <script>
   {
     const grid = document.getElementById('lore-grid');

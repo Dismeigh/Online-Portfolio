@@ -270,10 +270,19 @@
       sleep: ['..........o.o...', '...ooooooooooo..', '..oossossoo--oo.', '.ooooooooooopoo.', 'ooooooooooooooo.', 'oooowwwwoooooo..', '.oooooooooooo...'],
     };
     const COL = { o: '#c9772f', s: '#8f4f1d', e: '#14110f', p: '#e58a9b', w: '#efe6d2', '-': '#14110f' };
+    // Outfits that match the site's holiday looks (R red, W white, K witch purple, O orange, G green, Y gold, P pink, B blue, N pilgrim gray)
+    const HC = { R: '#d23a2f', W: '#f4efe4', K: '#7b4bb7', O: '#e08a2c', G: '#2f9a4a', Y: '#e3a92b', P: '#ec7fa0', B: '#3a64c8', N: '#7d7268' };
+    const party = ['..Y..', '..P..', '.PYP.', 'PYPYP'], flag = ['.BBB.', '.RWR.', '.BBB.', 'RRRRR'];
+    const HATS = { holiday: ['....W', '..RR.', '.RRR.', 'WWWWW'], spooky: ['...K.', '..KK.', '.KOK.', 'KKKKK'], thanksgiving: ['.NNN.', '.NYN.', 'NNNNN'],
+      valentines: ['P...P', 'PP.PP', '.PPP.', '..P..'], stpatricks: ['.GGG.', '.GGG.', '.YYY.', 'GGGGG'], easter: ['W...W', 'W...W', 'P...P'],
+      birthday: party, anniversary: party, newyear: party, july4: flag, veterans: flag, memorial: flag, presidents: flag };
+    const HAT_X = { sit: 9, walkA: 11, walkB: 11, sleep: 9 };
     const svg = name => {
-      const rows = SPRITES[name], w = 16, h = rows.length; let r = '';
+      const rows = SPRITES[name], w = 16, h = rows.length, hat = HATS[document.documentElement.dataset.season]; let r = '';
       rows.forEach((row, y) => [...row].forEach((c, x) => { if (COL[c]) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${COL[c]}"/>`; }));
-      return `<svg viewBox="0 0 ${w} ${h}" width="${w * 3}" height="${h * 3}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+      const top = hat ? hat.length - 1 : 0;
+      if (hat) hat.forEach((row, y) => [...row].forEach((c, x) => { if (HC[c]) r += `<rect x="${HAT_X[name] + x}" y="${y - top}" width="1.02" height="1.02" fill="${HC[c]}"/>`; }));
+      return `<svg viewBox="0 ${-top} ${w} ${h + top}" width="${w * 3}" height="${(h + top) * 3}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
     };
     const wrap = document.createElement('div'); wrap.className = 'ship-cat';
     const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cat-btn'; btn.setAttribute('aria-label', 'The ship’s cat. Tap to check on it.');
@@ -303,9 +312,12 @@
       const done = treatedToday();
       treat.textContent = done ? 'You gave a treat today' : 'Give a treat'; treat.setAttribute('aria-disabled', String(done));
       treat.addEventListener('click', giveTreat);
+      const di = document.createElement('p'); di.className = 'cat-diary';
+      if (st.today?.text) { di.append(Object.assign(document.createElement('b'), { textContent: `Diary, day ${st.today.n}: ` }), st.today.text === 'Quiet day. Nobody came by. Sulked under the console.' ? 'Nothing yet today. Waiting by the door.' : `${st.today.text} (so far)`); }
+      const dl = document.createElement('a'); dl.href = '/cat/'; dl.className = 'cat-diary-link'; dl.textContent = 'Read the cat\u2019s diary';
       const hide = document.createElement('button'); hide.type = 'button'; hide.className = 'cat-hide'; hide.textContent = 'Shoo (hide the cat)';
       hide.addEventListener('click', () => { try { localStorage.setItem('dm-cat-hide', '1'); } catch {} wrap.remove(); });
-      bub.append(h, l, m, f, treat, hide); bub.hidden = false;
+      bub.append(h, l, m, f, treat, ...(st.today ? [di] : []), dl, hide); bub.hidden = false;
       clearTimeout(say.t); say.t = setTimeout(() => { bub.hidden = true; }, 7000);
     }
     function puff(text) {
@@ -614,6 +626,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     ['Ask the Captain', '/ask/', 'Page', 'Send Dismeigh a question and read the answers.', 'ask question questions q&a qa answer captain faq'],
     ['What\u2019s new', '/new/', 'Page', 'The latest upgrades to the site.', 'new whats news updates changelog changes latest'],
     ['Car meets', '/garage/#meets', 'Page', 'Where the Sojourn ST will be next.', 'car meet meets meetup event cars and coffee show'],
+    ['The cat\u2019s diary', '/cat/', 'Page', 'What the ship\u2019s cat got up to each day.', 'cat kitty pet diary ship cat treats feed'],
     ['Secret hints', '/secrets/', 'Page', 'Clues for the hidden secrets around the site.', 'secret secrets hint hints achievements easter eggs clue clues license bounty hunter'],
     ['Ship map', '/map/', 'Page', 'A deck plan of the ship: every room is a page.', 'map ship deck plan rooms directory sitemap navigate'],
     ['Clip of the Month', '/#highlights', 'Page', 'Vote for your favorite home page clip.', 'clip of the month vote voting favorite clips'],

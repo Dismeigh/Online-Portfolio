@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=123">
+  <link rel="stylesheet" href="/styles.css?v=124">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -231,6 +231,12 @@
             <button type="button" class="dash-btn dash-primary" id="content-save">Save changes</button>
             <span class="dash-msg" id="content-msg" role="status"></span>
           </div>
+        </section>
+        <section class="dash-card" aria-labelledby="sg2-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">From viewers</p><h2 id="sg2-h">Suggestions</h2></div><button type="button" class="dash-btn dash-small" id="sug-refresh">Refresh</button></div>
+          <p class="dash-note">Quotes for the Quote Board and clips for the home page. Nothing shows on the site until you approve it. You can fix a quote&rsquo;s wording before adding it. Clips are a to-do list: add the ones you like with the clips manager below, then mark them done.</p>
+          <p class="dash-msg" id="sug-msg" role="status"></p>
+          <div id="sug-body"></div>
         </section>
         <section class="dash-card" aria-labelledby="cv-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Home page clips</p><h2 id="cv-h">Clip of the Month</h2></div><button type="button" class="dash-btn dash-small" id="cv-reload">Refresh</button></div>
@@ -491,6 +497,7 @@
             <label><input type="checkbox" value="quote" checked> <span>New quote requests <small>(from the Work page form)</small></span></label>
             <label><input type="checkbox" value="ask" checked> <span>New questions for the captain <small>(from the Ask page)</small></span></label>
             <label><input type="checkbox" value="collab" checked> <span>New collab requests <small>(from the press kit page)</small></span></label>
+            <label><input type="checkbox" value="suggest" checked> <span>New quote and clip suggestions <small>(from viewers)</small></span></label>
             <label><input type="checkbox" value="recap" checked> <span>Weekly recap &amp; monthly report <small>(Monday mornings, and the 1st of each month)</small></span></label>
           </fieldset>
           <div class="dash-actions">
@@ -734,6 +741,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=44" defer></script>
+  <script src="/dashboard.js?v=45" defer></script>
 </body>
 </html>
