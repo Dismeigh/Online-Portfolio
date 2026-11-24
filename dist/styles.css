@@ -2907,3 +2907,18 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-preset [data-preset] { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; text-align: left; text-transform: none; font-family: var(--body, inherit); font-weight: 600; letter-spacing: 0; line-height: 1.3; padding: 0.6rem 0.8rem; }
 .dash-preset small { font-weight: 400; font-size: 0.82rem; opacity: 0.8; }
 .dash-preset.is-on [data-preset] { border-color: var(--mustard); box-shadow: inset 4px 0 0 var(--mustard); }
+
+/* Live strip on every page while streaming; it takes the banner's place while it's showing */
+.site-banner.is-live { background: var(--red); color: var(--paper); padding-right: 1rem; }
+.site-banner.is-live a { color: var(--paper); }
+.site-banner.is-live[hidden] { display: none; }
+.site-nav.is-live-now > .site-banner:not(.is-live) { display: none; }
+.live-dot { display: inline-block; width: 0.6rem; height: 0.6rem; margin-right: 0.2rem; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3); animation: statusBlink 1.4s ease-in-out infinite; vertical-align: 0.05em; }
+@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+
+.dash-check-line { display: flex; gap: 0.6rem; align-items: flex-start; margin-top: 1rem; font-weight: 600; color: var(--paper); }
+.dash-check-line input { width: 1.2rem; height: 1.2rem; margin-top: 0.15rem; accent-color: var(--mustard); flex: 0 0 auto; }
+.dash-check-line small { display: block; font-weight: 400; color: var(--paper-dim); }
+.site-nav .site-banner a { display: inline; min-height: 0; padding: 0; background: none; font: inherit; font-weight: 800; letter-spacing: normal; text-transform: none; text-decoration: underline; text-underline-offset: 3px; color: inherit; box-shadow: none; }
+.site-nav .site-banner a:hover { background: none; color: inherit; }
+.site-banner.is-live { background: #a3301f; }

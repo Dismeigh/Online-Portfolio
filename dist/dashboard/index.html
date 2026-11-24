@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=79">
+  <link rel="stylesheet" href="/styles.css?v=83">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -334,11 +334,15 @@
             <input id="b-text" maxlength="140" placeholder="No stream tonight, back Friday at 8 PM!">
             <label for="b-link">Link <span>(optional, a site page like /garage/ or a full https:// link)</span></label>
             <input id="b-link" maxlength="200" placeholder="/#schedule">
+            <label for="b-from">Start at <span>(optional, leave empty to show it now)</span></label>
+            <input id="b-from" type="datetime-local">
             <label for="b-until">Show until <span>(optional)</span></label>
             <input id="b-until" type="datetime-local">
             <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Show banner</button><button type="button" class="dash-btn" id="b-clear">Turn banner off</button><button type="button" class="dash-btn" id="b-save-preset">Save as one-tap</button></div>
             <p class="dash-msg" id="banner-msg" role="status"></p>
           </form>
+          <div id="b-queue"></div>
+          <label class="dash-check-line"><input type="checkbox" id="b-live"> <span>Show a red &ldquo;Live now&rdquo; strip on every page while I&rsquo;m streaming <small>(the home page already has its On Air bar)</small></span></label>
         </section>
         <section class="dash-card dash-card-now" aria-labelledby="now-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Home page</p><h2 id="now-h">Right now</h2></div><span class="dash-chip" id="now-chip"><span class="dash-dot" aria-hidden="true"></span><span id="now-chip-text">Off</span></span></div>
@@ -425,6 +429,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=17" defer></script>
+  <script src="/dashboard.js?v=19" defer></script>
 </body>
 </html>

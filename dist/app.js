@@ -720,6 +720,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   const set = async on => {
     if (on === isOn) return;
     isOn = on;
+    window.dismeighLive = on; dispatchEvent(new CustomEvent('dismeigh:live', { detail: on }));
     if (on && !dotted) dotted = await makeDotted();
     links.forEach((l, i) => { l.href = on && dotted ? dotted : originals[i]; });
   };
@@ -788,17 +789,32 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       el.innerHTML = `<span class="commission-dot" aria-hidden="true"></span><b>Commissions ${st}</b>${s.commissions.note ? `<span>${esc(s.commissions.note)}</span>` : ''}`;
       el.hidden = false;
     });
+    // "Live now" strip on every page while streaming (the home page has its own On Air bar)
+    if (s.liveBar !== false && !document.getElementById('onair-bar') && !/^\/(dashboard|spotted)/.test(location.pathname)) {
+      const nav = document.querySelector('.site-nav');
+      const live = document.createElement('div');
+      live.className = 'site-banner is-live'; live.setAttribute('role', 'status'); live.hidden = true;
+      live.innerHTML = '<p><span class="live-dot" aria-hidden="true"></span> Dismeigh is live on Twitch right now. <a href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Watch now</a></p>';
+      if (nav) nav.prepend(live); else { live.classList.add('is-loose'); document.body.prepend(live); }
+      const sync = on => {
+        live.hidden = !on;
+        nav?.classList.toggle('is-live-now', on);
+        if (nav) nav.classList.toggle('has-banner', on || !!nav.querySelector('.site-banner:not(.is-live)'));
+      };
+      addEventListener('dismeigh:live', e => sync(e.detail));
+      sync(!!window.dismeighLive);
+    }
     // Banner across the top of every page, until it ends or the visitor closes it
     const b = s.banner;
     let closed = null; try { closed = localStorage.getItem('dm-banner-closed'); } catch {}
-    if (!b || !b.text || String(b.id) === closed || document.querySelector('.site-banner')) return;
+    if (!b || !b.text || String(b.id) === closed || document.querySelector('.site-banner:not(.is-live)')) return;
     const safeLink = typeof b.link === 'string' && (/^https:\/\//.test(b.link) || /^\/(?!\/)/.test(b.link)) ? b.link : '';
     const bar = document.createElement('div');
     bar.className = 'site-banner';
     bar.setAttribute('role', 'region');
     bar.setAttribute('aria-label', 'Announcement');
     bar.innerHTML = `<p>${esc(b.text)}${safeLink ? ` <a href="${esc(safeLink)}"${/^https:/.test(safeLink) ? ' target="_blank" rel="noopener noreferrer"' : ''}>More</a>` : ''}</p><button type="button" aria-label="Close announcement">&times;</button>`;
-    bar.querySelector('button').addEventListener('click', () => { bar.remove(); document.querySelector('.site-nav')?.classList.remove('has-banner'); try { localStorage.setItem('dm-banner-closed', String(b.id)); } catch {} });
+    bar.querySelector('button').addEventListener('click', () => { bar.remove(); const n = document.querySelector('.site-nav'); n?.classList.toggle('has-banner', !!n.querySelector('.site-banner.is-live:not([hidden])')); try { localStorage.setItem('dm-banner-closed', String(b.id)); } catch {} });
     // Sits inside the sticky top bar so it stays on screen while scrolling (and below the phone's status bar)
     const nav = document.querySelector('.site-nav');
     if (nav) { nav.classList.add('has-banner'); nav.prepend(bar); } else { bar.classList.add('is-loose'); document.body.prepend(bar); }

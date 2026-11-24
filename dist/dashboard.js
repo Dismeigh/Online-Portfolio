@@ -480,6 +480,11 @@
     $('b-text').value = b?.text || ''; $('b-link').value = b?.link || ''; $('b-until').value = toLocal(b?.until);
     $('banner-chip').className = `dash-chip ${b ? 'dash-chip-ok' : ''}`; $('banner-chip-text').textContent = b ? 'Showing' : 'Off';
     presets = data.presets || []; drawPresets(b);
+    $('b-live').checked = data.liveBar !== false;
+    const q = data.queue || [];
+    $('b-queue').innerHTML = q.length ? `<h3 class="dash-h3">Coming up</h3><ul class="dash-list">${q.map(x => `
+      <li class="dash-row"><div class="dash-row-main"><b>${esc(x.text)}</b> <span class="dash-meta">starts ${esc(when(new Date(x.from).toISOString()))}${x.until ? ` · ends ${esc(when(new Date(x.until).toISOString()))}` : ''}</span></div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small dash-danger" data-unq="${x.id}">Cancel</button></div></li>`).join('')}</ul>` : '';
     $('l-mode').innerHTML = `<option value="auto">Automatic (by date)</option><option value="off">No holiday looks</option>${data.seasons.map(k => `<option value="${k}">${esc(NAMES[k] || k)}</option>`).join('')}`;
     $('n-text').value = data.now?.text || ''; $('n-until').value = toLocal(data.now?.until);
     $('now-chip').className = `dash-chip ${data.now ? 'dash-chip-ok' : ''}`; $('now-chip-text').textContent = data.now ? 'Showing' : 'Off';
@@ -527,8 +532,22 @@
   $('banner-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!$('b-text').value.trim()) return flash($('banner-msg'), 'Type a message first.');
+    const from = fromLocal($('b-from').value);
+    if (from && from > Date.now() + 60000) {
+      const { data } = await api('site', { what: 'schedule', text: $('b-text').value, link: $('b-link').value, from, until: fromLocal($('b-until').value) });
+      flash($('banner-msg'), data.error || `Scheduled. It switches on ${when(new Date(from).toISOString())}.`);
+      if (!data.error) { $('b-from').value = ''; } return loaders.site();
+    }
     const { data } = await api('site', { what: 'banner', text: $('b-text').value, link: $('b-link').value, until: fromLocal($('b-until').value) });
-    flash($('banner-msg'), data.error || 'Banner is showing on every page.'); loaders.site();
+    flash($('banner-msg'), data.error || 'Banner is showing on every page.'); $('b-from').value = ''; loaders.site();
+  });
+  $('b-live').addEventListener('change', async () => {
+    await api('site', { what: 'livebar', on: $('b-live').checked });
+    flash($('banner-msg'), $('b-live').checked ? 'The Live now strip is on.' : 'The Live now strip is off.');
+  });
+  $('b-queue').addEventListener('click', async e => {
+    const b = e.target.closest('[data-unq]'); if (!b || !confirm('Cancel this scheduled banner?')) return;
+    await api('site', { what: 'unschedule', id: Number(b.dataset.unq) }); loaders.site();
   });
   $('b-clear').addEventListener('click', async () => { await api('site', { what: 'banner', text: '' }); flash($('banner-msg'), 'Banner is off.'); loaders.site(); });
   $('now-form').addEventListener('submit', async e => {
