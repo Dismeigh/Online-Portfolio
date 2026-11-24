@@ -12,6 +12,6 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   await askTables(env.ARCADE);
   const r = await submitQuestion(env.ARCADE, b, await visitorKey(request, env));
   if (r.error) return json(r, 400);
-  if (r.id) { const job = alert(env, 'ask', { title: 'New question for the captain', body: `${r.name}: ${r.q.slice(0, 120)}`, tab: 'guestbook' }); if (waitUntil) waitUntil(job); else await job; }
+  if (r.id) { const job = alert(env, 'ask', { title: 'New question for the captain', body: `${r.name}: ${r.q.slice(0, 120)}`, tab: 'guestbook', focus: `ask-${r.id}` }); if (waitUntil) waitUntil(job); else await job; }
   return json({ ok: true });
 });

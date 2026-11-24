@@ -8,6 +8,6 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   await collabTables(env.ARCADE);
   const r = await submitCollab(env.ARCADE, b, await visitorKey(request, env));
   if (r.error) return json(r, 400);
-  if (r.id) { const job = alert(env, 'collab', { title: 'New collab request', body: `${r.name}: ${r.kind}`, tab: 'clients' }); if (waitUntil) waitUntil(job); else await job; }
+  if (r.id) { const job = alert(env, 'collab', { title: 'New collab request', body: `${r.name}: ${r.kind}`, tab: 'clients', focus: `cr-${r.id}` }); if (waitUntil) waitUntil(job); else await job; }
   return json({ ok: true });
 });

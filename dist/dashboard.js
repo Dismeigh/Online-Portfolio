@@ -195,10 +195,21 @@
   }
   document.querySelectorAll('.dash-tabs [data-tab]').forEach(b => b.addEventListener('click', () => { openTab(b.dataset.tab); $('panel').scrollIntoView({ block: 'start', behavior: 'smooth' }); }));
   document.querySelectorAll('[data-refresh]').forEach(b => b.addEventListener('click', () => loaders[b.dataset.refresh]?.()));
-  document.addEventListener('dash:in', () => {
-    const want = location.hash.slice(1);
+  // A tapped phone alert opens #tab:item (like #guestbook:ask-12): open the tab, then scroll to and outline that item
+  function fromHash() {
+    const [raw, item] = location.hash.slice(1).split(':'), want = /^[a-z]+$/.test(raw || '') ? raw : 'overview';
     openTab(document.querySelector(`[data-panel="${want}"]`) ? want : 'overview', false);
-  });
+    if (!/^[a-z]+-\d+$/.test(item || '')) return;
+    let tries = 0;
+    const find = () => {
+      const el = document.querySelector(`[data-focus="${item}"]`);
+      if (el) { el.classList.add('dash-focus'); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.querySelector('textarea, button')?.focus({ preventScroll: true }); setTimeout(() => el.classList.remove('dash-focus'), 4000); history.replaceState(null, '', `#${want}`); }
+      else if (++tries < 20) setTimeout(find, 200);
+    };
+    find();
+  }
+  document.addEventListener('dash:in', fromHash);
+  addEventListener('hashchange', () => { if (location.hash.includes(':')) fromHash(); });
 
   // ---------- Overview: site stats ----------
   // Site health lights
@@ -264,6 +275,7 @@
     actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
   }));
   loaders.overview = async () => {
+    loadToday();
     loadActs(); loadHealth(); loadReport(); api('clients').then(r => { if (r.status === 200) drawBoard(r.data); }).catch(() => {});
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
@@ -319,6 +331,10 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    collabs: { note: 'Past collabs on the press kit page: who you worked with and what you made together. Newest first looks best.', fields: [
+      F('name', 'Who (name or channel)', 'text', { max: 60, required: true }), F('link', 'Their link (https://...)', 'text', { max: 300 }),
+      F('what', 'What you did', 'text', { max: 120 }), F('when', 'When (like Oct 2026)', 'text', { max: 30 }),
+    ] },
     captions: { note: 'Subtitles for the clips on the home page. One line per caption: which clip, when it starts and ends (like 0:03 and 0:06), and what\u2019s said. Order doesn\u2019t matter.', fields: [
       F('clip', 'Clip', 'select', { options: [['1', 'Clip 1'], ['2', 'Clip 2'], ['3', 'Clip 3'], ['4', 'Clip 4'], ['5', 'Clip 5']] }),
       F('start', 'Starts (m:ss)', 'text', { max: 9 }), F('end', 'Ends (m:ss)', 'text', { max: 9 }), F('text', 'What\u2019s said', 'text', { max: 160, required: true }),
@@ -344,7 +360,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -524,7 +540,7 @@
     const waiting = askRows.filter(q => !q.answered_at).length;
     document.querySelector('#ask-filter [data-ask="new"]').textContent = `Waiting${waiting ? ` (${waiting})` : ''}`;
     $('ask-body').innerHTML = list.length ? `<ul class="dash-list">${list.map(q => `
-      <li class="dash-row${q.hidden ? ' is-hidden' : ''}"><div class="dash-row-main"><b>${esc(q.name)}</b> <span class="dash-meta">${esc(when(q.at))}${q.hidden ? ' · hidden' : ''}</span><p>${esc(q.q)}</p>
+      <li class="dash-row${q.hidden ? ' is-hidden' : ''}" data-focus="ask-${q.id}"><div class="dash-row-main"><b>${esc(q.name)}</b> <span class="dash-meta">${esc(when(q.at))}${q.hidden ? ' · hidden' : ''}</span><p>${esc(q.q)}</p>
         <form class="dash-ask-form" data-ask-form="${q.id}"><label for="aa-${q.id}">${q.answered_at ? 'Your answer' : 'Answer'}</label><textarea id="aa-${q.id}" rows="3" maxlength="1200" placeholder="Your answer shows under the question on the Ask page">${esc(q.answer)}</textarea>
         <div class="dash-actions"><button type="submit" class="dash-btn dash-small dash-primary">${q.answered_at ? 'Update answer' : 'Answer and post'}</button></div></form></div>
         <div class="dash-row-actions">${q.answered_at ? `<button type="button" class="dash-btn dash-small" data-ask-act="${q.hidden ? 'unhide' : 'hide'}" data-id="${q.id}">${q.hidden ? 'Show' : 'Hide'}</button>` : ''}
@@ -811,7 +827,7 @@
     const n = board.requests.filter(r => r.status === 'new').length;
     $('cl-new').hidden = !n; $('cl-new').textContent = n;
     $('rq-body').innerHTML = list.length ? `<ul class="dash-list">${list.map(r => `
-      <li class="dash-row dash-req${r.status === 'new' ? ' is-new' : ''}"><div class="dash-row-main">
+      <li class="dash-row dash-req${r.status === 'new' ? ' is-new' : ''}" data-focus="rq-${r.id}"><div class="dash-row-main">
         <b>${esc(r.name)}</b> <span class="dash-meta">${esc(r.service)} · ${esc(when(r.at))}${r.status === 'new' ? ' · <span class="dash-new">New</span>' : r.status === 'replied' ? ' · replied' : ''}</span>
         <p class="dash-req-meta">${esc(r.contact)} · Budget: ${esc(r.budget || 'not given')} · ${esc(r.timeline || '')}</p>
         ${r.referred_by ? `<p class="dash-req-ref">Referred by ${esc(r.referred_by)}</p>` : ''}
@@ -1083,7 +1099,86 @@
     $('sg-share').hidden = false;
     $('sg-share').addEventListener('click', async () => { const b = await sgBlob(); if (!b) return; const f = new File([b], sgName(), { type: 'image/png' }); if (navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f] }); } catch {} } else $('sg-dl').click(); });
   }
-  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); };
+
+  // Stream stats log
+  let ssRows = [], ssEdit = 0;
+  const ssNum = v => (v === null || v === undefined ? '' : String(v));
+  const lenText = m => (m == null ? '' : `${Math.floor(m / 60) ? `${Math.floor(m / 60)}h ` : ''}${m % 60 ? `${m % 60}m` : ''}`.trim() || '0m');
+  const lenParse = t => { const v = String(t || '').trim(); if (!v) return null; const c = v.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/); if (c) return +c[1] * 60 + +c[2];
+    const h = v.match(/(\d+(?:\.\d+)?)\s*h/i), m = v.match(/(\d+)\s*m/i); if (h || m) return Math.round((h ? +h[1] * 60 : 0) + (m ? +m[1] : 0)); const n = Number(v); return Number.isFinite(n) ? Math.round(n * 60) : null; };
+  // Reads numbers out of a pasted Twitch stream summary. Handles "Label 12" and "12 Label" layouts; you check them before saving.
+  function readTwitch(raw) {
+    const t = String(raw || '').replace(/ /g, ' ');
+    const num = v => { const m = String(v).replace(/,/g, '').match(/^(\d+(?:\.\d+)?)\s*([kKmM]?)$/); if (!m) return null; return Math.round(Number(m[1]) * (m[2].toLowerCase() === 'k' ? 1e3 : m[2].toLowerCase() === 'm' ? 1e6 : 1) * 10) / 10; };
+    const N = '(\\d[\\d,]*(?:\\.\\d+)?\\s*[kKmM]?)';
+    const L = { avg: 'average viewers|avg\\.? viewers|average ccv', peak: 'peak viewers|max(?:imum)? viewers|peak ccv', follows: 'new followers|followers gained|follows gained|new follows', chatters: 'unique chatters|chatters', views: 'live views' };
+    const fwd = {}, back = {};
+    for (const [k, l] of Object.entries(L)) {
+      const f = t.match(new RegExp(`(?:${l})\\s*:?[ \\t]*\\n?[ \\t]*${N}(?![\\d%])`, 'i')); if (f) fwd[k] = num(f[1]);
+      const b = t.match(new RegExp(`${N}[ \\t]*\\n?[ \\t]*(?:${l})`, 'i')); if (b) back[k] = num(b[1]);
+    }
+    const use = Object.keys(back).length > Object.keys(fwd).length ? back : fwd;
+    const len = t.match(/(?:stream(?:ed)? (?:length|time)|airtime|hours streamed|duration|time live)\s*:?\s*\n?\s*((?:\d+\s*h(?:ours?|rs?)?\s*)?(?:\d+\s*m(?:in(?:utes?)?)?)?|\d{1,2}:\d{2}(?::\d{2})?)/i);
+    if (len && len[1].trim()) use.minutes = lenParse(len[1].replace(/ours?|rs?|in(?:utes?)?/gi, ''));
+    return use;
+  }
+  function drawStats() {
+    const rows = ssRows, day = 86400000, now = Date.now();
+    const inRange = (r, a, b) => { const t = Date.parse(r.day + 'T12:00:00'); return t > now - a * day && t <= now - b * day; };
+    const sum = (list, k) => list.reduce((s, r) => s + (r[k] || 0), 0), avgOf = (list, k) => { const v = list.filter(r => r[k] != null); return v.length ? sum(v, k) / v.length : null; };
+    const cur = rows.filter(r => inRange(r, 30, 0)), prev = rows.filter(r => inRange(r, 60, 30));
+    const delta = (a, b) => (a == null || b == null || !b ? '' : ` <span class="${a >= b ? 'is-up' : 'is-down'}">${a >= b ? '▲' : '▼'} ${Math.abs(Math.round((a - b) / b * 100))}%</span>`);
+    const a1 = avgOf(cur, 'avg'), a0 = avgOf(prev, 'avg'), f1 = sum(cur, 'follows'), f0 = sum(prev, 'follows'), p1 = Math.max(0, ...cur.map(r => r.peak || 0));
+    $('ss-sum').innerHTML = rows.length ? `<div class="dash-stats dash-ss-stats">
+      <div class="dash-stat"><span class="dash-stat-k">Streams, 30 days</span><b>${cur.length}</b></div>
+      <div class="dash-stat"><span class="dash-stat-k">Avg viewers</span><b>${a1 == null ? '–' : a1.toFixed(1)}${delta(a1, a0)}</b></div>
+      <div class="dash-stat"><span class="dash-stat-k">New followers</span><b>+${f1}${delta(f1, f0)}</b></div>
+      <div class="dash-stat"><span class="dash-stat-k">Best peak</span><b>${p1}</b></div></div><p class="dash-hint">Compared with the 30 days before.</p>` : '<p class="dash-note">No streams logged yet. After a stream, tap &ldquo;Log a stream&rdquo; and paste Twitch&rsquo;s summary email.</p>';
+    // Chart: average and peak viewers for the last 20 logged streams
+    const pts = rows.filter(r => r.avg != null || r.peak != null).slice(0, 20).reverse();
+    if (pts.length >= 2) {
+      const W = 600, H = 180, pad = 28, max = Math.max(1, ...pts.map(r => Math.max(r.avg || 0, r.peak || 0)));
+      const X = i => pad + i * (W - 2 * pad) / (pts.length - 1), Y = v => H - pad - v / max * (H - 2 * pad);
+      const line = k => pts.map((r, i) => r[k] == null ? '' : `${X(i)},${Y(r[k])}`).filter(Boolean).join(' ');
+      $('ss-chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Average and peak viewers for the last ${pts.length} logged streams, highest ${max}">
+        <line x1="${pad}" y1="${H - pad}" x2="${W - pad}" y2="${H - pad}" class="ss-axis"/><text x="${pad}" y="${pad - 10}" class="ss-lbl">${max}</text>
+        <polyline points="${line('peak')}" class="ss-peak"/><polyline points="${line('avg')}" class="ss-avg"/>
+        <text x="${pad}" y="${H - 6}" class="ss-lbl">${esc(pts[0].day)}</text><text x="${W - pad}" y="${H - 6}" class="ss-lbl" text-anchor="end">${esc(pts.at(-1).day)}</text></svg>
+        <p class="dash-hint"><span class="ss-key ss-key-avg"></span> average <span class="ss-key ss-key-peak"></span> peak</p>`;
+    } else $('ss-chart').innerHTML = '';
+    $('ss-list').innerHTML = rows.length ? `<div class="dash-table-wrap"><table class="dash-table"><thead><tr><th scope="col">Date</th><th scope="col">Avg</th><th scope="col">Peak</th><th scope="col">Follows</th><th scope="col">Chatters</th><th scope="col">Length</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+      <tbody>${rows.slice(0, 30).map(r => `<tr><th scope="row">${esc(r.day)}${r.title ? `<small class="dash-meta"> ${esc(r.title)}</small>` : ''}${r.note ? `<br><small class="dash-meta">${esc(r.note)}</small>` : ''}</th><td>${ssNum(r.avg)}</td><td>${ssNum(r.peak)}</td><td>${r.follows == null ? '' : `+${r.follows}`}</td><td>${ssNum(r.chatters)}</td><td>${esc(lenText(r.minutes))}</td>
+        <td><button type="button" class="dash-btn dash-small" data-ss-edit="${r.id}">Edit</button> <button type="button" class="dash-btn dash-small dash-danger" data-ss-del="${r.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>` : '';
+  }
+  const ssFill = (r = {}) => {
+    $('ss-day').value = r.day || todayET(); $('ss-title').value = r.title || ''; $('ss-note').value = r.note || ''; $('ss-paste').value = ''; $('ss-read-msg').textContent = '';
+    for (const k of ['avg', 'peak', 'follows', 'chatters', 'views']) $(`ss-${k}`).value = ssNum(r[k]);
+    $('ss-len').value = lenText(r.minutes);
+  };
+  const loadStats = async () => { ssRows = (await api('streamstats')).data.stats || []; drawStats(); };
+  $('ss-new').addEventListener('click', () => { ssEdit = 0; ssFill(); $('ss-form').hidden = false; $('ss-paste').focus(); });
+  $('ss-cancel').addEventListener('click', () => { $('ss-form').hidden = true; });
+  $('ss-read').addEventListener('click', () => {
+    const got = readTwitch($('ss-paste').value), names = { avg: 'average viewers', peak: 'peak viewers', follows: 'new followers', chatters: 'unique chatters', views: 'live views', minutes: 'length' };
+    for (const k of ['avg', 'peak', 'follows', 'chatters', 'views']) if (got[k] != null) $(`ss-${k}`).value = got[k];
+    if (got.minutes != null) $('ss-len').value = lenText(got.minutes);
+    const found = Object.keys(got).filter(k => got[k] != null).map(k => names[k]);
+    $('ss-read-msg').textContent = found.length ? `Found ${found.join(', ')}. Double-check them before saving.` : 'Couldn’t spot any numbers. Type them in below instead.';
+  });
+  $('ss-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { status, data } = await api('streamstats', { action: 'save', id: ssEdit, day: $('ss-day').value, title: $('ss-title').value, note: $('ss-note').value, minutes: lenParse($('ss-len').value),
+      ...Object.fromEntries(['avg', 'peak', 'follows', 'chatters', 'views'].map(k => [k, $(`ss-${k}`).value.trim()])) });
+    if (status !== 200) return flash($('ss-msg'), data.error || 'Couldn’t save.');
+    ssRows = data.stats || []; drawStats(); $('ss-form').hidden = true; flash($('ss-msg'), 'Logged.');
+  });
+  $('ss-list').addEventListener('click', async e => {
+    const ed = e.target.closest('[data-ss-edit]');
+    if (ed) { const r = ssRows.find(x => x.id === Number(ed.dataset.ssEdit)); ssEdit = r.id; ssFill(r); $('ss-form').hidden = false; return $('ss-day').focus(); }
+    const del = e.target.closest('[data-ss-del]');
+    if (del && confirm('Delete these stats?')) { const { data } = await api('streamstats', { action: 'delete', id: Number(del.dataset.ssDel) }); ssRows = data.stats || []; drawStats(); }
+  });
+  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); loadStats(); };
   $('st-new').addEventListener('click', () => { stEdit = 'new'; drawStreams(); $('sf-title').focus(); });
   $('st-body').addEventListener('change', e => {
     if (e.target.id !== 'sf-repeat') return;
@@ -1113,6 +1208,26 @@
   });
   $('st-clear-past').addEventListener('click', async () => { if (confirm('Remove the imported past streams? Rewind will lose that history.')) { await stAct({ action: 'clearPast' }); flash($('st-import-msg'), 'Removed.'); } });
 
+
+  // Today: the one card to check first
+  async function loadToday() {
+    $('td-date').textContent = new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+    const get = p => api(p).then(r => r.data).catch(() => ({}));
+    const [sched, ckd, ask, cl, co] = await Promise.all([fetch('/api/schedule', { cache: 'no-store' }).then(r => r.json()).catch(() => ({})), get('checklist'), get('ask'), get('clients'), get('collab')]);
+    const items = [], next = sched.next;
+    const todayKey = todayET(), nextDay = next ? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date(next.start)) : '';
+    if (next) items.push({ tab: 'streams', icon: next.live ? '🔴' : '📺', text: next.live ? `Live now: <b>${esc(next.title)}</b>` : `${nextDay === todayKey ? 'Streaming today' : 'Next stream'}: <b>${esc(next.title)}</b>, ${esc(etWhen(next.start))} ET` });
+    else items.push({ tab: 'streams', icon: '📺', text: 'No streams on the schedule. Add some in the Streams tab.' });
+    if (nextDay === todayKey && !next.live && ckd.items) { const d = ckd.done.length, t = ckd.items.length; items.push({ tab: 'streams', icon: d === t ? '✅' : '☐', text: d === t ? 'Pre-stream checklist done. Ready to go live.' : `Pre-stream checklist: <b>${d} of ${t}</b> done` }); }
+    const waiting = (ask.questions || []).filter(q => !q.answered_at).length; if (waiting) items.push({ tab: 'guestbook', icon: '❓', text: `<b>${waiting}</b> question${waiting === 1 ? '' : 's'} waiting for an answer` });
+    const newReq = (cl.requests || []).filter(r => r.status === 'new').length; if (newReq) items.push({ tab: 'clients', icon: '📥', text: `<b>${newReq}</b> new quote request${newReq === 1 ? '' : 's'}` });
+    const newCo = (co.collabs || []).filter(c => !c.replied).length; if (newCo) items.push({ tab: 'clients', icon: '🤝', text: `<b>${newCo}</b> collab request${newCo === 1 ? '' : 's'} to answer` });
+    const dueSoon = (cl.jobs || []).filter(j => j.due && j.stage !== 'done' && j.due <= plusDays(todayKey, 3)).length; if (dueSoon) items.push({ tab: 'clients', icon: '⏰', text: `<b>${dueSoon}</b> job${dueSoon === 1 ? '' : 's'} due in the next 3 days` });
+    if (items.length === 1 && next) items.push({ tab: '', icon: '✨', text: 'Nothing else needs you right now.' });
+    $('td-list').innerHTML = items.map(i => `<li>${i.tab ? `<button type="button" data-td="${i.tab}">` : '<span>'}<span aria-hidden="true">${i.icon}</span> <span>${i.text}</span>${i.tab ? '</button>' : '</span>'}</li>`).join('');
+  }
+  $('td-list').addEventListener('click', e => { const b = e.target.closest('[data-td]'); if (b) { openTab(b.dataset.td); $('panel').scrollIntoView({ block: 'start', behavior: 'smooth' }); } });
+  $('td-refresh').addEventListener('click', loadToday);
   // Income
   let incomeMonths = [];
   async function loadIncome() {
@@ -1189,7 +1304,7 @@
   let collabs = [];
   function drawCollabs() {
     $('cr-body').innerHTML = collabs.length ? `<ul class="dash-list">${collabs.map(c => `
-      <li class="dash-row${c.replied ? ' is-hidden' : ''}"><div class="dash-row-main"><b>${esc(c.name)}</b> <span class="dash-meta">${esc(c.kind)} · ${esc(when(c.at))}${c.replied ? ' · replied' : ''}</span>
+      <li class="dash-row${c.replied ? ' is-hidden' : ''}" data-focus="cr-${c.id}"><div class="dash-row-main"><b>${esc(c.name)}</b> <span class="dash-meta">${esc(c.kind)} · ${esc(when(c.at))}${c.replied ? ' · replied' : ''}</span>
         <p class="dash-req-meta">Reply to: <b>${esc(c.contact)}</b></p>${c.link ? `<p class="dash-req-links"><a href="${esc(c.link)}" target="_blank" rel="noopener noreferrer nofollow">Their link</a></p>` : ''}
         <p class="dash-note-text">${esc(c.message)}</p></div>
         <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-cr="${c.replied ? 'unreplied' : 'replied'}" data-id="${c.id}">${c.replied ? 'Mark not replied' : 'Mark replied'}</button>

@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=114">
+  <link rel="stylesheet" href="/styles.css?v=115">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Wallpapers", "item": "https://www.denizen-dismeigh.com/wallpapers/"}]}</script>
 </head>
@@ -180,12 +180,18 @@
       <section id="poster" class="content-section poster-section sweep" aria-labelledby="poster-heading">
         <div class="section-kicker"><span>Side B</span> Make your own</div>
         <h2 class="split-title" id="poster-heading">Wanted poster maker</h2>
-        <p class="wp-lede">Put a bounty on yourself (or a friend). Type a name, pick what they&rsquo;re wanted for, and download the poster. Great as a profile picture or a Discord flex. Everything stays on your device: nothing you type or add here is uploaded or saved.</p>
+        <p class="wp-lede">Put a bounty on yourself (or a friend), report them missing, or make them a crew ID. Type a name, pick the details, and download it. Great as a profile picture or a Discord flex. Everything stays on your device: nothing you type or add here is uploaded or saved.</p>
         <div class="poster-maker">
           <form id="poster-form" class="poster-form" autocomplete="off">
+            <fieldset class="poster-styles"><legend>Style</legend>
+              <label><input type="radio" name="poster-style" value="wanted" checked> Wanted</label>
+              <label><input type="radio" name="poster-style" value="mostwanted"> Most Wanted</label>
+              <label><input type="radio" name="poster-style" value="missing"> Missing</label>
+              <label><input type="radio" name="poster-style" value="crewid"> Crew ID</label>
+            </fieldset>
             <label for="poster-name">Name on the poster</label>
             <input id="poster-name" type="text" maxlength="24" placeholder="Space Cowboy">
-            <label for="poster-crime">Wanted for</label>
+            <label for="poster-crime" id="poster-crime-l">Wanted for</label>
             <input id="poster-crime" type="text" maxlength="70" placeholder="Being way too good at the arcade">
             <div class="poster-chips" aria-label="Quick picks">
               <button type="button" data-crime="Lurking with intent">Lurking</button>
@@ -194,7 +200,7 @@
               <button type="button" data-crime="One more mod, every single time">One more mod</button>
               <button type="button" data-crime="Stealing the last bounty">Bounty theft</button>
             </div>
-            <label for="poster-reward">Reward (Woolongs)</label>
+            <label for="poster-reward" id="poster-reward-l">Reward (Woolongs)</label>
             <input id="poster-reward" type="text" inputmode="numeric" maxlength="11" placeholder="6,000,000">
             <label for="poster-photo">Photo or avatar (optional)</label>
             <input id="poster-photo" type="file" accept="image/*">
@@ -233,7 +239,7 @@
 
   }
   </script>
-  <script src="/poster.js?v=2" defer></script>
+  <script src="/poster.js?v=3" defer></script>
   <script src="/app.js?v=63" defer></script>
 </body>
 </html>

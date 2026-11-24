@@ -11,7 +11,7 @@
   const dl = $('poster-download'), shareBtn = $('poster-share'), clearBtn = $('poster-clear-photo');
   let photo = null, photoUrl = '';
 
-  const C = { ink: '#14110f', paper: '#efe6d2', dim: '#8a7f6c', red: '#b73b2c', mustard: '#e3a92b' };
+  const C = { ink: '#14110f', paper: '#efe6d2', dim: '#7a6f5c', red: '#b73b2c', mustard: '#e3a92b' };
   const clean = (s, max) => String(s || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 
   const fit = (text, font, size, maxW, min = 28) => {
@@ -30,76 +30,118 @@
     return lines.slice(0, 3);
   };
 
-  function draw() {
-    const name = clean(nameIn.value, 24) || 'Space Cowboy';
-    const crime = clean(crimeIn.value, 70) || 'Being way too good at the arcade';
-    const amount = Math.min(999999999, Math.max(1, Math.floor(Number(String(rewardIn.value).replace(/[^\d]/g, '')) || 6000000)));
-
-    // Paper with a worn edge
-    ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = C.paper; ctx.fillRect(24, 24, W - 48, H - 48);
-    ctx.save();
-    ctx.globalAlpha = 0.07; ctx.fillStyle = C.ink;
-    for (let i = 0; i < 900; i++) { const x = (i * 7919) % (W - 48) + 24, y = (i * 104729) % (H - 48) + 24; ctx.fillRect(x, y, 2 + (i % 3), 2); }
-    ctx.restore();
-    ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.strokeRect(54, 54, W - 108, H - 108);
-
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = C.ink;
-    ctx.font = '34px "Special Elite", "Courier New", monospace';
-    ctx.fillText('BOUNTY HUNTER BULLETIN  ·  NO. ' + String(amount % 10000).padStart(4, '0'), W / 2, 118);
-    ctx.font = '210px Anton, Impact, sans-serif';
-    ctx.fillText('WANTED', W / 2, 330);
-    ctx.font = '34px "Special Elite", "Courier New", monospace';
-    ctx.fillText('DEAD OR LIVE-STREAMING', W / 2, 382);
-
-    // Photo frame
-    const px = 150, py = 420, pw = W - 300, ph = 560;
+  const STYLES = {
+    wanted: { crimeL: 'Wanted for', rewardL: 'Reward (Woolongs)', crime: 'Being way too good at the arcade', reward: 6000000, chips: true },
+    mostwanted: { crimeL: 'Wanted for', rewardL: 'Reward (Woolongs)', crime: 'Crimes against the backseat', reward: 99000000, chips: true },
+    missing: { crimeL: 'Last seen', rewardL: 'Reward if found (Woolongs)', crime: 'Lurking in chat at 2 AM', reward: 500000, chips: false },
+    crewid: { crimeL: 'Role on the ship', rewardL: 'Crew number', crime: 'Professional backseat driver', reward: 7, chips: false },
+  };
+  const style = () => form.querySelector('[name="poster-style"]:checked')?.value || 'wanted';
+  let lastStyle = '';
+  function syncLabels() {
+    const st = STYLES[style()]; if (lastStyle === style()) return; lastStyle = style();
+    $('poster-crime-l').textContent = st.crimeL; $('poster-reward-l').textContent = st.rewardL;
+    crimeIn.placeholder = st.crime; rewardIn.placeholder = st.reward.toLocaleString('en-US');
+    document.querySelector('.poster-chips').hidden = !st.chips;
+  }
+  function photoBox(px, py, pw, ph, tone = 'grayscale(1) sepia(0.45) contrast(1.15)') {
     ctx.fillStyle = '#d8ccb3'; ctx.fillRect(px, py, pw, ph);
     if (photo) {
       const r = Math.max(pw / photo.width, ph / photo.height), iw = photo.width * r, ih = photo.height * r;
       ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip();
-      ctx.filter = 'grayscale(1) sepia(0.45) contrast(1.15)';
-      ctx.drawImage(photo, px + (pw - iw) / 2, py + (ph - ih) / 2, iw, ih);
+      ctx.filter = tone; ctx.drawImage(photo, px + (pw - iw) / 2, py + (ph - ih) / 2, iw, ih);
       ctx.restore(); ctx.filter = 'none';
     } else {
+      ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip();
       ctx.fillStyle = '#a89c85';
-      ctx.beginPath(); ctx.arc(W / 2, py + 220, 110, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(W / 2, py + ph + 40, 260, 230, 0, Math.PI, 0); ctx.fill();
-      ctx.fillStyle = C.paper; ctx.font = '150px Anton, Impact, sans-serif'; ctx.fillText('?', W / 2, py + 275);
+      ctx.beginPath(); ctx.arc(px + pw / 2, py + ph * 0.39, ph * 0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(px + pw / 2, py + ph + ph * 0.07, pw * 0.33, ph * 0.41, 0, Math.PI, 0); ctx.fill();
+      ctx.fillStyle = C.paper; ctx.textAlign = 'center'; ctx.font = `${Math.round(ph * 0.27)}px Anton, Impact, sans-serif`; ctx.fillText('?', px + pw / 2, py + ph * 0.49);
+      ctx.restore();
     }
     ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.strokeRect(px, py, pw, ph);
-
-    // Name
+  }
+  function paper() {
+    ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = C.paper; ctx.fillRect(24, 24, W - 48, H - 48);
+    ctx.save(); ctx.globalAlpha = 0.07; ctx.fillStyle = C.ink;
+    for (let i = 0; i < 900; i++) { const x = (i * 7919) % (W - 48) + 24, y = (i * 104729) % (H - 48) + 24; ctx.fillRect(x, y, 2 + (i % 3), 2); }
+    ctx.restore();
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.strokeRect(54, 54, W - 108, H - 108);
+  }
+  function stamp(text, x, y, color = C.red) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(0.22); ctx.globalAlpha = 0.85; ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 6;
+    ctx.font = '62px Anton, Impact, sans-serif'; const w = ctx.measureText(text).width + 60;
+    ctx.strokeRect(-w / 2, -50, w, 92); ctx.textAlign = 'center'; ctx.fillText(text, 0, 26); ctx.restore();
+  }
+  function footer() { ctx.textAlign = 'center'; ctx.fillStyle = C.dim; ctx.font = '26px "Special Elite", "Courier New", monospace'; ctx.fillText('Issued by Dismeigh’s crew  ·  denizen-dismeigh.com', W / 2, H - 84); }
+  function poster(kind, name, crime, amount) {
+    paper();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = C.ink;
+    ctx.font = '34px "Special Elite", "Courier New", monospace';
+    const top = { wanted: 'BOUNTY HUNTER BULLETIN', mostwanted: 'PRIORITY BULLETIN', missing: 'SHIP-WIDE NOTICE' }[kind];
+    ctx.fillText(`${top}  ·  NO. ${String(amount % 10000).padStart(4, '0')}`, W / 2, 118);
+    if (kind === 'mostwanted') {
+      ctx.fillStyle = C.red; ctx.fillRect(90, 150, W - 180, 200);
+      ctx.fillStyle = C.paper; ctx.font = `${fit('MOST WANTED', 'Anton, Impact, sans-serif', 180, W - 240)}px Anton, Impact, sans-serif`; ctx.fillText('MOST WANTED', W / 2, 322);
+      ctx.fillStyle = C.ink; ctx.font = '34px "Special Elite", "Courier New", monospace'; ctx.fillText('EXTREMELY DANGEROUS IN CHAT', W / 2, 392);
+    } else {
+      const big = kind === 'missing' ? 'MISSING' : 'WANTED';
+      ctx.font = '210px Anton, Impact, sans-serif'; ctx.fillText(big, W / 2, 330);
+      ctx.font = '34px "Special Elite", "Courier New", monospace';
+      ctx.fillText(kind === 'missing' ? 'HAVE YOU SEEN THIS CREW MEMBER?' : 'DEAD OR LIVE-STREAMING', W / 2, 382);
+    }
+    photoBox(150, 420, W - 300, 560, kind === 'missing' ? 'grayscale(1) contrast(1.05)' : undefined);
     const ns = fit(name.toUpperCase(), 'Anton, Impact, sans-serif', 130, W - 200);
-    ctx.fillStyle = C.ink; ctx.font = `${ns}px Anton, Impact, sans-serif`;
-    ctx.fillText(name.toUpperCase(), W / 2, 1120);
-
-    // Crime
-    ctx.font = '38px "Special Elite", "Courier New", monospace';
-    ctx.fillStyle = C.dim; ctx.fillText('WANTED FOR', W / 2, 1180);
+    ctx.textAlign = 'center'; ctx.fillStyle = C.ink; ctx.font = `${ns}px Anton, Impact, sans-serif`; ctx.fillText(name.toUpperCase(), W / 2, 1120);
+    ctx.font = '38px "Special Elite", "Courier New", monospace'; ctx.fillStyle = C.dim; ctx.fillText(kind === 'missing' ? 'LAST SEEN' : 'WANTED FOR', W / 2, 1180);
     ctx.fillStyle = C.ink; ctx.font = '42px "Special Elite", "Courier New", monospace';
     wrap(crime, W - 240).forEach((l, i) => ctx.fillText(l, W / 2, 1232 + i * 50));
-
-    // Reward slab
-    ctx.fillStyle = C.mustard; ctx.fillRect(110, 1380, W - 220, 150);
-    ctx.fillStyle = C.ink; ctx.font = '36px "Special Elite", "Courier New", monospace';
-    ctx.fillText('REWARD', W / 2, 1424);
+    ctx.fillStyle = kind === 'mostwanted' ? C.red : C.mustard; ctx.fillRect(110, 1380, W - 220, 150);
+    ctx.fillStyle = kind === 'mostwanted' ? C.paper : C.ink; ctx.font = '36px "Special Elite", "Courier New", monospace';
+    ctx.fillText(kind === 'missing' ? 'REWARD IF FOUND' : 'REWARD', W / 2, 1424);
     const rw = amount.toLocaleString('en-US') + ' WOOLONGS';
-    ctx.font = `${fit(rw, 'Anton, Impact, sans-serif', 84, W - 280)}px Anton, Impact, sans-serif`;
-    ctx.fillText(rw, W / 2, 1510);
-
-    // Stamp
-    ctx.save(); ctx.translate(W - 230, 470); ctx.rotate(0.22);
-    ctx.globalAlpha = 0.85; ctx.strokeStyle = C.red; ctx.fillStyle = C.red; ctx.lineWidth = 6;
-    ctx.strokeRect(-130, -50, 260, 92);
-    ctx.font = '62px Anton, Impact, sans-serif'; ctx.fillText('BOUNTY', 0, 26);
-    ctx.restore();
-
-    ctx.fillStyle = C.dim; ctx.font = '26px "Special Elite", "Courier New", monospace';
-    ctx.fillText('Issued by Dismeigh’s crew  ·  denizen-dismeigh.com', W / 2, H - 76);
+    ctx.font = `${fit(rw, 'Anton, Impact, sans-serif', 84, W - 280)}px Anton, Impact, sans-serif`; ctx.fillText(rw, W / 2, 1510);
+    if (kind === 'wanted') stamp('BOUNTY', W - 230, 470);
+    if (kind === 'mostwanted') stamp('TOP 10', W - 230, 470);
+    if (kind === 'missing') stamp('URGENT', W - 230, 470, C.ink);
+    footer();
+  }
+  function crewId(name, role, num) {
+    ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H);
+    // lanyard
+    ctx.fillStyle = C.red; ctx.fillRect(W / 2 - 60, 0, 120, 150);
+    const cx = 110, cy = 150, cw = W - 220, ch = H - 260;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(cx + 16, cy + 16, cw, ch);
+    ctx.fillStyle = C.paper; ctx.fillRect(cx, cy, cw, ch);
+    ctx.fillStyle = C.ink; ctx.fillRect(W / 2 - 70, cy + 30, 140, 22);           // clip slot
+    ctx.fillStyle = C.mustard; ctx.fillRect(cx, cy + 80, cw, 150);
+    ctx.fillStyle = C.ink; ctx.textAlign = 'center';
+    ctx.font = '96px Anton, Impact, sans-serif'; ctx.fillText('SHIP’S CREW ID', W / 2, cy + 196);
+    photoBox(cx + 150, cy + 290, cw - 300, cw - 300, 'saturate(0.9) contrast(1.05)');
+    const y0 = cy + 290 + cw - 300 + 110;
+    ctx.fillStyle = C.ink; ctx.font = `${fit(name.toUpperCase(), 'Anton, Impact, sans-serif', 120, cw - 120)}px Anton, Impact, sans-serif`; ctx.fillText(name.toUpperCase(), W / 2, y0);
+    ctx.fillStyle = C.dim; ctx.font = '34px "Special Elite", "Courier New", monospace'; ctx.fillText('ROLE ON THE SHIP', W / 2, y0 + 62);
+    ctx.fillStyle = C.ink; ctx.font = '42px "Special Elite", "Courier New", monospace';
+    wrap(role, cw - 140).slice(0, 2).forEach((l, i) => ctx.fillText(l, W / 2, y0 + 112 + i * 50));
+    // crew number + barcode
+    const by = cy + ch - 190;
+    ctx.fillStyle = C.red; ctx.font = '40px "Special Elite", "Courier New", monospace'; ctx.fillText(`CREW NO. ${String(num).padStart(4, '0')}`, W / 2, by - 20);
+    ctx.fillStyle = C.ink; let x = cx + 160, seed = num * 9301 + name.length * 49297;
+    while (x < cx + cw - 160) { seed = (seed * 9301 + 49297) % 233280; const w = 3 + (seed % 9); ctx.fillRect(x, by, w, 90); x += w + 4 + (seed % 7); }
+    ctx.fillStyle = C.dim; ctx.font = '26px "Special Elite", "Courier New", monospace'; ctx.fillText('Authorized by Captain Dismeigh  ·  denizen-dismeigh.com', W / 2, cy + ch - 40);
+  }
+  function draw() {
+    syncLabels();
+    const kind = style(), st = STYLES[kind];
+    const name = clean(nameIn.value, 24) || 'Space Cowboy';
+    const crime = clean(crimeIn.value, 70) || st.crime;
+    const max = kind === 'crewid' ? 9999 : 999999999;
+    const amount = Math.min(max, Math.max(1, Math.floor(Number(String(rewardIn.value).replace(/[^\d]/g, '')) || st.reward)));
+    if (kind === 'crewid') crewId(name, crime, amount); else poster(kind, name, crime, amount);
   }
 
-  const fileName = () => 'wanted-' + (clean(nameIn.value, 24).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'space-cowboy') + '.png';
+  const fileName = () => ({ wanted: 'wanted', mostwanted: 'most-wanted', missing: 'missing', crewid: 'crew-id' }[style()] || 'poster') + '-' + (clean(nameIn.value, 24).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'space-cowboy') + '.png';
   const toBlob = () => new Promise(res => canvas.toBlob(res, 'image/png'));
 
   dl.addEventListener('click', async () => {
@@ -119,7 +161,7 @@
       if (!blob) return;
       const file = new File([blob], fileName(), { type: 'image/png' });
       if (!navigator.canShare({ files: [file] })) { dl.click(); return; }
-      try { await navigator.share({ files: [file], title: 'Wanted poster' }); } catch {}
+      try { await navigator.share({ files: [file], title: 'Poster from denizen-dismeigh.com' }); } catch {}
     });
   }
 

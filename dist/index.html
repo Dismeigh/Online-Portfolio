@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=114">
+  <link rel="stylesheet" href="styles.css?v=115">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -765,7 +765,25 @@
       });
     }
 
+    // "Add to my calendar" for one stream: a Google Calendar link, or an .ics file for Apple/Outlook
+    const addEvents = [];
+    const icsTime = iso => new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    const googleAdd = e => `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Dismeigh: ${e.title}`)}&dates=${icsTime(e.start)}/${icsTime(e.end || e.start)}&details=${encodeURIComponent('Live on Twitch: https://twitch.tv/dismeigh')}&location=${encodeURIComponent('https://twitch.tv/dismeigh')}`;
+    document.addEventListener('click', ev => {
+      const b = ev.target.closest('[data-ics]'); if (!b) return;
+      const e = addEvents[Number(b.dataset.ics)]; if (!e) return;
+      const esc = t => String(t).replace(/\\/g, '\\\\').replace(/[;,]/g, m => '\\' + m).replace(/\r?\n/g, ' ');
+      const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Dismeigh//Stream//EN', 'BEGIN:VEVENT', `UID:dismeigh-stream-${icsTime(e.start)}@denizen-dismeigh.com`, `DTSTAMP:${icsTime(new Date().toISOString())}`,
+        `DTSTART:${icsTime(e.start)}`, `DTEND:${icsTime(e.end || e.start)}`, `SUMMARY:${esc(`Dismeigh: ${e.title}`)}`, 'URL:https://twitch.tv/dismeigh', 'DESCRIPTION:Live on Twitch: https://twitch.tv/dismeigh',
+        'BEGIN:VALARM', 'TRIGGER:-PT15M', 'ACTION:DISPLAY', 'DESCRIPTION:Dismeigh goes live in 15 minutes', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+      a.download = `dismeigh-${e.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'stream'}.ics`;
+      document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    });
+
     function renderBoard(week) {
+      addEvents.length = 0;
       const days = weekDays(week.start);
       const todayKey = dayKey(new Date());
       weekLabel.textContent = `Week of ${days[0].short} to ${days[6].short}`;
@@ -781,6 +799,7 @@
               <span class="show">
                 <span class="show-title">${escapeHtml(e.title)}</span>
                 <span class="show-time">${e.live ? 'On air now' : e.allDay ? 'All day' : isEastern(new Date(e.start)) ? clockTime(new Date(e.start)) : `${localTime(new Date(e.start))}<small class="show-et">${clockTime(new Date(e.start))}</small>`}</span>
+                ${!e.done && !e.live && !e.allDay ? `<span class="show-add"><a href="${escapeHtml(googleAdd(e))}" target="_blank" rel="noopener noreferrer" aria-label="Add ${escapeHtml(e.title)} to Google Calendar">+ Google</a> <button type="button" data-ics="${addEvents.push(e) - 1}" aria-label="Add ${escapeHtml(e.title)} to Apple or Outlook calendar">+ Apple/Outlook</button></span>` : ''}
                 ${e.done && /^https:\/\//i.test(e.link || '') ? `<a class="show-recap" href="${escapeHtml(e.link)}" target="_blank" rel="noopener noreferrer">${/clip/i.test(e.link) ? 'Clip of the night' : 'Watch the VOD'} <span aria-hidden="true">&rarr;</span></a>` : ''}
               </span>`).join('')
           : '<span class="show show-off"><span class="show-title">Off night / rest day</span></span>';

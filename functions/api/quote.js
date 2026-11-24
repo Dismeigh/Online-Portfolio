@@ -8,6 +8,6 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   await clientTables(env.ARCADE);
   const r = await submitQuote(env.ARCADE, b, await visitorKey(request, env));
   if (r.error) return json(r, 400);
-  if (r.id) { const job = alert(env, 'quote', { title: 'New quote request', body: `${r.name}: ${r.service}`, tab: 'clients' }); if (waitUntil) waitUntil(job); else await job; }
+  if (r.id) { const job = alert(env, 'quote', { title: 'New quote request', body: `${r.name}: ${r.service}`, tab: 'clients', focus: `rq-${r.id}` }); if (waitUntil) waitUntil(job); else await job; }
   return json({ ok: true });
 });

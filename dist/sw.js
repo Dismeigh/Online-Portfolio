@@ -1,7 +1,7 @@
 // Dismeigh site service worker: makes the site installable and gives it an offline page.
 // Pages are always fetched fresh when online; only static files are cached.
-const CACHE = 'dismeigh-v101';
-const PRECACHE = ['/offline.html', '/styles.css?v=114', '/app.js?v=63', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
+const CACHE = 'dismeigh-v102';
+const PRECACHE = ['/offline.html', '/styles.css?v=115', '/app.js?v=63', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -17,7 +17,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('push', event => {
   let d = {}; try { d = event.data ? event.data.json() : {}; } catch {}
   event.waitUntil(self.registration.showNotification(d.title || 'Dismeigh dashboard', {
-    body: d.body || '', icon: '/dashboard/icon-192.png', badge: '/favicon-48.png', tag: d.tab || 'dash', data: { url: `/dashboard/#${String(d.tab || 'overview').replace(/[^a-z]/g, '')}` },
+    body: d.body || '', icon: '/dashboard/icon-192.png', badge: '/favicon-48.png', tag: d.tab || 'dash', data: { url: `/dashboard/#${String(d.tab || 'overview').replace(/[^a-z]/g, '')}${/^[a-z]+-\d+$/.test(d.focus || '') ? `:${d.focus}` : ''}` },
   }));
 });
 self.addEventListener('notificationclick', event => {

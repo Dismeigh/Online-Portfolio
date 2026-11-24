@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=114">
+  <link rel="stylesheet" href="/styles.css?v=115">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Press Kit", "item": "https://www.denizen-dismeigh.com/press/"}]}</script>
 </head>
@@ -180,6 +180,11 @@
           </details>
         </div>
 
+        <div id="press-past" hidden>
+          <h2 class="press-h">Past collabs</h2>
+          <ul class="press-past" id="press-past-list"></ul>
+        </div>
+
         <h2 class="press-h">Name</h2>
         <p class="press-copy"><strong>Dismeigh</strong>. Pronounced like &ldquo;dismay.&rdquo; Always one word, capital D.</p>
 
@@ -243,6 +248,19 @@
     }, { threshold: 0.15 });
     document.querySelectorAll('.sweep').forEach(el => io.observe(el));
 
+    fetch('/api/content/collabs').then(r => r.ok ? r.json() : null).then(d => {
+      const list = (d && d.collabs) || []; if (!list.length) return;
+      const ul = document.getElementById('press-past-list');
+      list.forEach(c => {
+        const li = document.createElement('li'), name = /^https:\/\//.test(c.link || '') ? document.createElement('a') : document.createElement('b');
+        name.textContent = c.name; if (name.tagName === 'A') { name.href = c.link; name.target = '_blank'; name.rel = 'noopener noreferrer nofollow'; }
+        li.append(name);
+        if (c.what) { const w = document.createElement('span'); w.textContent = c.what; li.append(w); }
+        if (c.when) { const t = document.createElement('small'); t.textContent = c.when; li.append(t); }
+        ul.append(li);
+      });
+      document.getElementById('press-past').hidden = false;
+    }).catch(() => {});
     fetch('/api/site').then(r => r.ok ? r.json() : null).then(d => {
       const c = d && d.collab; if (!c || !c.on) return;
       const ul = document.getElementById('press-collab-kinds');

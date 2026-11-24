@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=114">
+  <link rel="stylesheet" href="/styles.css?v=115">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -83,6 +83,10 @@
       </nav>
 
       <div data-panel="overview">
+      <section class="dash-card dash-today" aria-labelledby="td-h">
+        <div class="dash-card-head"><div><p class="dash-card-kicker" id="td-date">Today</p><h2 id="td-h">Today</h2></div><button type="button" class="dash-btn dash-small" id="td-refresh">Refresh</button></div>
+        <ul class="dash-today-list" id="td-list"><li class="dash-note">Loading&hellip;</li></ul>
+      </section>
       <section class="dash-stats" aria-label="At a glance">
         <div class="dash-stat"><span class="dash-stat-k">Goal bar</span><b id="st-goal">Off</b></div>
         <div class="dash-stat"><span class="dash-stat-k">Raised</span><b id="st-raised">$0</b></div>
@@ -208,6 +212,7 @@
             <button type="button" data-content="faq">Work FAQ</button>
             <button type="button" data-content="builder">Price builder</button>
             <button type="button" data-content="garage">Garage build</button>
+            <button type="button" data-content="collabs">Past collabs</button>
             <button type="button" data-content="captions">Clip captions</button>
           </div>
           <p class="dash-note" id="content-note"></p>
@@ -394,6 +399,30 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">What viewers see</p><h2 id="stu-h">Coming up</h2></div></div>
           <div id="st-up"></div>
           <p class="dash-hint">Viewers can add your schedule to their own calendar from the home page. It updates on its own when you change things here.</p>
+        </section>
+        <section class="dash-card" aria-labelledby="ss-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Private, from Twitch&rsquo;s stream summary</p><h2 id="ss-h">Stream stats</h2></div><button type="button" class="dash-btn dash-small dash-primary" id="ss-new">Log a stream</button></div>
+          <div id="ss-sum"></div>
+          <div id="ss-chart" class="dash-ss-chart"></div>
+          <form id="ss-form" class="dash-job-form" hidden>
+            <label for="ss-paste">Paste Twitch&rsquo;s stream summary email or page <span>(optional, fills in the numbers below)</span></label>
+            <textarea id="ss-paste" rows="4" placeholder="Select all in the email, copy, and paste it here"></textarea>
+            <div class="dash-actions"><button type="button" class="dash-btn dash-small" id="ss-read">Read the numbers</button></div>
+            <p class="dash-hint" id="ss-read-msg" role="status"></p>
+            <div class="dash-two"><div><label for="ss-day">Stream date</label><input id="ss-day" type="date" required></div><div><label for="ss-title">Title <span>(optional)</span></label><input id="ss-title" maxlength="80"></div></div>
+            <div class="dash-three">
+              <div><label for="ss-avg">Average viewers</label><input id="ss-avg" inputmode="decimal"></div>
+              <div><label for="ss-peak">Peak viewers</label><input id="ss-peak" inputmode="numeric"></div>
+              <div><label for="ss-follows">New followers</label><input id="ss-follows" inputmode="numeric"></div>
+              <div><label for="ss-chatters">Unique chatters</label><input id="ss-chatters" inputmode="numeric"></div>
+              <div><label for="ss-views">Live views</label><input id="ss-views" inputmode="numeric"></div>
+              <div><label for="ss-len">Length <span>(like 2h 30m)</span></label><input id="ss-len" maxlength="12"></div>
+            </div>
+            <label for="ss-note">Note <span>(optional, like &ldquo;raided by X&rdquo;)</span></label><input id="ss-note" maxlength="300">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button><button type="button" class="dash-btn" id="ss-cancel">Cancel</button></div>
+          </form>
+          <p class="dash-msg" id="ss-msg" role="status"></p>
+          <div id="ss-list"></div>
         </section>
         <section class="dash-card" aria-labelledby="sg-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">For X, Discord and Instagram</p><h2 id="sg-h">Schedule graphic</h2></div></div>
@@ -599,7 +628,7 @@
               <label><input type="checkbox" value="notes" checked> <span>Notes</span></label>
               <label><input type="checkbox" value="guestbook" checked> <span>Ship&rsquo;s Log <small>(only adds missing entries)</small></span></label>
               <label><input type="checkbox" value="jobs" checked> <span>Client jobs, payments, expenses &amp; auditions <small>(only adds missing ones)</small></span></label>
-              <label><input type="checkbox" value="streams" checked> <span>Stream schedule and pre-stream checklist <small>(only adds missing streams)</small></span></label>
+              <label><input type="checkbox" value="streams" checked> <span>Stream schedule, stream stats and pre-stream checklist <small>(only adds missing streams)</small></span></label>
               <label><input type="checkbox" value="ask" checked> <span>Answered questions <small>(only adds missing ones)</small></span></label>
             </fieldset>
             <div class="dash-actions"><button type="submit" class="dash-btn dash-danger">Restore</button><button type="button" class="dash-btn" id="bk-before">Download pre-restore copy</button></div>
@@ -626,7 +655,7 @@
           <label for="help-find" class="sr-only">Search help</label>
           <input id="help-find" type="search" placeholder="Search help, like &ldquo;invoice&rdquo; or &ldquo;banner&rdquo;" autocomplete="off">
           <h3 class="dash-h3">Getting around</h3>
-          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, collab requests, jobs, auditions, calendar and income. <b>Streams</b>: pre-stream checklist, your stream schedule (repeats, skipped nights, one-time streams) and the schedule graphic. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, collabs, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
+          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: the Today card (next stream, what&rsquo;s waiting on you), today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, collab requests, jobs, auditions, calendar and income. <b>Streams</b>: pre-stream checklist, your stream schedule (repeats, skipped nights, one-time streams) and the schedule graphic. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, collabs, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
           <details class="dash-help-item"><summary>Can I use this on my phone?</summary><p>Yes. Open the dashboard in Safari, tap Share, then Add to Home Screen. It works like an app, and phone alerts only work from the home-screen app on iPhone.</p></details>
           <h3 class="dash-h3">Stream & site</h3>
           <details class="dash-help-item"><summary>Put a message across every page</summary><p>Site tab, Site banner. Type a message, add a link if you want, and tap Show banner. Use the one-tap buttons for common ones like Live now or No stream tonight. Set Start at to schedule one for later.</p></details>
@@ -641,6 +670,7 @@
           <details class="dash-help-item"><summary>Send a client an agreement, invoice or status page</summary><p>Clients tab, open the job, then Agreement, client link, invoice & payments. Fill in each part, save, and use the Copy link buttons. Turn any link off at any time.</p></details>
           <details class="dash-help-item"><summary>Record money and see profit</summary><p>On the job, Record payment for anything paid outside Ko-fi (Ko-fi counts on its own). Add costs under Income, Expenses. Download spreadsheet gives you everything for tax time.</p></details>
           <details class="dash-help-item"><summary>Change the stream schedule</summary><p>Streams tab. Add your regular streams once with &ldquo;Every week&rdquo; and the days. To cancel one night, pick the date under &ldquo;Skip a date&rdquo; on that stream. For a one-off, add a one-time stream. The home page, calendar subscriptions and Rewind all update on their own.</p></details>
+          <details class="dash-help-item"><summary>Log a stream&rsquo;s stats</summary><p>Streams tab, Stream stats, &ldquo;Log a stream&rdquo;. Open Twitch&rsquo;s stream summary email, select all, copy, paste it in the box and tap &ldquo;Read the numbers&rdquo;. Check them and Save. You can also type them in yourself.</p></details>
           <details class="dash-help-item"><summary>Post this week&rsquo;s schedule</summary><p>Streams tab, Schedule graphic. Pick the week and the size (square for X or Discord, story for Instagram), then Download or Share.</p></details>
           <details class="dash-help-item"><summary>Answer a viewer&rsquo;s question</summary><p>Ship&rsquo;s Log tab, Questions. Type your answer and tap &ldquo;Answer and post&rdquo;. It shows on the Ask the Captain page right away. Delete the ones you don&rsquo;t want to answer.</p></details>
           <details class="dash-help-item"><summary>Track voice auditions</summary><p>Clients tab, Auditions. Add each one with its deadline and change the status as you hear back. Deadlines show on the calendar.</p></details>
@@ -685,6 +715,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=40" defer></script>
+  <script src="/dashboard.js?v=41" defer></script>
 </body>
 </html>
