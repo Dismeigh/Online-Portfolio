@@ -646,7 +646,7 @@
   // ---------- Phone alerts (Web Push) ----------
   const alertKinds = () => [...document.querySelectorAll('#al-kinds input:checked')].map(i => i.value);
   const deviceName = () => { const u = navigator.userAgent; return /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? 'Android phone' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows PC' : 'Device'; };
-  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins' };
+  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins', recap: 'Weekly recap' };
   const toKey = s => { const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4)); return Uint8Array.from(b, c => c.charCodeAt(0)); };
   let pushKey = '', mySub = null;
   const pushOk = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
