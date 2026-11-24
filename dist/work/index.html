@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=107">
+  <link rel="stylesheet" href="/styles.css?v=109">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Work", "item": "https://www.denizen-dismeigh.com/work/"}]}</script>
 </head>
@@ -220,6 +220,18 @@
           <p class="rates-cta"><a class="social-btn" id="rates-quote" href="#quote">Get a free quote</a></p>
         </div>
 
+        <div class="builder" id="builder">
+          <h3>Build your project</h3>
+          <p class="rates-intro">Tick what you want and get a ballpark price. It&rsquo;s an estimate: your free quote has the real number.</p>
+          <div class="builder-tabs" role="tablist" aria-label="Project type">
+            <button type="button" role="tab" id="bt-web" aria-controls="bp-web" aria-selected="true" data-bt="web">Website</button>
+            <button type="button" role="tab" id="bt-discord" aria-controls="bp-discord" aria-selected="false" data-bt="discord" tabindex="-1">Discord server</button>
+          </div>
+          <div class="builder-panel" id="bp-web" role="tabpanel" aria-labelledby="bt-web"></div>
+          <div class="builder-panel" id="bp-discord" role="tabpanel" aria-labelledby="bt-discord" hidden></div>
+          <div class="builder-total" aria-live="polite"><p id="bd-total"></p><button type="button" class="social-btn" id="bd-send">Send this in a quote request</button></div>
+        </div>
+
         <div class="faq" id="faq">
           <h3>Questions</h3>
           <div class="faq-list" id="faq-list"><details class="faq-item"><summary>How long does it take?</summary><p>Discord setups usually take 2 to 4 days. One-page sites take about 1 to 2 weeks, and bigger sites 3 to 6 weeks, depending on how fast content and feedback come back.</p></details><details class="faq-item"><summary>How does payment work?</summary><p>Discord work is paid up front. For websites, half is paid to start and the rest before the site goes live. Monthly care is billed at the start of each month and you can cancel anytime.</p></details><details class="faq-item"><summary>What counts as a round of changes?</summary><p>One list of tweaks sent together, like &quot;swap this photo, change this color, reword this line.&quot; Bigger new features or pages are quoted separately.</p></details><details class="faq-item"><summary>Do I own the site or server when it&#x27;s done?</summary><p>Yes. The domain, the site and the server are yours. I can hand everything over, or keep looking after it with monthly care.</p></details><details class="faq-item"><summary>Do I need to know anything about tech?</summary><p>Nope. Tell me what you want it to do and who it&#x27;s for, and I&#x27;ll handle the rest and show you how to make simple updates.</p></details><details class="faq-item"><summary>What do you need from me to start?</summary><p>Your logo or colors if you have them, the text and photos you want to use, and links to anything you like the look of. For Discord, admin access to the server (or I can build a fresh one).</p></details></div>
@@ -271,6 +283,64 @@
       for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
     }, { threshold: 0.15 });
     document.querySelectorAll('.sweep').forEach(el => io.observe(el));
+
+    // Price builder (prices come from the dashboard: Content, Price builder)
+    {
+      const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const usd = n => `$${Number(n).toLocaleString('en-US')}`;
+      let items = [], tab = 'web';
+      const draw = () => {
+        for (const g of ['web', 'discord']) {
+          const rows = items.map((it, i) => ({ ...it, i })).filter(it => it.group === g);
+          const base = rows.filter(r => r.kind === 'base'), add = rows.filter(r => r.kind === 'addon'), mo = rows.filter(r => r.kind === 'monthly');
+          const line = (r, input) => `<label class="bd-row">${input}<span class="bd-name">${esc(r.name)}${r.note ? `<small>${esc(r.note)}</small>` : ''}</span><b>${usd(r.price)}${r.kind === 'monthly' ? '/mo' : r.per === 'each' ? ' each' : ''}</b></label>`;
+          document.getElementById(`bp-${g}`).innerHTML =
+            (base.length ? `<fieldset><legend>Start with</legend>${base.map((r, k) => line(r, `<input type="radio" name="bd-base-${g}" data-bd="${r.i}"${k === 0 ? ' checked' : ''}>`)).join('')}</fieldset>` : '') +
+            (add.length ? `<fieldset><legend>Add extras</legend>${add.map(r => r.per === 'each'
+              ? `<div class="bd-row bd-qty"><span class="bd-name">${esc(r.name)}${r.note ? `<small>${esc(r.note)}</small>` : ''}</span><span class="bd-step"><button type="button" data-bd-step="-1" data-bd="${r.i}" aria-label="One fewer ${esc(r.name)}">&minus;</button><output id="bdq-${r.i}" aria-label="How many ${esc(r.name)}">0</output><button type="button" data-bd-step="1" data-bd="${r.i}" aria-label="One more ${esc(r.name)}">+</button></span><b>${usd(r.price)} each</b></div>`
+              : line(r, `<input type="checkbox" data-bd="${r.i}">`)).join('')}</fieldset>` : '') +
+            (mo.length ? `<fieldset><legend>Keep it running <small>(optional)</small></legend>${mo.map(r => line(r, `<input type="checkbox" data-bd="${r.i}">`)).join('')}</fieldset>` : '');
+        }
+        total();
+      };
+      const picked = () => {
+        const panel = document.getElementById(`bp-${tab}`), out = [];
+        panel.querySelectorAll('input[data-bd]:checked').forEach(el => out.push({ ...items[el.dataset.bd], qty: 1 }));
+        panel.querySelectorAll('output[id^="bdq-"]').forEach(o => { const q = Number(o.value || o.textContent); if (q > 0) out.push({ ...items[o.id.slice(4)], qty: q }); });
+        return out;
+      };
+      const total = () => {
+        const p = picked(), once = p.filter(x => x.kind !== 'monthly').reduce((s, x) => s + Number(x.price) * x.qty, 0), mo = p.filter(x => x.kind === 'monthly').reduce((s, x) => s + Number(x.price), 0);
+        const hi = Math.ceil(once * 1.25 / 5) * 5;
+        document.getElementById('bd-total').innerHTML = once ? `Ballpark: <b>${usd(once)}${hi > once ? `&ndash;${usd(hi)}` : ''}</b> one time${mo ? ` + <b>${usd(mo)}/month</b>` : ''}` : 'Pick something to see a ballpark.';
+      };
+      document.querySelectorAll('[data-bt]').forEach(b => b.addEventListener('click', () => {
+        tab = b.dataset.bt;
+        document.querySelectorAll('[data-bt]').forEach(x => { const on = x === b; x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; document.getElementById(`bp-${x.dataset.bt}`).hidden = !on; });
+        total();
+      }));
+      document.querySelector('.builder-tabs').addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const o = document.querySelector(`[data-bt="${tab === 'web' ? 'discord' : 'web'}"]`); o.click(); o.focus(); } });
+      const box = document.getElementById('builder');
+      box.addEventListener('change', total);
+      box.addEventListener('click', e => {
+        const s = e.target.closest('[data-bd-step]'); if (!s) return;
+        const o = document.getElementById(`bdq-${s.dataset.bd}`), v = Math.max(0, Math.min(20, Number(o.textContent) + Number(s.dataset.bdStep)));
+        o.textContent = v; o.value = v; total();
+      });
+      document.getElementById('bd-send').addEventListener('click', () => {
+        const p = picked(); if (!p.length) return;
+        const base = p.find(x => x.kind === 'base');
+        const svc = document.getElementById('q-service'), want = base ? base.name.replace(/\s*\(.*\)$/, '') : (tab === 'discord' ? 'Discord server setup' : 'Something else');
+        svc.value = [...svc.options].some(o => o.value === want) ? want : (tab === 'discord' ? 'Discord server setup' : 'Something else');
+        svc.dispatchEvent(new Event('change'));
+        const msg = document.getElementById('q-message');
+        msg.value = `From the price builder:\n${p.map(x => `- ${x.name}${x.qty > 1 ? ` x${x.qty}` : ''}`).join('\n')}\n\n${document.getElementById('bd-total').textContent}\n\nAbout the project: `;
+        document.getElementById('quote').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        setTimeout(() => { msg.focus(); msg.setSelectionRange(msg.value.length, msg.value.length); }, 400);
+      });
+      const load = d => { if (Array.isArray(d) && d.length) { items = d; draw(); } };
+      fetch('/api/content/builder').then(r => (r.ok ? r.json() : null)).then(d => load(d?.builder)).catch(() => {});
+    }
 
     // FAQ: the dashboard's saved copy replaces the built-in one
     fetch('/api/content/faq').then(r => (r.ok ? r.json() : null)).then(d => {

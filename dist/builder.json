@@ -1,0 +1,157 @@
+{
+  "note": "Project price builder on the Work page. Edit from the dashboard (Content tab, Price builder); once saved there, this file is only the fallback.",
+  "builder": [
+    {
+      "group": "web",
+      "kind": "base",
+      "name": "One-page website",
+      "price": "300",
+      "per": "once",
+      "note": "A single polished page"
+    },
+    {
+      "group": "web",
+      "kind": "base",
+      "name": "Multi-page website (up to 5 pages)",
+      "price": "750",
+      "per": "once",
+      "note": "Room to grow"
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Extra page",
+      "price": "75",
+      "per": "each",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Contact or signup form",
+      "price": "50",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Photo gallery",
+      "price": "75",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Events calendar",
+      "price": "100",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Online store or shop setup",
+      "price": "200",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Members or login area",
+      "price": "300",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Dashboard to edit your own content",
+      "price": "250",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "addon",
+      "name": "Domain and email setup",
+      "price": "25",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "web",
+      "kind": "monthly",
+      "name": "Monthly site care",
+      "price": "30",
+      "per": "once",
+      "note": "Updates, fixes and hosting checks"
+    },
+    {
+      "group": "discord",
+      "kind": "base",
+      "name": "Discord server setup",
+      "price": "50",
+      "per": "once",
+      "note": "Channels, roles, permissions, welcome and rules"
+    },
+    {
+      "group": "discord",
+      "kind": "addon",
+      "name": "Mod team setup & training",
+      "price": "35",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "discord",
+      "kind": "addon",
+      "name": "Extra bot set up",
+      "price": "10",
+      "per": "each",
+      "note": "Setup includes 3"
+    },
+    {
+      "group": "discord",
+      "kind": "addon",
+      "name": "Ticket or support system",
+      "price": "25",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "discord",
+      "kind": "addon",
+      "name": "Role menus (pick your own roles)",
+      "price": "15",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "discord",
+      "kind": "addon",
+      "name": "Verification gate",
+      "price": "15",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "discord",
+      "kind": "addon",
+      "name": "Custom welcome images",
+      "price": "20",
+      "per": "once",
+      "note": ""
+    },
+    {
+      "group": "discord",
+      "kind": "monthly",
+      "name": "Monthly server care",
+      "price": "25",
+      "per": "once",
+      "note": "Bot updates, changes as you grow"
+    }
+  ]
+}

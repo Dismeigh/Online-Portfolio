@@ -319,6 +319,11 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    builder: { note: 'The "Build your project" price builder on the Work page. Base = pick one; add-on = optional extras; monthly = care plan. Prices in whole dollars.', fields: [
+      F('group', 'Section', 'select', { options: [['web', 'Websites'], ['discord', 'Discord']] }), F('kind', 'Type', 'select', { options: [['base', 'Base (pick one)'], ['addon', 'Add-on'], ['monthly', 'Monthly']] }),
+      F('name', 'Name', 'text', { max: 60, required: true }), F('price', 'Price in dollars', 'text', { max: 7 }),
+      F('per', 'Charged', 'select', { options: [['once', 'Once'], ['each', 'Each (they pick how many)']] }), F('note', 'Small note (optional)', 'text', { max: 80 }),
+    ] },
     faq: { note: 'Questions and answers on the Work page, in this order.', fields: [
       F('q', 'Question', 'text', { max: 140, required: true }), F('a', 'Answer', 'textarea', { max: 600, required: true }),
     ] },
@@ -332,7 +337,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
