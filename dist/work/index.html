@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=100">
+  <link rel="stylesheet" href="/styles.css?v=101">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Work", "item": "https://www.denizen-dismeigh.com/work/"}]}</script>
 </head>
@@ -232,10 +232,11 @@
             <div class="log-fields quote-fields">
               <label class="log-field"><span>Your name <small>(or your server or business)</small></span><input id="q-name" name="name" maxlength="60" autocomplete="name" required></label>
               <label class="log-field"><span>Email or Discord username</span><input id="q-contact" name="contact" maxlength="120" autocomplete="email" spellcheck="false" required></label>
-              <label class="log-field"><span>What do you need?</span><select id="q-service" name="service" required><option value="">Pick one</option><option>Discord server setup</option><option>Mod team setup &amp; training</option><option>Monthly server care</option><option>One-page website</option><option>Multi-page website</option><option>Monthly site care</option><option>Voice acting</option><option>Something else</option></select></label>
+              <label class="log-field quote-svc"><span>What do you need?</span><select id="q-service" name="service" required><option value="">Pick one</option><option>Discord server setup</option><option>Mod team setup &amp; training</option><option>Monthly server care</option><option>One-page website</option><option>Multi-page website</option><option>Monthly site care</option><option>Voice acting</option><option>Something else</option></select></label>
+              <p class="quote-est" id="q-est" aria-live="polite" hidden></p>
               <label class="log-field"><span>Budget</span><select id="q-budget" name="budget"><option>Under $100</option><option>$100 to $300</option><option>$300 to $750</option><option>$750 to $1,500</option><option>$1,500+</option><option selected>Not sure yet</option></select></label>
               <label class="log-field"><span>When do you need it?</span><select id="q-timeline" name="timeline"><option>As soon as possible</option><option>Within a month</option><option>1 to 3 months</option><option selected>No rush</option></select></label>
-              <label class="log-field"><span>Links <small>(optional: your server, current site, or sites you like)</small></span><input id="q-links" name="links" maxlength="900" inputmode="url" spellcheck="false" placeholder="https://..."></label>
+              <label class="log-field quote-links"><span>Links <small>(optional: your server, current site, or sites you like)</small></span><input id="q-links" name="links" maxlength="900" inputmode="url" spellcheck="false" placeholder="https://..."></label>
               <label class="log-field quote-wide"><span>About the project</span><textarea id="q-message" name="message" maxlength="1500" rows="5" required placeholder="Who it's for, what it should do, anything you already have..."></textarea></label>
               <label class="log-trap" aria-hidden="true">Website <input id="q-website" name="website" tabindex="-1" autocomplete="off"></label>
             </div>
@@ -280,15 +281,27 @@
     // Quote request form
     {
       const form = document.getElementById('quote-form'), msg = document.getElementById('q-msg'), opened = Date.now();
-      const want = new URLSearchParams(location.search).get('service');
+      const params = new URLSearchParams(location.search), want = params.get('service');
       if (want === 'voice') document.getElementById('q-service').value = 'Voice acting';
+      // Referral links (/work/?ref=CODE): remembered for this visit so the request shows who sent them
+      try { const ref = (params.get('ref') || '').toUpperCase(); if (/^[A-Z2-9]{6}$/.test(ref)) sessionStorage.setItem('dm-ref', ref); } catch {}
+      // Live "starting at" from the Rates cards
+      const est = document.getElementById('q-est'), svc = document.getElementById('q-service');
+      const estimate = () => {
+        const v = svc.value; if (!v) { est.hidden = true; return; }
+        const card = [...document.querySelectorAll('.rate-card')].find(c => c.querySelector('h4')?.textContent.trim().toLowerCase() === v.toLowerCase());
+        const price = card?.querySelector('.rate-price')?.textContent.trim();
+        est.textContent = price ? `${/^from\b/i.test(price) ? `Starts at ${price.replace(/^from\s*/i, '')}` : `Price: ${price}`}. Your free quote will have the exact number.` : v === 'Voice acting' ? 'Voice work is quoted per project: tell me about the role below.' : 'I\u2019ll put together a quote for this one.';
+        est.hidden = false;
+      };
+      svc.addEventListener('change', estimate); estimate();
       form.addEventListener('submit', async e => {
         e.preventDefault();
         const v = id => document.getElementById(id).value;
         const btn = document.getElementById('q-submit'); btn.disabled = true; msg.textContent = 'Sending\u2026'; msg.style.color = '';
         try {
           const r = await fetch('/api/quote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-            name: v('q-name'), contact: v('q-contact'), service: v('q-service'), budget: v('q-budget'), timeline: v('q-timeline'), links: v('q-links'), message: v('q-message'), website: v('q-website'), elapsed: Date.now() - opened }) });
+            name: v('q-name'), contact: v('q-contact'), service: v('q-service'), budget: v('q-budget'), timeline: v('q-timeline'), links: v('q-links'), message: v('q-message'), website: v('q-website'), elapsed: Date.now() - opened, ref: (() => { try { return sessionStorage.getItem('dm-ref') || ''; } catch { return ''; } })() }) });
           const d = await r.json().catch(() => ({}));
           if (!r.ok) { msg.textContent = d.error || 'That didn\u2019t send. Try again, or email me.'; if (d.field) document.getElementById(d.field)?.focus(); }
           else { form.innerHTML = '<p class="quote-done"><b>Request sent!</b> Thanks. I\u2019ll get back to you soon, usually within a couple of days.</p>'; form.querySelector('.quote-done').setAttribute('tabindex', '-1'); form.querySelector('.quote-done').focus(); }

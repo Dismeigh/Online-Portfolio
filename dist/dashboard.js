@@ -709,6 +709,7 @@
       <li class="dash-row dash-req${r.status === 'new' ? ' is-new' : ''}"><div class="dash-row-main">
         <b>${esc(r.name)}</b> <span class="dash-meta">${esc(r.service)} · ${esc(when(r.at))}${r.status === 'new' ? ' · <span class="dash-new">New</span>' : r.status === 'replied' ? ' · replied' : ''}</span>
         <p class="dash-req-meta">${esc(r.contact)} · Budget: ${esc(r.budget || 'not given')} · ${esc(r.timeline || '')}</p>
+        ${r.referred_by ? `<p class="dash-req-ref">Referred by ${esc(r.referred_by)}</p>` : ''}
         <p class="dash-note-text">${esc(r.message)}</p>
         ${r.links.length ? `<p class="dash-req-links">${r.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow">${esc(u.replace(/^https:\/\//, ''))}</a>`).join(' ')}</p>` : ''}
         <span class="dash-meta">${r.keep ? 'Kept' : `Deletes ${esc(when(r.expires))}`}</span></div>
@@ -737,7 +738,22 @@
   function jobTools(j) {
     const inv = j.invoice || {}, today = new Date().toISOString().slice(0, 10);
     const pays = (board.payments || []).filter(p => p.job_id === j.id);
+    const ag = j.agreement || {};
+    const sv = (board.services || []).includes(j.service) ? j.service : '';
     return `<div class="dash-tools">
+      <h4>Project agreement</h4>
+      ${ag.signed ? `<p class="dash-signed">Signed by <b>${esc(ag.signed.name)}</b> on ${esc(when(ag.signed.at))}. Editing it makes a new version that needs signing again.</p>` : '<p class="dash-hint">What you\u2019re doing, for how much. The client signs it on a private link.</p>'}
+      <label for="ags-${j.id}">What&rsquo;s included</label><textarea id="ags-${j.id}" rows="4" maxlength="2000" placeholder="One-page website: home section, links, contact form, mobile-friendly, connected to your domain.">${esc(ag.scope || '')}</textarea>
+      <div class="dash-two"><div><label for="agp-${j.id}">Price</label><input id="agp-${j.id}" maxlength="40" placeholder="$300" value="${esc(ag.price || j.price || '')}"></div>
+        <div><label for="agr-${j.id}">Rounds of changes</label><input id="agr-${j.id}" maxlength="60" placeholder="2 rounds" value="${esc(ag.rounds || '')}"></div></div>
+      <label for="agt-${j.id}">Timeline</label><input id="agt-${j.id}" maxlength="120" placeholder="About 2 weeks after content is in" value="${esc(ag.timeline || '')}">
+      <label for="agy-${j.id}">Payment</label><textarea id="agy-${j.id}" rows="2" maxlength="600" placeholder="50% to start, the rest before launch.">${esc(ag.payment || '')}</textarea>
+      <label for="agx-${j.id}">Anything else <span>(optional)</span></label><textarea id="agx-${j.id}" rows="2" maxlength="1500" placeholder="Client provides text and photos. Client owns the site and domain.">${esc(ag.extra || '')}</textarea>
+      <div class="dash-actions"><button type="button" class="dash-btn dash-small dash-primary" data-tool="ag-save" data-id="${j.id}">Save agreement</button>
+        ${j.agreement ? (j.agr_token ? `<button type="button" class="dash-btn dash-small" data-tool="copy-ag" data-id="${j.id}">Copy signing link</button><a class="dash-btn dash-small" href="/agree/?a=${esc(j.agr_token)}" target="_blank" rel="noopener noreferrer">View</a><button type="button" class="dash-btn dash-small dash-danger" data-tool="ag-off" data-id="${j.id}">Turn off link</button>` : `<button type="button" class="dash-btn dash-small" data-tool="ag-on" data-id="${j.id}">Turn link back on</button>`) : ''}</div>
+      <h4>Referral link</h4>
+      <p class="dash-hint">For happy clients to share. Quote requests that come through it show &ldquo;Referred by ${esc(j.client)}&rdquo;.</p>
+      <div class="dash-actions">${j.ref_code ? `<code class="dash-code">${esc(location.origin)}/work/?ref=${esc(j.ref_code)}</code><button type="button" class="dash-btn dash-small" data-tool="copy-ref" data-id="${j.id}">Copy</button><button type="button" class="dash-btn dash-small dash-danger" data-tool="ref-off" data-id="${j.id}">Turn off</button>` : `<button type="button" class="dash-btn dash-small" data-tool="ref-on" data-id="${j.id}">Make a referral link</button>`}</div>
       <h4>Client status link</h4>
       <p class="dash-hint">A private page where ${esc(j.client)} can see the stage, due date and your note. No price, contact info or private notes.</p>
       <div class="dash-actions">${j.token ? `<button type="button" class="dash-btn dash-small dash-primary" data-tool="copy-status" data-id="${j.id}">Copy link</button><a class="dash-btn dash-small" href="/status/?s=${esc(j.token)}" target="_blank" rel="noopener noreferrer">View</a><button type="button" class="dash-btn dash-small dash-danger" data-tool="status-off" data-id="${j.id}">Turn off</button>`
@@ -779,8 +795,8 @@
         <b>${esc(j.client)}</b> <span class="dash-meta">${esc(j.service || '')}${j.price ? ` · ${esc(j.price)}` : ''}</span>
         <p class="dash-req-meta">${esc(STAGE[j.stage])}${j.due ? ` · due ${esc(j.due)}${j.stage !== 'done' && j.due < today ? ' <span class="dash-late">overdue</span>' : ''}` : ''}${j.contact ? ` · ${esc(j.contact)}` : ''}</p>
         ${j.notes ? `<p class="dash-note-text">${esc(j.notes)}</p>` : ''}
-        <p class="dash-job-tags">${j.token ? '<span>Client link on</span>' : ''}${j.invoice ? `<span>Invoice ${esc(j.invoice.number)} · ${esc({ unpaid: 'unpaid', deposit: 'deposit paid', paid: 'paid' }[j.invoice.status])}${j.inv_token ? '' : ' · link off'}</span>` : ''}${paidFor(j.id) ? `<span>Received ${esc(money(paidFor(j.id)))}</span>` : ''}</p>
-        <details class="dash-job-more" data-job-more="${j.id}"${openMore === j.id ? ' open' : ''}><summary>Client link, invoice &amp; payments</summary>${jobTools(j)}</details></div>
+        <p class="dash-job-tags">${j.agreement ? `<span>${j.agreement.signed ? `Agreement signed by ${esc(j.agreement.signed.name)}` : 'Agreement not signed yet'}</span>` : ''}${j.token ? '<span>Client link on</span>' : ''}${j.invoice ? `<span>Invoice ${esc(j.invoice.number)} · ${esc({ unpaid: 'unpaid', deposit: 'deposit paid', paid: 'paid' }[j.invoice.status])}${j.inv_token ? '' : ' · link off'}</span>` : ''}${paidFor(j.id) ? `<span>Received ${esc(money(paidFor(j.id)))}</span>` : ''}</p>
+        <details class="dash-job-more" data-job-more="${j.id}"${openMore === j.id ? ' open' : ''}><summary>Agreement, client link, invoice &amp; payments</summary>${jobTools(j)}</details></div>
         <div class="dash-row-actions">
           <label class="sr-only" for="js-${j.id}">Stage</label><select id="js-${j.id}" data-job-stage="${j.id}">${Object.entries(STAGE).map(([k, v]) => `<option value="${k}"${j.stage === k ? ' selected' : ''}>${v}</option>`).join('')}</select>
           <button type="button" class="dash-btn dash-small" data-job-edit="${j.id}">Edit</button>
@@ -796,14 +812,15 @@
     $('cal-month').textContent = first.toLocaleDateString([], { month: 'long', year: 'numeric' });
     const due = {}; board.jobs.filter(j => j.due && j.stage !== 'done').forEach(j => (due[j.due] ||= []).push(j));
     const st = {}; streams.forEach(s => (st[s.day] ||= []).push(s));
+    const au = {}; (board.auditions || []).filter(a => a.deadline && ['sent', 'callback'].includes(a.status)).forEach(a => (au[a.deadline] ||= []).push(a));
     let cells = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => `<span class="cal-h" aria-hidden="true">${d}</span>`).join('') + '<span></span>'.repeat(first.getDay());
     for (let d = 1; d <= days; d++) {
-      const k = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, J = due[k] || [], S = st[k] || [];
-      cells += `<button type="button" class="cal-d${k === today ? ' is-today' : ''}${k === calPick ? ' is-pick' : ''}${J.length && k < today ? ' is-late' : ''}" data-day="${k}" aria-label="${d}${J.length ? `, ${J.length} job${J.length > 1 ? 's' : ''} due` : ''}${S.length ? `, ${S.length} stream${S.length > 1 ? 's' : ''}` : ''}">${d}<i>${J.length ? '<b class="cal-job"></b>' : ''}${S.length ? '<b class="cal-stream"></b>' : ''}</i></button>`;
+      const k = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, J = due[k] || [], S = st[k] || [], A = au[k] || [];
+      cells += `<button type="button" class="cal-d${k === today ? ' is-today' : ''}${k === calPick ? ' is-pick' : ''}${J.length && k < today ? ' is-late' : ''}" data-day="${k}" aria-label="${d}${J.length ? `, ${J.length} job${J.length > 1 ? 's' : ''} due` : ''}${A.length ? `, ${A.length} audition deadline${A.length > 1 ? 's' : ''}` : ''}${S.length ? `, ${S.length} stream${S.length > 1 ? 's' : ''}` : ''}">${d}<i>${J.length ? '<b class="cal-job"></b>' : ''}${A.length ? '<b class="cal-aud"></b>' : ''}${S.length ? '<b class="cal-stream"></b>' : ''}</i></button>`;
     }
     $('cal-grid').innerHTML = cells;
-    const P = calPick && (due[calPick] || st[calPick]) ? calPick : null;
-    $('cal-day').innerHTML = P ? `<b>${esc(new Date(P + 'T12:00:00').toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }))}</b><ul>${(due[P] || []).map(j => `<li>Due: ${esc(j.client)} (${esc(j.service || 'job')}, ${esc(STAGE[j.stage])})</li>`).join('')}${(st[P] || []).map(s => `<li>Stream ${esc(s.time)}: ${esc(s.title)}</li>`).join('')}</ul>` : '';
+    const P = calPick && (due[calPick] || st[calPick] || au[calPick]) ? calPick : null;
+    $('cal-day').innerHTML = P ? `<b>${esc(new Date(P + 'T12:00:00').toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }))}</b><ul>${(due[P] || []).map(j => `<li>Due: ${esc(j.client)} (${esc(j.service || 'job')}, ${esc(STAGE[j.stage])})</li>`).join('')}${(au[P] || []).map(a => `<li>Audition deadline: ${esc(a.project)}${a.role ? ` (${esc(a.role)})` : ''}</li>`).join('')}${(st[P] || []).map(s => `<li>Stream ${esc(s.time)}: ${esc(s.title)}</li>`).join('')}</ul>` : '';
   }
   $('cal-prev').addEventListener('click', () => { calMonth.setMonth(calMonth.getMonth() - 1); drawCal(); });
   $('cal-next').addEventListener('click', () => { calMonth.setMonth(calMonth.getMonth() + 1); drawCal(); });
@@ -816,22 +833,71 @@
     const sum = k => incomeMonths.reduce((s, m) => s + m[k], 0);
     const yr = String(new Date().getFullYear()), ytd = incomeMonths.filter(m => m.month.startsWith(yr)).reduce((s, m) => s + m.total, 0);
     const name = k => new Date(k + '-15').toLocaleDateString([], { month: 'short', year: 'numeric' });
-    $('inc-body').innerHTML = incomeMonths.length ? `<p class="dash-inc-ytd">${yr} so far: <b>${esc(money(ytd))}</b></p>
-      <div class="dash-table-wrap"><table class="dash-table"><thead><tr><th scope="col">Month</th><th scope="col">Tips</th><th scope="col">Memberships</th><th scope="col">Ko-fi sales</th><th scope="col">Clients</th><th scope="col">Total</th></tr></thead>
-      <tbody>${incomeMonths.slice(0, 12).map(m => `<tr><th scope="row">${esc(name(m.month))}</th><td>${money(m.tips)}</td><td>${money(m.memberships)}</td><td>${money(m.kofiSales)}</td><td>${money(m.clients)}</td><td><b>${money(m.total)}</b></td></tr>`).join('')}</tbody></table></div>`
+    const ytdP = incomeMonths.filter(m => m.month.startsWith(yr)).reduce((s, m) => s + m.profit, 0);
+    $('inc-body').innerHTML = incomeMonths.length ? `<p class="dash-inc-ytd">${yr} so far: <b>${esc(money(ytd))}</b> in &middot; <b class="${ytdP < 0 ? 'is-neg' : ''}">${esc(money(ytdP))}</b> profit</p>
+      <div class="dash-table-wrap"><table class="dash-table"><thead><tr><th scope="col">Month</th><th scope="col">Tips</th><th scope="col">Memberships</th><th scope="col">Ko-fi sales</th><th scope="col">Clients</th><th scope="col">Total in</th><th scope="col">Expenses</th><th scope="col">Profit</th></tr></thead>
+      <tbody>${incomeMonths.slice(0, 12).map(m => `<tr><th scope="row">${esc(name(m.month))}</th><td>${money(m.tips)}</td><td>${money(m.memberships)}</td><td>${money(m.kofiSales)}</td><td>${money(m.clients)}</td><td><b>${money(m.total)}</b></td><td>${m.expenses ? `&minus;${money(m.expenses)}` : money(0)}</td><td><b class="${m.profit < 0 ? 'is-neg' : ''}">${money(m.profit)}</b></td></tr>`).join('')}</tbody></table></div>`
       : '<p class="dash-note">Nothing yet. Ko-fi payments and payments you record on jobs show up here.</p>';
   }
+  function drawExpenses() {
+    if (!$('ex-cat').options.length) { $('ex-cat').innerHTML = (board.categories || []).map(c => `<option>${esc(c)}</option>`).join(''); $('ex-day').value = new Date().toISOString().slice(0, 10); }
+    const list = (board.expenses || []).slice(0, 15);
+    $('ex-list').innerHTML = list.length ? `<ul class="dash-pays">${list.map(e => `<li>${esc(e.day)} · <b>${esc(money(e.amount_cents))}</b> · ${esc(e.category)}${e.note ? ` · ${esc(e.note)}` : ''} <button type="button" class="dash-btn dash-small dash-danger" data-exp-del="${e.id}">Delete</button></li>`).join('')}</ul>${(board.expenses || []).length > 15 ? '<p class="dash-hint">Showing the newest 15. The spreadsheet has them all.</p>' : ''}` : '<p class="dash-hint">No expenses logged yet.</p>';
+  }
+  $('ex-add').addEventListener('click', async () => {
+    const d = await clientAct({ action: 'expAdd', amount: $('ex-amt').value, day: $('ex-day').value, category: $('ex-cat').value, note: $('ex-note').value });
+    if (d) { $('ex-amt').value = ''; $('ex-note').value = ''; flash($('ex-msg'), 'Expense added.'); loadIncome(); }
+  });
+  $('ex-list').addEventListener('click', async e => { const b = e.target.closest('[data-exp-del]'); if (b && confirm('Delete this expense?')) { await clientAct({ action: 'expDelete', id: Number(b.dataset.expDel) }); loadIncome(); } });
+
+  // Auditions
+  const AUD = { sent: 'Sent', callback: 'Callback', booked: 'Booked', passed: 'Passed' };
+  let auView = 'open', auEdit = null;
+  const audForm = (a = {}) => `<form class="dash-job-form" data-aud-form="${a.id || ''}">
+    <div class="dash-two"><div><label for="af-project">Project</label><input id="af-project" maxlength="80" required value="${esc(a.project || '')}"></div><div><label for="af-role">Role</label><input id="af-role" maxlength="80" value="${esc(a.role || '')}"></div></div>
+    <div class="dash-two"><div><label for="af-sent">Sent</label><input id="af-sent" type="date" value="${esc(a.sent || new Date().toISOString().slice(0, 10))}"></div><div><label for="af-deadline">Deadline or results date</label><input id="af-deadline" type="date" value="${esc(a.deadline || '')}"></div></div>
+    <div class="dash-two"><div><label for="af-status">Status</label><select id="af-status">${Object.entries(AUD).map(([k, v]) => `<option value="${k}"${(a.status || 'sent') === k ? ' selected' : ''}>${v}</option>`).join('')}</select></div><div><label for="af-link">Casting link</label><input id="af-link" type="url" placeholder="https://..." value="${esc(a.link || '')}"></div></div>
+    <label for="af-notes">Notes</label><textarea id="af-notes" rows="3" maxlength="1500">${esc(a.notes || '')}</textarea>
+    <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button><button type="button" class="dash-btn" data-aud-cancel>Cancel</button></div></form>`;
+  function drawAuditions() {
+    const all = board.auditions || [], list = all.filter(a => auView === 'all' || (auView === 'open' ? ['sent', 'callback'].includes(a.status) : a.status === auView));
+    const booked = all.filter(a => a.status === 'booked').length, decided = all.filter(a => ['booked', 'passed'].includes(a.status)).length;
+    $('au-stats').textContent = all.length ? `${all.length} audition${all.length === 1 ? '' : 's'} logged · ${booked} booked${decided ? ` (${Math.round(booked / decided * 100)}% of decided)` : ''}` : '';
+    const today = new Date().toISOString().slice(0, 10);
+    $('au-body').innerHTML = (auEdit === 'new' ? audForm() : '') + (list.length ? `<ul class="dash-list">${list.map(a => auEdit === a.id ? `<li class="dash-row">${audForm(a)}</li>` : `
+      <li class="dash-row dash-aud aud-${esc(a.status)}"><div class="dash-row-main"><b>${esc(a.project)}</b>${a.role ? ` <span class="dash-meta">as ${esc(a.role)}</span>` : ''}
+        <p class="dash-req-meta">${esc(AUD[a.status])}${a.sent ? ` · sent ${esc(a.sent)}` : ''}${a.deadline ? ` · deadline ${esc(a.deadline)}${['sent', 'callback'].includes(a.status) && a.deadline < today ? ' <span class="dash-late">past</span>' : ''}` : ''}</p>
+        ${a.link ? `<p class="dash-req-links"><a href="${esc(a.link)}" target="_blank" rel="noopener noreferrer nofollow">Casting link</a></p>` : ''}${a.notes ? `<p class="dash-note-text">${esc(a.notes)}</p>` : ''}</div>
+        <div class="dash-row-actions"><label class="sr-only" for="as-${a.id}">Status</label><select id="as-${a.id}" data-aud-status="${a.id}">${Object.entries(AUD).map(([k, v]) => `<option value="${k}"${a.status === k ? ' selected' : ''}>${v}</option>`).join('')}</select>
+          <button type="button" class="dash-btn dash-small" data-aud-edit="${a.id}">Edit</button><button type="button" class="dash-btn dash-small dash-danger" data-aud-del="${a.id}">Delete</button></div></li>`).join('')}</ul>` : `<p class="dash-note">${auView === 'open' ? 'Nothing waiting on an answer.' : 'Nothing here.'}</p>`);
+  }
+  $('au-new').addEventListener('click', () => { auEdit = 'new'; drawAuditions(); $('af-project').focus(); });
+  document.querySelectorAll('#au-filter [data-au]').forEach(b => b.addEventListener('click', () => { auView = b.dataset.au; document.querySelectorAll('#au-filter [data-au]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawAuditions(); }));
+  $('au-body').addEventListener('click', async e => {
+    if (e.target.closest('[data-aud-cancel]')) { auEdit = null; return drawAuditions(); }
+    const ed = e.target.closest('[data-aud-edit]'); if (ed) { auEdit = Number(ed.dataset.audEdit); drawAuditions(); return $('af-project').focus(); }
+    const del = e.target.closest('[data-aud-del]'); if (del && confirm('Delete this audition?')) await clientAct({ action: 'audDelete', id: Number(del.dataset.audDel) });
+  });
+  $('au-body').addEventListener('change', async e => { const s = e.target.closest('[data-aud-status]'); if (s) { await clientAct({ action: 'audStatus', id: Number(s.dataset.audStatus), status: s.value }); flash($('au-msg'), s.value === 'booked' ? 'Booked! Nice work.' : `Marked ${AUD[s.value]}.`); } });
+  $('au-body').addEventListener('submit', async e => {
+    const f = e.target.closest('[data-aud-form]'); if (!f) return; e.preventDefault();
+    const d = await clientAct({ action: 'audSave', id: Number(f.dataset.audForm) || 0, project: $('af-project').value, role: $('af-role').value, sent: $('af-sent').value, deadline: $('af-deadline').value, status: $('af-status').value, link: $('af-link').value, notes: $('af-notes').value });
+    if (d) { auEdit = null; drawAuditions(); flash($('au-msg'), 'Saved.'); }
+  });
+
   $('inc-csv').addEventListener('click', () => {
-    const q = v => `"${String(v).replace(/"/g, '""')}"`, rows = [['Month', 'Tips', 'Memberships', 'Ko-fi sales', 'Client payments', 'Total']];
-    incomeMonths.forEach(m => rows.push([m.month, ...['tips', 'memberships', 'kofiSales', 'clients', 'total'].map(k => (m[k] / 100).toFixed(2))]));
+    const q = v => `"${String(v).replace(/"/g, '""')}"`, rows = [['Month', 'Tips', 'Memberships', 'Ko-fi sales', 'Client payments', 'Total in', 'Expenses', 'Profit']];
+    incomeMonths.forEach(m => rows.push([m.month, ...['tips', 'memberships', 'kofiSales', 'clients', 'total', 'expenses', 'profit'].map(k => (m[k] / 100).toFixed(2))]));
     rows.push([], ['Client payments'], ['Date', 'Client', 'Amount', 'How', 'Note']);
     (board.payments || []).forEach(p => rows.push([p.day, board.jobs.find(j => j.id === p.job_id)?.client || '', (p.amount_cents / 100).toFixed(2), p.method, p.note || '']));
+    rows.push([], ['Expenses'], ['Date', 'Category', 'Amount', 'What for']);
+    (board.expenses || []).forEach(e => rows.push([e.day, e.category, (e.amount_cents / 100).toFixed(2), e.note || '']));
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([rows.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' }));
     a.download = `dismeigh-income-${new Date().toISOString().slice(0, 10)}.csv`; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   });
 
-  const drawBoard = d => { if (d && d.requests) board = d; drawRequests(); drawJobs(); if ($('cal-grid')) drawCal(); };
+  const drawBoard = d => { if (d && d.requests) board = d; drawRequests(); drawJobs(); drawExpenses(); drawAuditions(); if ($('cal-grid')) drawCal(); };
   loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); };
   const clientAct = async body => { const { status, data } = await api('clients', body); if (status !== 200) return flash($('jb-msg'), data.error || 'Couldn\u2019t save.'); drawBoard(data); return data; };
   $('rq-refresh').addEventListener('click', loaders.clients);
@@ -859,11 +925,17 @@
     openMore = id;
     if (act === 'copy-status') return copy(`${location.origin}/status/?s=${job.token}`, 'Client link');
     if (act === 'copy-inv') return copy(`${location.origin}/invoice/?i=${job.inv_token}`, 'Invoice link');
+    if (act === 'copy-ag') return copy(`${location.origin}/agree/?a=${job.agr_token}`, 'Signing link');
+    if (act === 'copy-ref') return copy(`${location.origin}/work/?ref=${job.ref_code}`, 'Referral link');
+    if (act === 'ag-save' && job.agreement?.signed && !confirm('This agreement is already signed. Saving makes a new version with a new link that needs signing again. Go ahead?')) return;
+    if ((act === 'ag-off' || act === 'ref-off') && !confirm('Turn off this link? The old link stops working.')) return;
     if (act === 'inv-add') { $(`inv-${id}`).insertAdjacentHTML('beforeend', invRow()); return; }
     if (act === 'status-off' && !confirm('Turn off this client link? The old link stops working.')) return;
     if (act === 'inv-off' && !confirm('Turn off the invoice link? The old link stops working.')) return;
     if (act === 'pay-del' && !confirm('Delete this payment?')) return;
     const body = {
+      'ag-save': { action: 'agreementSave', agreement: { scope: $(`ags-${id}`).value, price: $(`agp-${id}`).value, rounds: $(`agr-${id}`).value, timeline: $(`agt-${id}`).value, payment: $(`agy-${id}`).value, extra: $(`agx-${id}`).value } },
+      'ag-off': { action: 'agreementOff' }, 'ag-on': { action: 'agreementOn' }, 'ref-on': { action: 'refOn' }, 'ref-off': { action: 'refOff' },
       'status-on': { action: 'jobShare', on: true }, 'status-off': { action: 'jobShare', on: false },
       note: { action: 'jobClientNote', note: $(`cn-${id}`)?.value },
       'inv-off': { action: 'invoiceOff' }, 'inv-on': { action: 'invoiceNewLink' },
@@ -877,7 +949,7 @@
     if (!body) return;
     const d = await clientAct({ id, ...body });
     if (d && (act === 'pay-add' || act === 'pay-del')) loadIncome();
-    if (d) flash($('jb-msg'), { 'status-on': 'Client link is on. Tap Copy link to send it.', note: 'Note saved. The client sees it on their page.', 'inv-save': 'Invoice saved.', 'pay-add': 'Payment recorded.' }[act] || 'Saved.');
+    if (d) flash($('jb-msg'), { 'ag-save': 'Agreement saved. Tap Copy signing link to send it.', 'ref-on': 'Referral link made. Tap Copy to send it.', 'status-on': 'Client link is on. Tap Copy link to send it.', note: 'Note saved. The client sees it on their page.', 'inv-save': 'Invoice saved.', 'pay-add': 'Payment recorded.' }[act] || 'Saved.');
   });
   $('jb-body').addEventListener('click', e => { if (e.target.closest('[data-inv-del]')) e.target.closest('.dash-inv-row').remove(); });
   $('jb-body').addEventListener('change', async e => {

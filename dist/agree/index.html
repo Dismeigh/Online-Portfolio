@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project agreement | Denizen Technologies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#14110f">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=101">
+</head>
+<body class="client-page invoice-page">
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <main class="client-wrap">
+    <article class="invoice agreement" aria-live="polite">
+      <header class="inv-head">
+        <div><p class="inv-brand">Denizen Technologies</p><p class="inv-from">Dismeigh &middot; denizen.dismeigh@gmail.com</p></div>
+        <div class="inv-meta"><p class="inv-word">Agreement</p><p id="ag-date"></p></div>
+      </header>
+      <p class="inv-loading" id="ag-loading">Loading&hellip;</p>
+      <div id="ag-body" hidden>
+        <p class="inv-to"><span>Between Dismeigh (Denizen Technologies) and</span><b id="ag-client"></b><span id="ag-service"></span></p>
+        <dl class="ag-list">
+          <dt>What&rsquo;s included</dt><dd id="ag-scope"></dd>
+          <dt id="ag-price-t">Price</dt><dd id="ag-price"></dd>
+          <dt id="ag-rounds-t">Rounds of changes</dt><dd id="ag-rounds"></dd>
+          <dt id="ag-time-t">Timeline</dt><dd id="ag-time"></dd>
+          <dt id="ag-pay-t">Payment</dt><dd id="ag-pay"></dd>
+          <dt id="ag-extra-t">Also agreed</dt><dd id="ag-extra"></dd>
+        </dl>
+        <p class="ag-small">Anything not listed above, like extra pages, features or rounds, gets quoted separately before any work starts.</p>
+        <form id="ag-form" class="ag-form">
+          <label for="ag-name">Type your full name to sign</label>
+          <input id="ag-name" maxlength="80" autocomplete="name" required>
+          <label class="ag-check"><input type="checkbox" id="ag-ok"> I&rsquo;ve read this and agree to it.</label>
+          <button type="submit" class="social-btn inv-pay">Sign agreement</button>
+          <p class="ag-msg" id="ag-msg" role="alert"></p>
+        </form>
+        <p class="inv-stamp is-paid" id="ag-signed" hidden></p>
+        <p class="inv-actions"><button type="button" class="social-btn" id="ag-print">Print or save as PDF</button></p>
+      </div>
+    </article>
+    <p class="client-foot">This agreement is private: only people with this link can see it. Questions? <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
+  </main>
+  <script>
+  (() => {
+    const $ = id => document.getElementById(id);
+    const code = new URLSearchParams(location.search).get('a') || '';
+    history.replaceState(null, '', location.pathname + '?a=' + encodeURIComponent(code));
+    $('ag-print').addEventListener('click', () => print());
+    const day = d => new Date(d + (d.length === 10 ? 'T12:00:00' : '')).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+    const show = (id, v) => { $(id).textContent = v || ''; const t = $(id + '-t'); if (t) { t.hidden = !v; $(id).hidden = !v; } };
+    const signed = s => { $('ag-form').hidden = true; $('ag-signed').hidden = false; $('ag-signed').textContent = `Signed by ${s.name} · ${new Date(s.at).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}`; };
+    fetch('/api/job?a=' + encodeURIComponent(code), { cache: 'no-store' }).then(r => r.json()).then(d => {
+      if (d.error) { $('ag-loading').textContent = d.error; return; }
+      $('ag-date').textContent = day(d.made); $('ag-client').textContent = d.client; $('ag-service').textContent = d.service || '';
+      $('ag-scope').textContent = d.scope; show('ag-price', d.price); show('ag-rounds', d.rounds); show('ag-time', d.timeline); show('ag-pay', d.payment); show('ag-extra', d.extra);
+      if (d.signed) signed(d.signed);
+      $('ag-loading').hidden = true; $('ag-body').hidden = false;
+    }).catch(() => { $('ag-loading').textContent = 'Couldn’t load. Check your connection and refresh.'; });
+    $('ag-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!$('ag-ok').checked) { $('ag-msg').textContent = 'Tick the box to agree.'; return; }
+      $('ag-msg').textContent = 'Signing…';
+      try {
+        const r = await fetch('/api/job', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ a: code, name: $('ag-name').value, agree: true }) });
+        const d = await r.json();
+        if (!r.ok) { $('ag-msg').textContent = d.error || 'That didn’t go through. Try again.'; return; }
+        $('ag-msg').textContent = ''; signed(d.signed);
+      } catch { $('ag-msg').textContent = 'That didn’t go through. Check your connection.'; }
+    });
+  })();
+  </script>
+</body>
+</html>

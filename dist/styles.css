@@ -3011,7 +3011,7 @@ html:has(.dash-body) { background: var(--ink); }
 .faq-item[open] summary::after { content: "\2212"; }
 .faq-item p { margin: 0; padding: 0 1rem 0.9rem; color: var(--paper-dim); }
 .quote-form { max-width: 52rem; text-align: left; }
-@media (min-width: 720px) { .quote-fields { grid-template-columns: 1fr 1fr; } .quote-wide, .quote-fields > .log-field:nth-child(6) { grid-column: 1 / -1; } }
+@media (min-width: 720px) { .quote-fields { grid-template-columns: 1fr 1fr; } .quote-wide, .quote-links { grid-column: 1 / -1; } }
 .quote-form select { width: 100%; padding: 0.6rem 0.75rem; border: 3px solid var(--ink); border-radius: 0; background: #fffaf0; color: var(--ink); font: inherit; font-size: 1rem; }
 .quote-form select:focus { outline: 3px solid var(--mustard); outline-offset: 1px; }
 .quote .log-msg { margin: 0; font-weight: 600; color: #9e3326; }
@@ -3132,3 +3132,28 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-linkbtn[hidden] { display: none; }
 .dash-codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem 1rem; margin: 0.6rem 0; padding-left: 1.4rem; }
 .dash-codes code { font-size: 1.1rem; letter-spacing: 0.08em; color: var(--paper); }
+
+/* Agreement page */
+.ag-list { margin: 0 0 1rem; } .ag-list dt { margin-top: 0.8rem; font-family: var(--typed); font-size: 0.85rem; color: #5a4c41; } .ag-list dd { margin: 0.15rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ag-list [hidden] { display: none; }
+.ag-small { font-size: 0.88rem; color: #5a4c41; }
+.ag-form { display: grid; gap: 0.5rem; margin: 1rem 0; padding: 1rem; border: 2px dashed #14110f; }
+.ag-form input[type="text"], .ag-form #ag-name { padding: 0.6rem 0.75rem; border: 3px solid #14110f; background: #fff; font: inherit; }
+.ag-check { display: flex; gap: 0.5rem; align-items: center; } .ag-check input { width: 1.2rem; height: 1.2rem; accent-color: #14110f; }
+.ag-msg { margin: 0; color: #9e3326; font-weight: 600; }
+.ag-form[hidden] { display: none; }
+
+/* Dashboard: referrals, agreements, expenses, auditions */
+.dash-req-ref { margin: 0.2rem 0; color: #8fd393; font-weight: 700; font-size: 0.92rem; }
+.dash-signed { margin: 0.2rem 0 0.5rem; padding: 0.5rem 0.7rem; border-left: 4px solid #6fbf73; background: rgba(111, 191, 115, 0.1); color: var(--paper); }
+.is-neg { color: #f08a75 !important; }
+.dash-exp-form { grid-template-columns: 1fr 1fr 1fr; }
+.dash-exp-form > div:nth-child(4) { grid-column: 1 / -1; }
+@media (min-width: 760px) { .dash-exp-form { grid-template-columns: 7rem 10rem 1fr 1.4fr auto; } .dash-exp-form > div:nth-child(4) { grid-column: auto; } }
+.dash-aud.aud-sent { border-left-color: #8fb8ff !important; } .dash-aud.aud-callback { border-left-color: var(--mustard) !important; }
+.dash-aud.aud-booked { border-left-color: #6fbf73 !important; } .dash-aud.aud-passed { border-left-color: var(--line) !important; opacity: 0.8; }
+.cal-aud, .cal-key.cal-aud { display: inline-block; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #d85fa0; }
+
+.quote-est { margin: -0.3rem 0 0; padding: 0.5rem 0.7rem; background: #f3e7c9; border-left: 4px solid var(--mustard); color: var(--ink); font-weight: 600; font-size: 0.95rem; }
+.quote-est[hidden] { display: none; }
+@media (min-width: 720px) { .quote-est { grid-column: 1 / -1; } }
