@@ -19,12 +19,7 @@
     const target = money($('g-target').value), start = money($('g-start').value);
     const raised = Math.max(0, p.raised - (g.start || 0)) + start;
     const pct = target ? Math.min(100, Math.floor((raised / target) * 100)) : 0;
-    $('pv-title').textContent = title || 'No goal yet';
-    $('pv-blurb').textContent = blurb; $('pv-blurb').hidden = !blurb;
-    $('pv-fill').style.width = `${pct}%`;
-    $('pv-raised').textContent = usd(raised);
-    $('pv-target').textContent = usd(target);
-    $('pv-pct').textContent = pct;
+    if (window.dismeighGoalCard) $('pv-card').innerHTML = window.dismeighGoalCard({ title: title || 'No goal yet', blurb, raised, target, pct, count: p.payments || 0, garage: $('g-garage').checked, url: 'https://ko-fi.com/dismeigh' });
     const dirty = title !== (g.title || '') || blurb !== (g.blurb || '') || target !== (g.target || 0) || start !== (g.start || 0)
       || $('g-memberships').checked !== (g.memberships !== false) || $('g-garage').checked !== !!g.garage;
     $('pv-dirty').hidden = !dirty;
@@ -50,11 +45,6 @@
     $('state-note').textContent = on
       ? `Showing now in Support & Shop on the home page${g.garage ? ' and in the Garage' : ''}.`
       : 'Hidden. Turn it on to show the bar in Support & Shop on the home page.';
-    $('pv-title').textContent = g.title || 'No goal yet';
-    $('pv-fill').style.width = `${p.pct}%`;
-    $('pv-raised').textContent = usd(p.raised);
-    $('pv-target').textContent = usd(g.target);
-    $('pv-pct').textContent = p.pct;
     $('pv-count').textContent = g.since ? `${p.payments} Ko-fi payment${p.payments === 1 ? '' : 's'} counted` : '';
     if (document.activeElement?.closest('#goal-form') == null) {
       $('g-title').value = g.title || '';
