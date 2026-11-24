@@ -3175,4 +3175,4 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-help-item[hidden], .dash-help h3[hidden] { display: none; }
 
 /* Bigger tap area on video titles */
-.yt-card h4 a { display: inline-block; padding: 0.2rem 0; }
+.yt-card h4 a { display: block; padding: 0.25rem 0; min-height: 24px; }
