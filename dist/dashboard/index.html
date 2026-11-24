@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=101">
+  <link rel="stylesheet" href="/styles.css?v=102">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -78,6 +78,7 @@
         <button type="button" data-tab="alerts">Alerts</button>
         <button type="button" data-tab="site">Site</button>
         <button type="button" data-tab="security">Logins</button>
+        <button type="button" data-tab="help">Help</button>
       </nav>
 
       <div data-panel="overview">
@@ -531,6 +532,36 @@
         </section>
       </div>
 
+      <div data-panel="help" hidden>
+        <section class="dash-card dash-help" aria-labelledby="help-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">How do I&hellip;</p><h2 id="help-h">Help</h2></div></div>
+          <label for="help-find" class="sr-only">Search help</label>
+          <input id="help-find" type="search" placeholder="Search help, like &ldquo;invoice&rdquo; or &ldquo;banner&rdquo;" autocomplete="off">
+          <h3 class="dash-h3">Getting around</h3>
+          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, YouTube row and special event. <b>Ship's Log</b>: moderate entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, jobs, auditions, calendar and income. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
+          <details class="dash-help-item"><summary>Can I use this on my phone?</summary><p>Yes. Open the dashboard in Safari, tap Share, then Add to Home Screen. It works like an app, and phone alerts only work from the home-screen app on iPhone.</p></details>
+          <h3 class="dash-h3">Stream & site</h3>
+          <details class="dash-help-item"><summary>Put a message across every page</summary><p>Site tab, Site banner. Type a message, add a link if you want, and tap Show banner. Use the one-tap buttons for common ones like Live now or No stream tonight. Set Start at to schedule one for later.</p></details>
+          <details class="dash-help-item"><summary>Change what's on the site (bounties, quotes, lore&hellip;)</summary><p>Content tab. Pick a section, edit, then tap Save at the bottom. Changes are live right away.</p></details>
+          <details class="dash-help-item"><summary>Set up a Ko-fi goal</summary><p>Ko-fi goal tab. Fill in the name, amount and description, pick where it shows, and switch it on. When it’s done, End goal &amp; save it moves it to the Funded list.</p></details>
+          <details class="dash-help-item"><summary>Plan a subathon or special stream</summary><p>Content tab, Special event. Set the name, times, an optional goal and a run of show. The event page and the home page countdown update on their own.</p></details>
+          <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Site tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
+          <details class="dash-help-item"><summary>Close the site for a bit</summary><p>Site tab, Maintenance mode. Visitors see a back-soon page. This dashboard, Ko-fi and client links keep working.</p></details>
+          <h3 class="dash-h3">Business</h3>
+          <details class="dash-help-item"><summary>Change my rates or open/close commissions</summary><p>Rates: Content tab, Rates. Open/closed: Site tab, Commissions, with a separate switch and note for voice, websites and Discord.</p></details>
+          <details class="dash-help-item"><summary>Someone sent a quote request. Now what?</summary><p>Clients tab. Email them (button on the request), then Mark replied. If it turns into work, tap Make it a job. Requests delete themselves after 90 days unless you keep them.</p></details>
+          <details class="dash-help-item"><summary>Send a client an agreement, invoice or status page</summary><p>Clients tab, open the job, then Agreement, client link, invoice & payments. Fill in each part, save, and use the Copy link buttons. Turn any link off at any time.</p></details>
+          <details class="dash-help-item"><summary>Record money and see profit</summary><p>On the job, Record payment for anything paid outside Ko-fi (Ko-fi counts on its own). Add costs under Income, Expenses. Download spreadsheet gives you everything for tax time.</p></details>
+          <details class="dash-help-item"><summary>Track voice auditions</summary><p>Clients tab, Auditions. Add each one with its deadline and change the status as you hear back. Deadlines show on the calendar.</p></details>
+          <h3 class="dash-h3">Safety</h3>
+          <details class="dash-help-item"><summary>I lost my phone</summary><p>On the login screen, tap Lost your phone? Use a backup code. Each code works once. Make a set in the Logins tab ahead of time. Out of codes? Change DASHBOARD_PASSWORD in Cloudflare, which signs everyone out and resets two-step login.</p></details>
+          <details class="dash-help-item"><summary>Back everything up</summary><p>Site tab, Backup and restore, then Download backup. Do it every month or so. Restoring keeps a copy of how things were right before, just in case.</p></details>
+          <details class="dash-help-item"><summary>Something looks broken</summary><p>Overview tab, Site health shows what's down. Site tab, Link check finds dead links. Turn on Something on the site breaks in Alerts to get pinged.</p></details>
+          <details class="dash-help-item"><summary>Someone posted something nasty in the Ship's Log</summary><p>Ship's Log tab. Hide it or delete it. The site already blocks links and slurs.</p></details>
+          <p class="dash-note" id="help-none" hidden>Nothing matches. Try another word.</p>
+        </section>
+      </div>
+
       <div data-panel="security" hidden>
         <section class="dash-card" aria-labelledby="bc-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">If you lose your phone</p><h2 id="bc-h">Backup codes</h2></div></div>
@@ -557,6 +588,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=32" defer></script>
+  <script src="/dashboard.js?v=33" defer></script>
 </body>
 </html>

@@ -1061,6 +1061,14 @@
     loaders.alerts();
   });
 
+  // ---------- Help search ----------
+  $('help-find').addEventListener('input', () => {
+    const q = $('help-find').value.trim().toLowerCase(); let shown = 0;
+    document.querySelectorAll('.dash-help-item').forEach(d => { const hit = !q || d.textContent.toLowerCase().includes(q); d.hidden = !hit; d.open = !!q && hit; if (hit) shown++; });
+    document.querySelectorAll('.dash-help h3').forEach(h => { let n = h.nextElementSibling, any = false; while (n && n.matches('.dash-help-item')) { if (!n.hidden) any = true; n = n.nextElementSibling; } h.hidden = !any; });
+    $('help-none').hidden = shown > 0;
+  });
+
   // ---------- Backup codes ----------
   let shownCodes = [];
   const loadBackup = async () => {

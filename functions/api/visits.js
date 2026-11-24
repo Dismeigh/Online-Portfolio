@@ -13,7 +13,7 @@ async function ensureTable(db) {
 export const onRequestPost = guard(async ({ request, env }) => {
   if (!sameOrigin(request)) return json({ error: 'Not allowed.' }, 403);
   const db = env.ARCADE; await ensureTable(db);
-  const key = await visitorKey(request);
+  const key = await visitorKey(request, env);
   await db.prepare('INSERT OR IGNORE INTO visitors (key, n, created_at) SELECT ?, COALESCE(MAX(n), 0) + 1, ? FROM visitors')
     .bind(key, Date.now()).run();
   const row = await db.prepare('SELECT n FROM visitors WHERE key = ?').bind(key).first();

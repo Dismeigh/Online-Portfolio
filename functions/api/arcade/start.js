@@ -7,7 +7,7 @@ export const onRequestPost = guard(async ({ request, env }) => {
   const game = gameOf(body?.game);
   if (!game) return json({ error: 'Unknown game.' }, 400);
   const db = env.ARCADE;
-  const ip = await visitorKey(request);
+  const ip = await visitorKey(request, env);
   const now = Date.now();
   const recent = await db.prepare('SELECT COUNT(*) AS n FROM runs WHERE ip = ? AND started_at > ?').bind(ip, now - 3600000).first();
   if ((recent?.n || 0) >= 300) return json({ error: 'Slow down, pilot. Try again in a bit.' }, 429);

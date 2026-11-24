@@ -3157,3 +3157,19 @@ html:has(.dash-body) { background: var(--ink); }
 .quote-est { margin: -0.3rem 0 0; padding: 0.5rem 0.7rem; background: #f3e7c9; border-left: 4px solid var(--mustard); color: var(--ink); font-weight: 600; font-size: 0.95rem; }
 .quote-est[hidden] { display: none; }
 @media (min-width: 720px) { .quote-est { grid-column: 1 / -1; } }
+
+/* Privacy page */
+.privacy-body { max-width: 46rem; text-align: left; }
+.privacy-body h2 { margin: 2rem 0 0.6rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; text-transform: uppercase; color: var(--mustard); }
+.privacy-body ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; }
+.privacy-body li, .privacy-body p { color: var(--paper); line-height: 1.6; }
+.privacy-body b { color: var(--paper); }
+.privacy-body a { color: var(--mustard); }
+
+/* Dashboard help */
+#help-find { width: 100%; margin: 0.4rem 0 0.4rem; }
+.dash-help-item { border-bottom: 1px dashed var(--line); }
+.dash-help-item summary { padding: 0.7rem 0; cursor: pointer; font-weight: 700; color: var(--paper); }
+.dash-help-item p { margin: 0 0 0.9rem; color: var(--paper-dim); line-height: 1.55; }
+.dash-help-item b { color: var(--paper); }
+.dash-help-item[hidden], .dash-help h3[hidden] { display: none; }

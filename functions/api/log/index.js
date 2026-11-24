@@ -42,7 +42,7 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   if (!(Number(body?.elapsed) >= 3000)) return json({ error: 'Take a second, then try again.' }, 400);
   const n = cleanName(body?.name, LOG_NAME_MAX); if (n.error) return json({ error: n.error, field: 'name' }, 400);
   const m = cleanMessage(body?.message); if (m.error) return json({ error: m.error, field: 'message' }, 400);
-  const ip = await visitorKey(request); const now = Date.now();
+  const ip = await visitorKey(request, env); const now = Date.now();
   const recent = await db.prepare('SELECT COUNT(*) AS day, MAX(created_at) AS last FROM guestbook WHERE ip = ? AND created_at > ?').bind(ip, now - 86400000).first();
   if (recent?.last && now - recent.last < 60000) return json({ error: 'One entry a minute, captain. Try again shortly.' }, 429);
   if ((recent?.day || 0) >= 5) return json({ error: 'That’s plenty of log entries for today. Come back tomorrow!' }, 429);

@@ -10,7 +10,7 @@ export const onRequestPost = guard(async ({ request, env }) => {
   if (nameError) return json({ error: nameError, field: 'name' }, 400);
 
   const db = env.ARCADE;
-  const ip = await visitorKey(request);
+  const ip = await visitorKey(request, env);
   const now = Date.now();
   const run = await db.prepare('SELECT ip, started_at, used, game FROM runs WHERE id = ?').bind(String(body?.run || '')).first();
   if (!run || run.ip !== ip || run.used || now - run.started_at > 3 * 3600000) return json({ error: 'That run can’t be posted. Play another and try again.' }, 400);
