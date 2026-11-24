@@ -319,6 +319,10 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    captions: { note: 'Subtitles for the clips on the home page. One line per caption: which clip, when it starts and ends (like 0:03 and 0:06), and what\u2019s said. Order doesn\u2019t matter.', fields: [
+      F('clip', 'Clip', 'select', { options: [['1', 'Clip 1'], ['2', 'Clip 2'], ['3', 'Clip 3'], ['4', 'Clip 4'], ['5', 'Clip 5']] }),
+      F('start', 'Starts (m:ss)', 'text', { max: 9 }), F('end', 'Ends (m:ss)', 'text', { max: 9 }), F('text', 'What\u2019s said', 'text', { max: 160, required: true }),
+    ] },
     garage: { note: 'The Sojourn ST build sheet on the Garage page. Move a mod to Done when it\u2019s on the car; the progress bar updates on its own.', fields: [
       F('status', 'Status', 'select', { options: [['planned', 'Planned'], ['done', 'Done']] }), F('name', 'Mod', 'text', { max: 80, required: true }),
     ] },
@@ -340,7 +344,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -416,7 +420,7 @@
     if (status !== 200) { $('content-msg').textContent = data.error || 'Couldn’t save.'; return; }
     const v = data[WRAP[kind]], sent = SCHEMA[kind].single ? (items[0] ? 1 : 0) : items.length, kept = SCHEMA[kind].single ? (v ? 1 : 0) : (v || []).length;
     items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
-    flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (a link or Twitch name wasn’t valid).` : 'Saved. It’s live on the site now.');
+    flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (something was missing or not valid${kind === 'captions' ? ', like an end time before the start time' : ''}).` : 'Saved. It’s live on the site now.');
   });
   loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); };
 

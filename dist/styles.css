@@ -3237,3 +3237,19 @@ html:has(.dash-body) { background: var(--ink); }
 
 .rate-spots { margin-left: 0.4rem; padding-left: 0.4rem; border-left: 1px solid currentColor; font-weight: 700; }
 .dash-cap legend span { font-weight: 400; color: var(--paper-dim); } .dash-cap label { display: block; min-height: 0; }
+
+/* Hyperspace page transitions: a quick Bebop-style wipe between pages (Chrome, Edge, Safari 18.2+; others just switch).
+   Skipped for anyone with reduced motion on. The menu bar stays put while the page underneath changes. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .site-nav { view-transition-name: site-nav; }
+  ::view-transition-group(root) { animation-duration: 0.45s; }
+  ::view-transition-old(root) { animation: 0.3s ease-in both hyperOut; }
+  ::view-transition-new(root) { animation: 0.45s cubic-bezier(.7, 0, .2, 1) both hyperIn; }
+  ::view-transition-group(site-nav) { animation: none; z-index: 2; }
+  @keyframes hyperOut { to { opacity: 0; transform: translateX(-4%) scale(0.98); filter: blur(2px); } }
+  @keyframes hyperIn {
+    from { clip-path: polygon(0 0, 0 0, -12% 100%, -12% 100%); filter: saturate(1.6) brightness(1.15); }
+    to { clip-path: polygon(0 0, 112% 0, 100% 100%, -12% 100%); filter: none; }
+  }
+}
