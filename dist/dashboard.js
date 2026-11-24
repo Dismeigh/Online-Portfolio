@@ -214,6 +214,7 @@
       </div>
       <div class="dash-two-col">
         <div><h3 class="dash-h3">Top pages, 30 days</h3>${s.topPages.length ? `<ol class="dash-rank">${s.topPages.map(r => `<li><span>${esc(pageName(r.path))}</span><b>${r.n}</b></li>`).join('')}</ol>` : '<p class="dash-note">No views counted yet.</p>'}</div>
+        <div><h3 class="dash-h3">Where visitors come from, 30 days</h3>${(s.sources || []).length ? `<ol class="dash-rank">${s.sources.map(r => `<li><span>${esc(r.source)}</span><b>${r.n}</b></li>`).join('')}</ol>` : '<p class="dash-note">Nothing counted yet. This started on Nov 23, 2026.</p>'}</div>
         <div><h3 class="dash-h3">Everything else</h3><ul class="dash-rank">
           <li><span>Visitors, all time</span><b>${s.visitors.total}</b></li>
           <li><span>Bounty Run plays (7 / 30 days)</span><b>${s.arcade.bounty.week} / ${s.arcade.bounty.month}</b></li>

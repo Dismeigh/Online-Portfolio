@@ -748,7 +748,15 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   // Count this page view: page and day only, nothing about the visitor
   try {
     if (!/^\/(dashboard|spotted)/.test(location.pathname)) {
-      const body = JSON.stringify({ p: location.pathname });
+      // Where they came from: just the other site's name, once per visit (not when clicking around this site)
+      let r = null;
+      try {
+        if (!sessionStorage.getItem('dm-src')) {
+          const ref = document.referrer ? new URL(document.referrer).hostname : '';
+          if (ref !== location.hostname) { r = ref || 'direct'; sessionStorage.setItem('dm-src', '1'); }
+        }
+      } catch {}
+      const body = JSON.stringify(r ? { p: location.pathname, r } : { p: location.pathname });
       if (!(navigator.sendBeacon && navigator.sendBeacon('/api/hit', new Blob([body], { type: 'application/json' })))) fetch('/api/hit', { method: 'POST', body, keepalive: true }).catch(() => {});
     }
   } catch {}
