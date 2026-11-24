@@ -823,10 +823,32 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       addEventListener('dismeigh:live', e => sync(e.detail));
       sync(!!window.dismeighLive);
     }
+    // Birthday (April 12) and Twitch anniversary (June 10): a strip across every page for the day, closable
+    {
+      const day = document.documentElement.dataset.season;
+      if ((day === 'birthday' || day === 'anniversary') && !/^\/(dashboard|overlay)/.test(location.pathname)) {
+        const key = `dm-party-${day}-${new Date().getFullYear()}`;
+        let shut = false; try { shut = localStorage.getItem(key) === '1'; } catch {}
+        if (!shut) {
+          const yrs = Number(document.documentElement.dataset.streamYears || 1);
+          const strip = document.createElement('div');
+          strip.className = 'site-banner is-party'; strip.setAttribute('role', 'note');
+          strip.innerHTML = day === 'birthday'
+            ? '<p>It\u2019s Dismeigh\u2019s birthday! Come hang out and celebrate on stream. <a href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Say happy birthday</a></p><button type="button" aria-label="Close">&times;</button>'
+            : `<p>${yrs} year${yrs === 1 ? '' : 's'} of Dismeigh on Twitch! Thanks for being part of the crew. <a href="/rewind/">See the Rewind</a></p><button type="button" aria-label="Close">&times;</button>`;
+          const nav = document.querySelector('.site-nav');
+          if (nav) { nav.prepend(strip); nav.classList.add('has-banner'); } else { strip.classList.add('is-loose'); document.body.prepend(strip); }
+          strip.querySelector('button').addEventListener('click', () => {
+            strip.remove(); try { localStorage.setItem(key, '1'); } catch {}
+            if (nav) nav.classList.toggle('has-banner', !!nav.querySelector('.site-banner:not([hidden])'));
+          });
+        }
+      }
+    }
     // Banner across the top of every page, until it ends or the visitor closes it
     const b = s.banner;
     let closed = null; try { closed = localStorage.getItem('dm-banner-closed'); } catch {}
-    if (!b || !b.text || String(b.id) === closed || document.querySelector('.site-banner:not(.is-live)')) return;
+    if (!b || !b.text || String(b.id) === closed || document.querySelector('.site-banner:not(.is-live):not(.is-party)')) return;
     const safeLink = typeof b.link === 'string' && (/^https:\/\//.test(b.link) || /^\/(?!\/)/.test(b.link)) ? b.link : '';
     const bar = document.createElement('div');
     bar.className = 'site-banner';
