@@ -18,11 +18,38 @@
       if (e.pinned) { const tag = document.createElement('span'); tag.className = 'log-pin'; tag.textContent = 'Pinned'; head.append(name, tag); }
       else head.append(name, when);
       const msg = document.createElement('p'); msg.className = 'log-entry-msg'; msg.textContent = e.message;
-      li.append(head, msg);
+      li.append(head, msg, reactBar(e));
       return li;
     }));
     emptyEl.textContent = emptyText; emptyEl.hidden = rows.length > 0;
   };
+  // Emoji reactions: one per visitor per entry
+  const EMOJI = { fire: ['\u{1F525}', 'Fire'], lol: ['\u{1F602}', 'Funny'], rocket: ['\u{1F680}', 'Rocket'], cowboy: ['\u{1F920}', 'Space cowboy'] };
+  let mine = {}; try { mine = JSON.parse(localStorage.getItem('dm-log-reacted') || '{}') || {}; } catch {}
+  const paint = (bar, counts, picked) => bar.querySelectorAll('button').forEach(b => {
+    const k = b.dataset.kind, n = counts[k] || 0;
+    b.querySelector('b').textContent = n ? n : '';
+    b.setAttribute('aria-pressed', String(picked === k));
+    b.setAttribute('aria-label', `${EMOJI[k][1]}${n ? `, ${n}` : ''}${picked === k ? ' (you)' : ''}`);
+    b.disabled = !!picked && picked !== k;
+  });
+  function reactBar(e) {
+    const bar = document.createElement('div'); bar.className = 'log-react'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', `React to ${e.name}'s entry`);
+    bar.innerHTML = Object.entries(EMOJI).map(([k, [em]]) => `<button type="button" data-kind="${k}"><span aria-hidden="true">${em}</span><b></b></button>`).join('');
+    paint(bar, e.reactions || {}, mine[e.id]);
+    bar.addEventListener('click', async ev => {
+      const b = ev.target.closest('button'); if (!b || mine[e.id]) return;
+      const kind = b.dataset.kind; mine[e.id] = kind;
+      const optimistic = { ...(e.reactions || {}), [kind]: ((e.reactions || {})[kind] || 0) + 1 }; paint(bar, optimistic, kind);
+      try {
+        const r = await fetch('/api/log/react', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: e.id, kind }) });
+        const d = await r.json();
+        if (r.ok) { e.reactions = d.reactions; paint(bar, d.reactions, kind); } else { delete mine[e.id]; paint(bar, e.reactions || {}, null); }
+      } catch { delete mine[e.id]; paint(bar, e.reactions || {}, null); }
+      try { localStorage.setItem('dm-log-reacted', JSON.stringify(mine)); } catch {}
+    });
+    return bar;
+  }
   const load = () => fetch('/api/log', { cache: 'no-store' }).then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => d.entries || []);
 
   // Home page: newest three

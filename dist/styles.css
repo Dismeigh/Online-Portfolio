@@ -3118,3 +3118,11 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-table th, .dash-table td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; color: var(--paper); }
 .dash-table th:first-child, .dash-table thead th:first-child { text-align: left; }
 .dash-table thead th { font-family: var(--typed); font-weight: 400; color: var(--paper-dim); }
+
+/* Ship's Log reactions */
+.log-react { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+.log-react button { display: inline-flex; align-items: center; gap: 0.25rem; min-height: 2.2rem; min-width: 2.6rem; padding: 0.15rem 0.55rem; border: 1px solid rgba(239, 230, 210, 0.25); border-radius: 999px; background: rgba(0, 0, 0, 0.25); color: var(--paper); font: inherit; font-size: 0.95rem; cursor: pointer; }
+.log-react button b { font-size: 0.85rem; font-weight: 700; }
+.log-react button[aria-pressed="true"] { border-color: var(--mustard); background: rgba(227, 169, 47, 0.2); }
+.log-react button:disabled { opacity: 0.5; cursor: default; }
+.log-react button:not(:disabled):hover, .log-react button:focus-visible { border-color: var(--mustard); }

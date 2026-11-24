@@ -3,21 +3,31 @@ import { cleanName, cleanMessage, LOG_NAME_MAX } from '../../../lib/guestbook.js
 import { alert } from '../../../lib/push.js';
 
 let ready = false;
-async function ensureTable(db) {
+export async function ensureTable(db) {
   if (ready) return;
   await db.batch([
     db.prepare('CREATE TABLE IF NOT EXISTS guestbook (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, message TEXT NOT NULL, ip TEXT NOT NULL, created_at INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0, pinned INTEGER NOT NULL DEFAULT 0)'),
     db.prepare('CREATE INDEX IF NOT EXISTS guestbook_recent ON guestbook (hidden, created_at DESC)'),
     db.prepare('CREATE INDEX IF NOT EXISTS guestbook_ip ON guestbook (ip, created_at)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS log_reactions (entry_id INTEGER NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (entry_id, kind))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS log_reacted (entry_id INTEGER NOT NULL, visitor TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (entry_id, visitor))'),
   ]);
   ready = true;
 }
 // Entries expire after 60 days unless pinned (pinned = 1 keeps one forever and puts it on top).
 export const KEEP_DAYS = 60;
 const cutoff = () => Date.now() - KEEP_DAYS * 86400000;
-const latest = async db => (await db.prepare(
-  'SELECT id, name, message, created_at, pinned FROM guestbook WHERE hidden = 0 AND (pinned = 1 OR created_at > ?) ORDER BY pinned DESC, created_at DESC LIMIT 50').bind(cutoff()).all())
-  .results.map(r => ({ id: r.id, name: r.name, message: r.message, at: new Date(r.created_at).toISOString(), pinned: !!r.pinned }));
+export const REACTIONS = ['fire', 'lol', 'rocket', 'cowboy'];
+export const latest = async db => {
+  const rows = (await db.prepare(
+    'SELECT id, name, message, created_at, pinned FROM guestbook WHERE hidden = 0 AND (pinned = 1 OR created_at > ?) ORDER BY pinned DESC, created_at DESC LIMIT 50').bind(cutoff()).all()).results;
+  const counts = {};
+  if (rows.length) {
+    const r = await db.prepare(`SELECT entry_id, kind, n FROM log_reactions WHERE entry_id IN (${rows.map(() => '?').join(',')})`).bind(...rows.map(x => x.id)).all();
+    for (const x of r.results) (counts[x.entry_id] ||= {})[x.kind] = x.n;
+  }
+  return rows.map(r => ({ id: r.id, name: r.name, message: r.message, at: new Date(r.created_at).toISOString(), pinned: !!r.pinned, reactions: counts[r.id] || {} }));
+};
 
 // GET /api/log -> { entries: [{ id, name, message, at, pinned }] } (pinned first, then newest, up to 50)
 export const onRequestGet = guard(async ({ env }) => { await ensureTable(env.ARCADE); return json({ entries: await latest(env.ARCADE) }); });
@@ -40,6 +50,10 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   const job = alert(env, 'log', { title: 'New Ship\u2019s Log entry', body: `${n.name}: ${m.message.slice(0, 120)}`, tab: 'guestbook' });
   if (waitUntil) waitUntil(job); else await job;
   // Now and then, clear out expired entries for good (pinned ones stay)
-  if (Math.random() < 0.1) await db.prepare('DELETE FROM guestbook WHERE pinned = 0 AND created_at < ?').bind(cutoff()).run();
+  if (Math.random() < 0.1) {
+    await db.prepare('DELETE FROM guestbook WHERE pinned = 0 AND created_at < ?').bind(cutoff()).run();
+    await db.prepare('DELETE FROM log_reactions WHERE entry_id NOT IN (SELECT id FROM guestbook)').run();
+    await db.prepare('DELETE FROM log_reacted WHERE entry_id NOT IN (SELECT id FROM guestbook) OR at < ?').bind(Date.now() - 90 * 86400000).run();
+  }
   return json({ ok: true, entries: await latest(db) });
 });
