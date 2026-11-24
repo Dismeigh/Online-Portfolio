@@ -364,7 +364,22 @@
       <div class="dash-row-actions"><button type="button" class="dash-btn dash-small dash-danger" data-score="${r.id}">Remove score</button>
       <button type="button" class="dash-btn dash-small dash-danger" data-name="${esc(r.name)}">Remove all by name</button></div></li>`).join('')}</ol>` : '<p class="dash-note">No scores yet.</p>'}`;
     $('arcade-body').innerHTML = table('This week', data.week || []) + table('All time', data.all || []);
+    const drag = game === 'drag', [lo, hi] = data.limits || [0, 0];
+    $('tu-label').textContent = `Arcade master target (${drag ? 'Launch Control' : 'Bounty Run'})`;
+    Object.assign($('tu-target'), { value: data.master, min: lo, max: hi });
+    $('tu-help').textContent = drag ? `Launch at or under this many ms to unlock Arcade master. Default ${data.masterDefault} ms.` : `Score at least this much to unlock Arcade master. Default ${data.masterDefault.toLocaleString()}.`;
+    $('tu-week').textContent = data.early ? `Started early on ${when(data.weekStart)}. Resets again Monday at midnight (Eastern).` : 'Resets every Monday at midnight (Eastern). Reset early to clear it now; all-time scores stay.';
   };
+  $('tune-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { data } = await api('scores', { action: 'target', game, value: Number($('tu-target').value) });
+    flash($('tune-msg'), data.error || 'Target saved. It applies on the next run.'); if (!data.error) loaders.arcade();
+  });
+  $('tu-reset').addEventListener('click', async () => {
+    if (!confirm(`Start this week's ${game === 'drag' ? 'Launch Control' : 'Bounty Run'} board over? All-time scores stay.`)) return;
+    const { data } = await api('scores', { action: 'resetWeek', game });
+    flash($('tune-msg'), data.error || 'This week\u2019s board is fresh.'); loaders.arcade();
+  });
   document.querySelectorAll('#arcade-pick [data-game]').forEach(b => b.addEventListener('click', () => { game = b.dataset.game; loaders.arcade(); }));
   $('arcade-body').addEventListener('click', async e => {
     const s = e.target.closest('[data-score]'), n = e.target.closest('[data-name]');

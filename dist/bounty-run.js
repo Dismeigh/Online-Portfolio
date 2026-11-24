@@ -99,7 +99,7 @@
     for (let i = 0; i < 28; i++) sparks.push({ x: ship.x, y: ship.y, vx: (Math.random() - 0.5) * 420, vy: (Math.random() - 0.5) * 420, life: 0.8, c: i % 2 ? C.mustard : C.red });
     buzz([80, 40, 120]);
     finalScore = Math.floor(score); finalSeconds = t;
-    if (finalScore >= 1500) window.dismeighUnlock?.('arcade');  // Secret: Arcade master
+    if (finalScore >= (boards.master || 1500)) window.dismeighUnlock?.('arcade');  // Secret: Arcade master
     const isBest = finalScore > best;
     if (isBest) { best = finalScore; store.set('dismeigh-bounty-run', String(best)); ui.best.textContent = best; }
     setTimeout(() => {

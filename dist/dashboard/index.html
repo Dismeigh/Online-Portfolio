@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=72">
+  <link rel="stylesheet" href="/styles.css?v=73">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -208,6 +208,19 @@
             <button type="button" data-game="drag">Launch Control</button>
           </div>
           <p class="dash-note">Remove one bad score, or every score under a name (for names that slipped past the filter).</p>
+          <div class="dash-tune" id="arcade-tune">
+            <form id="tune-form" class="dash-tune-box">
+              <label for="tu-target" id="tu-label">Arcade master target</label>
+              <div class="dash-end-row"><input id="tu-target" type="number" inputmode="numeric" required><button type="submit" class="dash-btn dash-primary">Save target</button></div>
+              <p class="dash-note" id="tu-help"></p>
+            </form>
+            <div class="dash-tune-box">
+              <p class="dash-label-like">This week&rsquo;s board</p>
+              <p class="dash-note" id="tu-week"></p>
+              <button type="button" class="dash-btn dash-danger" id="tu-reset">Reset this week now</button>
+            </div>
+            <p class="dash-msg" id="tune-msg" role="status"></p>
+          </div>
           <div id="arcade-body"></div>
         </section>
       </div>
@@ -316,6 +329,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=10" defer></script>
+  <script src="/dashboard.js?v=11" defer></script>
 </body>
 </html>

@@ -96,7 +96,7 @@
     lastMs = ms;
     timeEl.textContent = fmt(ms);
     if (ms < 100) { verdict.textContent = 'Too quick to be real. That counts as a guess, so no time.'; return; }
-    if (ms <= 175) window.dismeighUnlock?.('arcade');  // Secret: Arcade master
+    if (ms <= (boards.master || 175)) window.dismeighUnlock?.('arcade');  // Secret: Arcade master
     verdict.textContent = ms < 150 ? 'Holeshot! Unreal launch.' : ms < 250 ? 'Great launch.' : ms < 400 ? 'Solid launch.' : 'A little sleepy on the tree.';
     const isBest = !best || ms < best;
     if (isBest) { best = ms; store.set('dismeigh-launch-best', String(ms)); bestEl.textContent = fmt(ms); verdict.textContent += ' New personal best!'; }
