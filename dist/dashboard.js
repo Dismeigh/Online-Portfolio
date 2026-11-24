@@ -1,6 +1,7 @@
 // Private dashboard (/dashboard/). Talks to /api/admin/* (see lib/admin.js and lib/kofi.js).
 (() => {
   const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const usd = n => `$${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: n % 1 ? 2 : 0 })}`;
   const api = async (path, body) => {
     const r = await fetch(`/api/admin/${path}`, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' } : { credentials: 'same-origin', cache: 'no-store' });
@@ -64,6 +65,14 @@
       $('g-garage').checked = !!g.garage;
     }
     preview();
+    $('g-endplace').value = g.garage ? 'garage' : 'home';
+    $('g-end').disabled = !g.title;
+    const past = s.past || [];
+    $('past-body').innerHTML = past.length ? `<ul class="dash-list">${past.map(p => `<li class="dash-row${p.funded ? ' is-pinned' : ''}">
+      <div class="dash-row-main"><b>${esc(p.title)}</b> <span class="dash-meta">${esc(usd(p.raised))} of ${esc(usd(p.target))}${p.funded ? ' · Funded' : ''} · ended ${esc(new Date(p.ended).toLocaleDateString())}</span></div>
+      <div class="dash-row-actions"><label class="sr-only" for="pp-${p.id}">Where it shows</label><select id="pp-${p.id}" data-past="${p.id}">
+        ${[['garage', 'Garage'], ['home', 'Home page'], ['none', 'Hidden']].map(([v, l]) => `<option value="${v}"${p.place === v ? ' selected' : ''}>${l}</option>`).join('')}</select>
+        <button type="button" class="dash-btn dash-small dash-danger" data-pastdel="${p.id}">Delete</button></div></li>`).join('')}</ul>` : '<p class="dash-note">None yet. When you finish a goal, use "End goal & save it".</p>';
     $('hook-url').textContent = s.webhookUrl;
     $('kofi-status').textContent = s.connected
       ? `Connected. Last payment received: ${s.lastPayment ? new Date(s.lastPayment).toLocaleString() : 'none yet'}.`
@@ -124,6 +133,20 @@
   $('restart').addEventListener('click', () => {
     if (state?.goal?.since && !confirm('Start a new goal? Ko-fi payments will be counted from now, and the old count is set aside.')) return;
     save(true);
+  });
+  $('g-end').addEventListener('click', async () => {
+    if (!confirm('End this goal? Its final total is saved to Past goals and the goal bar turns off.')) return;
+    const { status, data } = await api('goal', { action: 'end', place: $('g-endplace').value });
+    if (status === 401) return show('login');
+    $('goal-msg').textContent = data.error || 'Goal ended and saved to Past goals.'; load();
+  });
+  $('past-body').addEventListener('change', async e => {
+    const sel = e.target.closest('[data-past]'); if (!sel) return;
+    await api('goal', { action: 'pastPlace', id: Number(sel.dataset.past), place: sel.value }); load();
+  });
+  $('past-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-pastdel]'); if (!b || !confirm('Delete this past goal?')) return;
+    await api('goal', { action: 'pastDelete', id: Number(b.dataset.pastdel) }); load();
   });
   $('toggle').addEventListener('click', async () => {
     const want = !state?.goal?.on;

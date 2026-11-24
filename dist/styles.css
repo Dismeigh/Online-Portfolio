@@ -2835,3 +2835,16 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-secrets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .dash-secrets li.is-license { grid-column: 1 / -1; border-color: var(--mustard); }
 @media (max-width: 760px) { .dash-secrets { grid-template-columns: 1fr; } }
+
+/* Past Ko-fi goals ("Funded") */
+.kofi-past { margin: 0.4rem 0 1rem; text-align: left; }
+.past-label { margin: 0 0 0.4rem; font-family: var(--typed); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mustard); }
+.past-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.past-list li { display: grid; gap: 0.1rem; padding: 0.55rem 0.8rem; background: var(--ink-2, #1d1916); border: 2px solid var(--line, #3a322b); border-left: 5px solid var(--paper-dim); }
+.past-list li.is-funded { border-left-color: #6fbf73; }
+.past-list b { font-family: var(--display); font-weight: 400; font-size: 1.05rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--paper); }
+.past-list span { font-size: 0.9rem; color: var(--paper-dim); }
+.dash-end { margin-top: 1rem; padding-top: 0.8rem; border-top: 2px dashed var(--line, #3a322b); }
+.dash-end-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.dash-end-row select { flex: 1 1 14rem; width: auto; }
+.dash-row-actions select { width: auto; min-height: 2.4rem; }

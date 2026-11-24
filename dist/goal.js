@@ -2,12 +2,22 @@
 // Home: always while on. Garage: only if "Also show it in the Garage" is ticked.
 (() => {
   const boxes = [...document.querySelectorAll('[data-kofi-goal]')];
-  if (!boxes.length) return;
+  const pastBoxes = [...document.querySelectorAll('[data-kofi-past]')];
+  if (!boxes.length && !pastBoxes.length) return;
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const usd = n => `$${Number(n).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: n % 1 ? 2 : 0 })}`;
   const safeUrl = u => (/^https:\/\/ko-fi\.com\//.test(String(u)) ? u : 'https://ko-fi.com/dismeigh');
   fetch('/api/goal').then(r => r.json()).then(g => {
-    if (!g || !g.on) return;
+    if (!g) return;
+    // Finished goals picked to show on this page
+    for (const box of pastBoxes) {
+      const list = (g.past || []).filter(p => p.place === box.dataset.kofiPast).slice(0, 6);
+      if (!list.length) continue;
+      box.innerHTML = `<p class="past-label">Funded by you</p><ul class="past-list">${list.map(p => `<li class="${p.funded ? 'is-funded' : ''}">
+        <b>${esc(p.title)}</b><span>${esc(usd(p.raised))} of ${esc(usd(p.target))}${p.funded ? ' &middot; Funded' : ''} &middot; ${esc(new Date(p.ended).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }))}</span></li>`).join('')}</ul>`;
+      box.hidden = false;
+    }
+    if (!g.on) return;
     const pct = Math.max(0, Math.min(100, Math.round(Number(g.pct) || 0)));
     const html = `<div class="goal-card">
       <div class="goal-head"><span class="goal-label">Ko-fi goal</span><b>${esc(g.title)}</b></div>

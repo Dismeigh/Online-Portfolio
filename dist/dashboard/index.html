@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=68">
+  <link rel="stylesheet" href="/styles.css?v=69">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -121,6 +121,13 @@
               <button type="button" class="dash-btn" id="restart">Save as a new goal</button>
             </div>
             <p class="dash-msg" id="goal-msg" role="status"></p>
+            <div class="dash-end">
+              <label for="g-endplace">When this goal is done, show it in</label>
+              <div class="dash-end-row">
+                <select id="g-endplace"><option value="garage">The Garage (car goals)</option><option value="home">Home page (Support &amp; Shop)</option><option value="none">Nowhere</option></select>
+                <button type="button" class="dash-btn" id="g-end">End goal &amp; save it</button>
+              </div>
+            </div>
             <p class="dash-hint">&ldquo;Save as a new goal&rdquo; starts counting Ko-fi payments from now (use it when you start raising for something new). &ldquo;Save goal&rdquo; keeps the current count.</p>
           </form>
 
@@ -134,6 +141,12 @@
             <p class="dash-hint" id="pv-count"></p>
           </aside>
         </div>
+      </section>
+
+      <section class="dash-card dash-card-past" aria-labelledby="past-h">
+        <div class="dash-card-head"><div><p class="dash-card-kicker">Funded</p><h2 id="past-h">Past goals</h2></div></div>
+        <p class="dash-note">Finished goals and their final totals. Choose where each one shows, or hide it.</p>
+        <div id="past-body"></div>
       </section>
 
       <section class="dash-card dash-card-kofi" aria-labelledby="kofi-h">
@@ -265,6 +278,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=7" defer></script>
+  <script src="/dashboard.js?v=8" defer></script>
 </body>
 </html>
