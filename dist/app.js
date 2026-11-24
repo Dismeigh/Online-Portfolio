@@ -790,7 +790,9 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     bar.setAttribute('role', 'region');
     bar.setAttribute('aria-label', 'Announcement');
     bar.innerHTML = `<p>${esc(b.text)}${safeLink ? ` <a href="${esc(safeLink)}"${/^https:/.test(safeLink) ? ' target="_blank" rel="noopener noreferrer"' : ''}>More</a>` : ''}</p><button type="button" aria-label="Close announcement">&times;</button>`;
-    bar.querySelector('button').addEventListener('click', () => { bar.remove(); try { localStorage.setItem('dm-banner-closed', String(b.id)); } catch {} });
-    document.body.prepend(bar);
+    bar.querySelector('button').addEventListener('click', () => { bar.remove(); document.querySelector('.site-nav')?.classList.remove('has-banner'); try { localStorage.setItem('dm-banner-closed', String(b.id)); } catch {} });
+    // Sits inside the sticky top bar so it stays on screen while scrolling (and below the phone's status bar)
+    const nav = document.querySelector('.site-nav');
+    if (nav) { nav.classList.add('has-banner'); nav.prepend(bar); } else { bar.classList.add('is-loose'); document.body.prepend(bar); }
   }).catch(() => {});
 })();

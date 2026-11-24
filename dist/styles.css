@@ -2848,3 +2848,10 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-end-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 .dash-end-row select { flex: 1 1 14rem; width: auto; }
 .dash-row-actions select { width: auto; min-height: 2.4rem; }
+
+/* Banner lives inside the sticky top bar: full width, above the links */
+.site-nav.has-banner { flex-wrap: wrap; row-gap: 0.4rem; }
+.site-nav { --nav-pad: max(4vw, 1rem); }
+.site-nav > .site-banner { order: -1; flex: 0 0 calc(100% + 2 * var(--nav-pad)); margin: -0.55rem calc(-1 * var(--nav-pad)) 0.1rem; }
+@media (max-width: 900px) { .site-nav.has-menu { --nav-pad: 0.75rem; } }
+.site-banner.is-loose { padding-top: max(0.45rem, env(safe-area-inset-top)); }
