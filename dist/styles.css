@@ -2863,3 +2863,11 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-noterow.cat-stream { border-left-color: #3f8f8c; }
 .dash-noterow.cat-bounty { border-left-color: var(--mustard); }
 .dash-noterow.cat-quote { border-left-color: #d85fa0; }
+
+/* Maintenance page + dashboard switch */
+.shop-title { font-size: clamp(2.4rem, 8vw, 3.6rem); margin-top: 0.2rem; }
+.shop-note { margin: 0 0 1.2rem; padding: 0.7rem 0.9rem; border-left: 4px solid var(--mustard); background: rgba(0, 0, 0, 0.3); color: var(--paper); }
+.shop-retry { margin: 1.2rem 0 0; font-size: 0.95rem; }
+.shop-retry a { color: var(--mustard); }
+.dash-chip-warn { border-color: #e07a5f; color: #f2a48f; }
+.dash-chip-warn .dash-dot { background: #e07a5f; }

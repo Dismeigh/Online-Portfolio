@@ -387,7 +387,18 @@
     $('cm-voice').value = data.commissions?.voice || 'off'; $('cm-work').value = data.commissions?.work || 'off'; $('cm-note').value = data.commissions?.note || '';
     $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
     updatePreview();
+    const m = (await api('maintenance')).data.maintenance || {};
+    shopOn = !!m.on; $('s-note').value = m.note || ''; $('s-until').value = toLocal(m.until);
+    $('shop-chip').className = `dash-chip ${shopOn ? 'dash-chip-warn' : ''}`; $('shop-chip-text').textContent = shopOn ? 'Site is closed' : 'Off';
+    $('s-go').textContent = shopOn ? 'Turn off (reopen site)' : 'Turn on';
   };
+  let shopOn = false;
+  $('shop-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!shopOn && !confirm('Close the public site? Visitors will see the "back soon" page until you turn this off.')) return;
+    const { data } = await api('maintenance', { on: !shopOn, note: $('s-note').value, until: fromLocal($('s-until').value) });
+    flash($('shop-msg'), data.error || (data.maintenance?.on ? 'Site is closed for maintenance.' : 'Site is open again.')); loaders.site();
+  });
   const updatePreview = () => { const m = $('l-mode').value; $('l-preview').href = m === 'auto' ? '/' : `/?season=${encodeURIComponent(m)}`; };
   $('l-mode').addEventListener('change', updatePreview);
   $('banner-form').addEventListener('submit', async e => {

@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=71">
+  <link rel="stylesheet" href="/styles.css?v=72">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -262,6 +262,18 @@
             <p class="dash-msg" id="now-msg" role="status"></p>
           </form>
         </section>
+        <section class="dash-card dash-card-shop" aria-labelledby="shop-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Whole site</p><h2 id="shop-h">Maintenance mode</h2></div><span class="dash-chip" id="shop-chip"><span class="dash-dot" aria-hidden="true"></span><span id="shop-chip-text">Off</span></span></div>
+          <p class="dash-note">Visitors see a &ldquo;Ship&rsquo;s in the shop, back soon&rdquo; page instead of the site. This dashboard and Ko-fi keep working. Takes up to a minute to switch everywhere.</p>
+          <form id="shop-form">
+            <label for="s-note">Extra line <span>(optional)</span></label>
+            <input id="s-note" maxlength="160" placeholder="Moving to a new PC, back Friday">
+            <label for="s-until">Turn off automatically at <span>(optional)</span></label>
+            <input id="s-until" type="datetime-local">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary" id="s-go">Turn on</button><a class="dash-btn" href="/maintenance.html" target="_blank" rel="noopener">Preview page</a></div>
+            <p class="dash-msg" id="shop-msg" role="status"></p>
+          </form>
+        </section>
         <section class="dash-card dash-card-comm" aria-labelledby="comm-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Voice and Work pages</p><h2 id="comm-h">Commissions</h2></div></div>
           <form id="comm-form">
@@ -304,6 +316,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=9" defer></script>
+  <script src="/dashboard.js?v=10" defer></script>
 </body>
 </html>

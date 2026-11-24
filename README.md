@@ -50,6 +50,8 @@ Secrets (Pages project → Settings → Variables and Secrets), then redeploy:
 - `KOFI_VERIFICATION_TOKEN`: from Ko-fi → Settings → More → API. Set Ko-fi's webhook URL to `https://www.denizen-dismeigh.com/api/kofi`.
 
 Login is two steps: the password, then a 6-digit code from an authenticator app (set up on the first login).
+Maintenance mode (Site tab) swaps every public page for the "Ship's in the shop" page (`dist/maintenance.html`, served with a 503) via `functions/_middleware.js` and `lib/maintenance.js`. The dashboard, all `/api/` routes (Ko-fi webhook included) and static files keep working. Private notes live in `lib/notes.js` (Notes tab, owner-only).
+
 Lost the phone? Change `DASHBOARD_PASSWORD`: that signs out every session and resets two-step login.
 
 How it works: `lib/admin.js` (password + authenticator code, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
