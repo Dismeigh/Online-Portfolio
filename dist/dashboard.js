@@ -332,7 +332,46 @@
     items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
     flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (a link or Twitch name wasn’t valid).` : 'Saved. It’s live on the site now.');
   });
-  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); };
+  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); };
+
+  // ---------- Special event ----------
+  const evLocal = iso => { if (!iso) return ''; const d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+  const evIso = v => (v ? new Date(v).toISOString() : '');
+  const schedRow = (x = {}) => `<div class="dash-ev-row"><label class="sr-only">Segment time</label><input type="datetime-local" data-ev="time" value="${esc(evLocal(x.time))}">
+    <label class="sr-only">Segment</label><input data-ev="title" maxlength="80" placeholder="Opening ceremony" value="${esc(x.title || '')}">
+    <button type="button" class="dash-btn dash-small dash-danger" data-ev-del>Remove</button></div>`;
+  async function loadEvent() {
+    const { data } = await api('content?key=events');
+    const ev = data.event;
+    $('ev-title-in').value = ev?.title || ''; $('ev-type-in').value = ev?.type || 'subathon';
+    $('ev-start-in').value = evLocal(ev?.start); $('ev-end-in').value = evLocal(ev?.end);
+    $('ev-desc-in').value = ev?.description || ''; $('ev-link-in').value = ev?.link || '';
+    $('evg-label').value = ev?.goal?.label || ''; $('evg-unit').value = ev?.goal?.unit || ''; $('evg-cur').value = ev?.goal?.current ?? ''; $('evg-target').value = ev?.goal?.target ?? ''; $('evg-url').value = ev?.goal?.url || '';
+    $('ev-sched').innerHTML = (ev?.schedule || []).map(schedRow).join('');
+    const now = Date.now(), live = ev && now >= Date.parse(ev.start) && now < Date.parse(ev.end), over = ev && now >= Date.parse(ev.end);
+    $('ev-chip').className = `dash-chip ${ev && !over ? 'dash-chip-ok' : ''}`; $('ev-chip-text').textContent = !ev ? 'None' : live ? 'Live now' : over ? 'Ended' : 'Coming up';
+  }
+  $('ev-sched-add').addEventListener('click', () => { $('ev-sched').insertAdjacentHTML('beforeend', schedRow()); $('ev-sched').lastElementChild.querySelector('input').focus(); });
+  $('ev-sched').addEventListener('click', e => { if (e.target.closest('[data-ev-del]')) e.target.closest('.dash-ev-row').remove(); });
+  $('ev-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!$('ev-title-in').value.trim() || !$('ev-start-in').value || !$('ev-end-in').value) return flash($('ev-msg'), 'Give it a name, a start and an end.');
+    if (new Date($('ev-end-in').value) <= new Date($('ev-start-in').value)) return flash($('ev-msg'), 'The end has to be after the start.');
+    const target = Number($('evg-target').value);
+    const ev = {
+      title: $('ev-title-in').value, type: $('ev-type-in').value, start: evIso($('ev-start-in').value), end: evIso($('ev-end-in').value),
+      description: $('ev-desc-in').value, link: $('ev-link-in').value,
+      goal: target > 0 ? { label: $('evg-label').value, unit: $('evg-unit').value, current: Number($('evg-cur').value) || 0, target, url: $('evg-url').value } : null,
+      schedule: [...$('ev-sched').querySelectorAll('.dash-ev-row')].map(r => ({ time: evIso(r.querySelector('[data-ev="time"]').value), title: r.querySelector('[data-ev="title"]').value })).filter(x => x.time && x.title.trim()),
+    };
+    const { status, data } = await api('content', { key: 'events', data: ev });
+    if (status !== 200) return flash($('ev-msg'), data.error || 'Couldn\u2019t save.');
+    flash($('ev-msg'), data.event ? 'Saved. The event page and home page countdown are updated.' : 'That didn\u2019t save. Check the dates (events can be up to 31 days long).'); loadEvent();
+  });
+  $('ev-clear').addEventListener('click', async () => {
+    if (!confirm('Remove the event? The event page goes back to "nothing planned".')) return;
+    await api('content', { key: 'events', data: null }); flash($('ev-msg'), 'Event removed.'); loadEvent();
+  });
   addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
   // ---------- Ship's Log ----------

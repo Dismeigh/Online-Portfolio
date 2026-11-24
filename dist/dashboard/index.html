@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=77">
+  <link rel="stylesheet" href="/styles.css?v=78">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -190,6 +190,46 @@
             <button type="button" class="dash-btn dash-primary" id="content-save">Save changes</button>
             <span class="dash-msg" id="content-msg" role="status"></span>
           </div>
+        </section>
+        <section class="dash-card dash-card-event" aria-labelledby="ev-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Event page and home page callout</p><h2 id="ev-h">Special event</h2></div><span class="dash-chip" id="ev-chip"><span class="dash-dot" aria-hidden="true"></span><span id="ev-chip-text">None</span></span></div>
+          <p class="dash-note">For subathons, charity streams and other big nights. The home page shows a countdown from 7 days before until 3 days after. Times are your local time.</p>
+          <form id="ev-form">
+            <div class="dash-two">
+              <div><label for="ev-title-in">Name</label><input id="ev-title-in" maxlength="80" placeholder="24-Hour Subathon"></div>
+              <div><label for="ev-type-in">Type</label><select id="ev-type-in"><option value="subathon">Subathon</option><option value="charity">Charity stream</option><option value="special">Special stream</option></select></div>
+            </div>
+            <div class="dash-two">
+              <div><label for="ev-start-in">Starts</label><input id="ev-start-in" type="datetime-local"></div>
+              <div><label for="ev-end-in">Ends</label><input id="ev-end-in" type="datetime-local"></div>
+            </div>
+            <label for="ev-desc-in">About it <span>(optional)</span></label>
+            <textarea id="ev-desc-in" rows="3" maxlength="500"></textarea>
+            <label for="ev-link-in">Watch link <span>(optional, Twitch if empty)</span></label>
+            <input id="ev-link-in" type="url" placeholder="https://twitch.tv/dismeigh">
+            <fieldset class="dash-checks dash-ev-goal">
+              <legend>Event goal <span>(optional)</span></legend>
+              <div class="dash-two">
+                <div><label for="evg-label">What for</label><input id="evg-label" maxlength="60" placeholder="Raised for St. Jude"></div>
+                <div><label for="evg-unit">Unit</label><input id="evg-unit" maxlength="12" placeholder="$ or subs"></div>
+              </div>
+              <div class="dash-two">
+                <div><label for="evg-cur">So far</label><input id="evg-cur" type="number" min="0" inputmode="decimal"></div>
+                <div><label for="evg-target">Goal</label><input id="evg-target" type="number" min="0" inputmode="decimal"></div>
+              </div>
+              <label for="evg-url">Donate link <span>(optional)</span></label>
+              <input id="evg-url" type="url" placeholder="https://tiltify.com/...">
+            </fieldset>
+            <h3 class="dash-h3">Run of show <span class="dash-meta">(optional)</span></h3>
+            <div id="ev-sched"></div>
+            <button type="button" class="dash-btn dash-small" id="ev-sched-add">+ Add a segment</button>
+            <div class="dash-actions">
+              <button type="submit" class="dash-btn dash-primary">Save event</button>
+              <a class="dash-btn" href="/event/" target="_blank" rel="noopener">View event page</a>
+              <button type="button" class="dash-btn dash-danger" id="ev-clear">Remove event</button>
+            </div>
+            <p class="dash-msg" id="ev-msg" role="status"></p>
+          </form>
         </section>
       </div>
 
@@ -372,6 +412,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=14" defer></script>
+  <script src="/dashboard.js?v=15" defer></script>
 </body>
 </html>

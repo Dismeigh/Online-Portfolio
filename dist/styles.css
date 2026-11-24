@@ -2894,3 +2894,9 @@ html:has(.dash-body) { background: var(--ink); }
 /* Dashboard backup */
 #bk-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--line); }
 #bk-file { padding: 0.6rem; width: 100%; color: var(--paper); }
+
+/* Dashboard event editor */
+.dash-ev-row { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) auto; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+@media (max-width: 560px) { .dash-ev-row { grid-template-columns: minmax(0, 1fr) auto; } .dash-ev-row [data-ev="title"] { grid-column: 1; } .dash-ev-row [data-ev-del] { grid-row: 1 / span 2; grid-column: 2; } }
+.dash-ev-goal legend span { font-weight: 400; color: var(--paper-dim); }
+.dash-ev-goal label { display: block; min-height: 0; }
