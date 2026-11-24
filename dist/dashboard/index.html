@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=115">
+  <link rel="stylesheet" href="/styles.css?v=116">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -404,6 +404,7 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">Private, from Twitch&rsquo;s stream summary</p><h2 id="ss-h">Stream stats</h2></div><button type="button" class="dash-btn dash-small dash-primary" id="ss-new">Log a stream</button></div>
           <div id="ss-sum"></div>
           <div id="ss-chart" class="dash-ss-chart"></div>
+          <div id="ss-best" class="dash-ss-best"></div>
           <form id="ss-form" class="dash-job-form" hidden>
             <label for="ss-paste">Paste Twitch&rsquo;s stream summary email or page <span>(optional, fills in the numbers below)</span></label>
             <textarea id="ss-paste" rows="4" placeholder="Select all in the email, copy, and paste it here"></textarea>
@@ -422,6 +423,7 @@
             <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button><button type="button" class="dash-btn" id="ss-cancel">Cancel</button></div>
           </form>
           <p class="dash-msg" id="ss-msg" role="status"></p>
+          <div id="ss-record" class="dash-record" hidden aria-live="polite"></div>
           <div id="ss-list"></div>
         </section>
         <section class="dash-card" aria-labelledby="sg-h">
@@ -670,7 +672,7 @@
           <details class="dash-help-item"><summary>Send a client an agreement, invoice or status page</summary><p>Clients tab, open the job, then Agreement, client link, invoice & payments. Fill in each part, save, and use the Copy link buttons. Turn any link off at any time.</p></details>
           <details class="dash-help-item"><summary>Record money and see profit</summary><p>On the job, Record payment for anything paid outside Ko-fi (Ko-fi counts on its own). Add costs under Income, Expenses. Download spreadsheet gives you everything for tax time.</p></details>
           <details class="dash-help-item"><summary>Change the stream schedule</summary><p>Streams tab. Add your regular streams once with &ldquo;Every week&rdquo; and the days. To cancel one night, pick the date under &ldquo;Skip a date&rdquo; on that stream. For a one-off, add a one-time stream. The home page, calendar subscriptions and Rewind all update on their own.</p></details>
-          <details class="dash-help-item"><summary>Log a stream&rsquo;s stats</summary><p>Streams tab, Stream stats, &ldquo;Log a stream&rdquo;. Open Twitch&rsquo;s stream summary email, select all, copy, paste it in the box and tap &ldquo;Read the numbers&rdquo;. Check them and Save. You can also type them in yourself.</p></details>
+          <details class="dash-help-item"><summary>Log a stream&rsquo;s stats</summary><p>Streams tab, Stream stats, &ldquo;Log a stream&rdquo;. Open Twitch&rsquo;s stream summary email, select all, copy, paste it in the box and tap &ldquo;Read the numbers&rdquo;. Check them and Save. You can also type them in yourself. If a stream sets a new best peak, average or follower count, you get a one-tap &ldquo;New record&rdquo; banner for the site. Under the chart, &ldquo;Best time to stream&rdquo; shows which days and start times get the most viewers.</p></details>
           <details class="dash-help-item"><summary>Post this week&rsquo;s schedule</summary><p>Streams tab, Schedule graphic. Pick the week and the size (square for X or Discord, story for Instagram), then Download or Share.</p></details>
           <details class="dash-help-item"><summary>Answer a viewer&rsquo;s question</summary><p>Ship&rsquo;s Log tab, Questions. Type your answer and tap &ldquo;Answer and post&rdquo;. It shows on the Ask the Captain page right away. Delete the ones you don&rsquo;t want to answer.</p></details>
           <details class="dash-help-item"><summary>Track voice auditions</summary><p>Clients tab, Auditions. Add each one with its deadline and change the status as you hear back. Deadlines show on the calendar.</p></details>
@@ -715,6 +717,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=41" defer></script>
+  <script src="/dashboard.js?v=42" defer></script>
 </body>
 </html>

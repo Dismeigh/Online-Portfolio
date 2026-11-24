@@ -1101,7 +1101,7 @@
   }
 
   // Stream stats log
-  let ssRows = [], ssEdit = 0;
+  let ssRows = [], ssEdit = 0, ssBest = null;
   const ssNum = v => (v === null || v === undefined ? '' : String(v));
   const lenText = m => (m == null ? '' : `${Math.floor(m / 60) ? `${Math.floor(m / 60)}h ` : ''}${m % 60 ? `${m % 60}m` : ''}`.trim() || '0m');
   const lenParse = t => { const v = String(t || '').trim(); if (!v) return null; const c = v.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/); if (c) return +c[1] * 60 + +c[2];
@@ -1146,6 +1146,15 @@
         <text x="${pad}" y="${H - 6}" class="ss-lbl">${esc(pts[0].day)}</text><text x="${W - pad}" y="${H - 6}" class="ss-lbl" text-anchor="end">${esc(pts.at(-1).day)}</text></svg>
         <p class="dash-hint"><span class="ss-key ss-key-avg"></span> average <span class="ss-key ss-key-peak"></span> peak</p>`;
     } else $('ss-chart').innerHTML = '';
+    const B = ssBest;
+    if (!B || B.counted < 3) $('ss-best').innerHTML = rows.length ? `<h3 class="dash-h3">Best time to stream</h3><p class="dash-note">Log ${Math.max(1, 3 - (B?.counted || 0))} more stream${3 - (B?.counted || 0) === 1 ? '' : 's'} with average viewers to see which days and start times do best.</p>` : '';
+    else {
+      const bars = (list, unit) => { const top = Math.max(1, ...list.map(x => x.avg)); return `<ul class="dash-bars">${list.map(x => `<li><span>${esc(x.label)}</span><span class="dash-bar"><i style="width:${Math.round(x.avg / top * 100)}%"></i></span><b>${x.avg}</b></li>`).join('')}</ul><p class="dash-hint">Average viewers, from ${list.reduce((s, x) => s + x.n, 0)} logged ${unit}.</p>`; };
+      const tip = [B.bestDay && `<b>${esc(B.bestDay.label)}s</b> (${B.bestDay.avg} avg over ${B.bestDay.n} streams)`, B.bestHour && `starting around <b>${esc(B.bestHour.label)}</b> (${B.bestHour.avg} avg)`].filter(Boolean).join(', ');
+      $('ss-best').innerHTML = `<h3 class="dash-h3">Best time to stream</h3>${tip ? `<p class="dash-best-tip">Your best so far: ${tip}.</p>` : '<p class="dash-note">Not enough repeats yet to call a winner. Each day or time needs at least 2 streams.</p>'}
+        <details class="dash-job-more"><summary>By day and start time</summary><h4 class="dash-h4">By day</h4>${bars(B.days, 'streams')}${B.hours.length ? `<h4 class="dash-h4">By start time <span class="dash-meta">(from your stream schedule)</span></h4>${bars(B.hours, 'streams that were on the schedule')}` : '<p class="dash-hint">Start times come from the Streams schedule. Streams that weren\u2019t on it only count by day.</p>'}</details>
+        <p class="dash-hint">Small numbers swing a lot, so treat this as a hint, not a rule. It gets better the more you log.</p>`;
+    }
     $('ss-list').innerHTML = rows.length ? `<div class="dash-table-wrap"><table class="dash-table"><thead><tr><th scope="col">Date</th><th scope="col">Avg</th><th scope="col">Peak</th><th scope="col">Follows</th><th scope="col">Chatters</th><th scope="col">Length</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead>
       <tbody>${rows.slice(0, 30).map(r => `<tr><th scope="row">${esc(r.day)}${r.title ? `<small class="dash-meta"> ${esc(r.title)}</small>` : ''}${r.note ? `<br><small class="dash-meta">${esc(r.note)}</small>` : ''}</th><td>${ssNum(r.avg)}</td><td>${ssNum(r.peak)}</td><td>${r.follows == null ? '' : `+${r.follows}`}</td><td>${ssNum(r.chatters)}</td><td>${esc(lenText(r.minutes))}</td>
         <td><button type="button" class="dash-btn dash-small" data-ss-edit="${r.id}">Edit</button> <button type="button" class="dash-btn dash-small dash-danger" data-ss-del="${r.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>` : '';
@@ -1155,7 +1164,26 @@
     for (const k of ['avg', 'peak', 'follows', 'chatters', 'views']) $(`ss-${k}`).value = ssNum(r[k]);
     $('ss-len').value = lenText(r.minutes);
   };
-  const loadStats = async () => { ssRows = (await api('streamstats')).data.stats || []; drawStats(); };
+  // New records: celebrate, and offer a one-tap site banner
+  const REC = { peak: ['Best peak ever', v => `${v} viewers at once`], avg: ['Best average ever', v => `${v} average viewers`], follows: ['Most new followers in one stream', v => `+${v} followers`] };
+  function showRecords(list, day) {
+    const box = $('ss-record');
+    if (!list.length) { box.hidden = true; return; }
+    const top = list[0], line = REC[top.kind][1](top.value);
+    const recent = day >= plusDays(todayET(), -3), banner = `New record: ${line} ${recent ? 'last stream' : `on ${new Date(day + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}! Thanks, crew.`;
+    box.innerHTML = `<div class="dash-record-burst" aria-hidden="true">${'<i></i>'.repeat(14)}</div>
+      <p class="dash-record-kicker">New record${list.length > 1 ? 's' : ''}!</p>
+      <ul>${list.map(r => `<li><b>${esc(REC[r.kind][0])}:</b> ${esc(REC[r.kind][1](r.value))} <span class="dash-meta">(was ${esc(String(r.before))})</span></li>`).join('')}</ul>
+      <p class="dash-hint">Show it off? This puts a banner on every page for 2 days:</p><p class="dash-record-banner">&ldquo;${esc(banner)}&rdquo;</p>
+      <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="rec-banner">Put it on the site</button><button type="button" class="dash-btn" id="rec-close">Not now</button></div>`;
+    box.hidden = false; box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    $('rec-close').addEventListener('click', () => { box.hidden = true; });
+    $('rec-banner').addEventListener('click', async () => {
+      const { status, data } = await api('site', { what: 'banner', text: banner, link: 'https://twitch.tv/dismeigh', until: Date.now() + 48 * 3600000 });
+      box.hidden = true; flash($('ss-msg'), status === 200 ? 'Banner is up for 2 days. Change it any time in the Site tab.' : (data.error || 'Couldn’t set the banner.'));
+    });
+  }
+  const loadStats = async () => { const d = (await api('streamstats')).data; ssRows = d.stats || []; ssBest = d.best || null; drawStats(); };
   $('ss-new').addEventListener('click', () => { ssEdit = 0; ssFill(); $('ss-form').hidden = false; $('ss-paste').focus(); });
   $('ss-cancel').addEventListener('click', () => { $('ss-form').hidden = true; });
   $('ss-read').addEventListener('click', () => {
@@ -1170,13 +1198,14 @@
     const { status, data } = await api('streamstats', { action: 'save', id: ssEdit, day: $('ss-day').value, title: $('ss-title').value, note: $('ss-note').value, minutes: lenParse($('ss-len').value),
       ...Object.fromEntries(['avg', 'peak', 'follows', 'chatters', 'views'].map(k => [k, $(`ss-${k}`).value.trim()])) });
     if (status !== 200) return flash($('ss-msg'), data.error || 'Couldn’t save.');
-    ssRows = data.stats || []; drawStats(); $('ss-form').hidden = true; flash($('ss-msg'), 'Logged.');
+    ssRows = data.stats || []; ssBest = data.best || null; drawStats(); $('ss-form').hidden = true; flash($('ss-msg'), 'Logged.');
+    showRecords(data.records || [], $('ss-day').value);
   });
   $('ss-list').addEventListener('click', async e => {
     const ed = e.target.closest('[data-ss-edit]');
     if (ed) { const r = ssRows.find(x => x.id === Number(ed.dataset.ssEdit)); ssEdit = r.id; ssFill(r); $('ss-form').hidden = false; return $('ss-day').focus(); }
     const del = e.target.closest('[data-ss-del]');
-    if (del && confirm('Delete these stats?')) { const { data } = await api('streamstats', { action: 'delete', id: Number(del.dataset.ssDel) }); ssRows = data.stats || []; drawStats(); }
+    if (del && confirm('Delete these stats?')) { const { data } = await api('streamstats', { action: 'delete', id: Number(del.dataset.ssDel) }); ssRows = data.stats || []; ssBest = data.best || null; drawStats(); }
   });
   loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); loadStats(); };
   $('st-new').addEventListener('click', () => { stEdit = 'new'; drawStreams(); $('sf-title').focus(); });
