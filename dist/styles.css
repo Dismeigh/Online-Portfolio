@@ -2759,3 +2759,63 @@ html:has(.dash-body) { background: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .dash-track, .dash-track .dash-knob { transition: none; } }
 
 .dash-body, html:has(.dash-body) { background: var(--ink) none !important; }
+
+/* Site banner (set from the dashboard) */
+.site-banner { position: relative; z-index: 60; display: flex; align-items: center; justify-content: center; gap: 0.6rem; padding: 0.45rem 3.2rem 0.45rem 1rem; background: var(--mustard); color: var(--ink); text-align: center; font-weight: 600; }
+.site-banner p { margin: 0; }
+.site-banner a { color: var(--ink); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.site-banner a:focus-visible, .site-banner button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.site-banner button { position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%); width: 2.75rem; height: 2.75rem; border: 0; background: none; color: var(--ink); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+
+/* Dashboard, v3: tabs and editors */
+.dash-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1.4rem; }
+.dash-tabs button, .dash-sub button { min-height: 2.75rem; padding: 0 0.95rem; border: 2px solid var(--line, #3a322b); background: var(--ink-2, #1d1916); color: var(--paper); font-family: var(--display); font-size: 0.95rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; }
+.dash-tabs button:hover, .dash-sub button:hover { border-color: var(--mustard); }
+.dash-tabs button[aria-current="page"], .dash-sub button[aria-pressed="true"] { background: var(--mustard); border-color: var(--mustard); color: var(--ink); }
+.dash-tabs button:focus-visible, .dash-sub button:focus-visible { outline: 3px solid var(--paper); outline-offset: 2px; }
+.dash-sub { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.9rem 0 0.4rem; }
+.dash-sub button { font-size: 0.85rem; min-height: 2.6rem; }
+.dash-card textarea, .dash-card select { width: 100%; box-sizing: border-box; min-height: 2.9rem; padding: 0.5rem 0.75rem; border: 2px solid var(--paper-dim); background: var(--ink); color: var(--paper); font: 16px var(--body); }
+.dash-card textarea { resize: vertical; line-height: 1.4; }
+.dash-card textarea:focus-visible, .dash-card select:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.dash-card a.dash-btn { display: inline-flex; align-items: center; text-decoration: none; }
+.dash-item { position: relative; margin: 1rem 0 0; padding: 0.6rem 1rem 1rem; background: var(--ink); border: 2px solid var(--line, #3a322b); border-left: 5px solid var(--mustard); }
+.dash-item-num { position: absolute; top: 0.6rem; right: 0.8rem; font-family: var(--typed); color: var(--paper-dim); font-size: 0.85rem; }
+.dash-field label { margin-top: 0.6rem; }
+.dash-item-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.9rem; }
+.dash-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.dash-danger { border-color: #e2725b; color: #f0a594; }
+.dash-danger:hover, .dash-danger:focus-visible { background: #e2725b; border-color: #e2725b; color: var(--ink); }
+.dash-add { margin-top: 0.6rem; }
+.dash-sticky-save { position: sticky; bottom: 0; z-index: 2; margin: 1rem -1.2rem -1.3rem; padding: 0.8rem 1.2rem; background: var(--ink-2, #1d1916); border-top: 2px solid var(--line, #3a322b); align-items: center; }
+.dash-sticky-save .dash-msg { margin: 0; }
+.dash-list { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.6rem; }
+.dash-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.6rem 1rem; padding: 0.75rem 0.9rem; background: var(--ink); border: 2px solid var(--line, #3a322b); border-left: 5px solid var(--paper-dim); }
+.dash-row.is-pinned { border-left-color: var(--mustard); }
+.dash-row.is-hidden { opacity: 0.6; border-left-style: dashed; }
+.dash-row.is-bad { border-left-color: #e2725b; }
+.dash-row-main { flex: 1 1 16rem; min-width: 0; }
+.dash-row-main p { margin: 0.25rem 0 0; color: var(--paper-dim); overflow-wrap: anywhere; }
+.dash-meta { font-family: var(--typed); font-size: 0.8rem; color: var(--paper-dim); }
+.dash-row-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.dash-h3 { margin: 1.2rem 0 0.5rem; font-family: var(--display); font-weight: 400; font-size: 1.15rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--mustard); }
+.dash-numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.7rem; margin-top: 0.8rem; }
+.dash-numbers div { padding: 0.7rem 0.8rem; background: var(--ink); border: 2px solid var(--line, #3a322b); }
+.dash-numbers b { display: block; font-family: var(--display); font-weight: 400; font-size: 1.8rem; line-height: 1; }
+.dash-numbers span { font-size: 0.85rem; color: var(--paper-dim); }
+.dash-chart { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; align-items: end; height: 9rem; padding: 0.5rem; background: var(--ink); border: 2px solid var(--line, #3a322b); }
+.dash-chart span { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.dash-chart i { display: block; height: max(var(--h), 2px); background: var(--mustard); }
+.dash-chart em { margin-top: 4px; font-style: normal; font-size: 0.7rem; text-align: center; color: var(--paper-dim); }
+.dash-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.dash-rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.dash-rank li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--line, #3a322b); }
+.dash-rank b { font-family: var(--display); font-weight: 400; letter-spacing: 0.04em; }
+.dash-offline::before { content: 'You\2019re offline. Changes can\2019t be saved until you\2019re back online.'; position: sticky; top: 0; z-index: 50; display: block; padding: 0.6rem 1rem; background: #e2725b; color: var(--ink); font-weight: 700; text-align: center; }
+@media (max-width: 760px) {
+  .dash-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-tabs button { padding: 0 0.4rem; }
+  .dash-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-two-col { grid-template-columns: 1fr; }
+  .dash-chart { height: 7rem; gap: 2px; }
+}

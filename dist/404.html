@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=64">
+  <link rel="stylesheet" href="/styles.css?v=65">
 </head>
 <body>
   <div class="fixed-bg" aria-hidden="true"></div>
@@ -42,7 +42,7 @@
       </figure>
     </section>
   </main>
-  <script src="/app.js?v=46" defer></script>
+  <script src="/app.js?v=47" defer></script>
   <script>
   {
     // Search from the 404 card opens the site search with the words filled in.
@@ -57,7 +57,7 @@
     // Guess from the broken address: /garage-pics -> "garage pics"
     const guess = decodeURIComponent(location.pathname).replace(/\.[a-z0-9]+$/i, '').replace(/[\/_-]+/g, ' ').trim();
     if (guess && guess.length < 40) q.value = guess;
-    fetch('/quotes.json').then(r => r.json()).then(d => {
+    fetch('/api/content/quotes').then(r => r.json()).then(d => {
       const list = (d.quotes || []).filter(x => x && x.text);
       if (!list.length) return;
       const pick = list[Math.floor(Math.random() * list.length)];

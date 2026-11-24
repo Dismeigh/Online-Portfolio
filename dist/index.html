@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=64">
+  <link rel="stylesheet" href="styles.css?v=65">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -150,6 +150,8 @@
       else if (M === 11 && D === 11) season = 'veterans';
       else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
       else if (M === 12) season = 'holiday';
+      // Holiday look forced on/off from the dashboard (cached here by app.js from /api/site)
+      try { const lk = JSON.parse(localStorage.getItem('dm-look') || 'null'); if (lk && lk.mode && (!lk.until || Date.now() < lk.until)) season = lk.mode === 'off' ? '' : lk.mode; } catch {}
       try {
         const override = new URLSearchParams(location.search).get('season');
         if (override) season = override === 'off' ? '' : override;
@@ -1335,7 +1337,7 @@
       const grid = document.getElementById('bounty-grid');
       const empty = document.getElementById('bounty-empty');
       let list = [];
-      try { list = (await (await fetch('/bounties.json', { cache: 'no-store' })).json()).bounties || []; } catch {}
+      try { list = (await (await fetch('/api/content/bounties', { cache: 'no-store' })).json()).bounties || []; } catch {}
       if (window.BOUNTY_SAMPLE) list = window.BOUNTY_SAMPLE;
       const label = { open: 'Open', progress: 'In progress', claimed: 'Claimed' };
       const valid = list.filter(b => b && b.title && label[b.status]).slice(0, 6);
@@ -1406,7 +1408,7 @@
         pin = { url: 'https://clips.twitch.tv/DemoClipSlug', by: 'ChatLegend', title: 'The scream heard round the Discord', reason: 'Jump scare bounty winner',
           until: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10) };
       } else {
-        try { const r = await fetch('/pinned.json', { cache: 'no-store' }); if (r.ok) pin = (await r.json()).pinned; } catch {}
+        try { const r = await fetch('/api/content/pinned', { cache: 'no-store' }); if (r.ok) pin = (await r.json()).pinned; } catch {}
       }
       if (!pin || !pin.url) return;
       if (pin.until) { const end = Date.parse(`${pin.until}T23:59:59-05:00`); if (!isNaN(end) && Date.now() > end) return; }
@@ -1493,9 +1495,9 @@
   }
   </script>
   <script src="/log.js?v=2" defer></script>
-  <script src="/crew.js?v=5" defer></script>
+  <script src="/crew.js?v=6" defer></script>
   <script src="/bounty-run.js?v=36" defer></script>
-  <script src="/app.js?v=46" defer></script>
+  <script src="/app.js?v=47" defer></script>
   <script src="/goal.js?v=1" defer></script>
 </body>
 </html>

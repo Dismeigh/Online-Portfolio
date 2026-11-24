@@ -110,8 +110,9 @@
 
   updateFooter();
 
-  // Holiday looks: a light falling effect (the colors come from styles.css)
-  {
+  // Holiday looks: a light falling effect (the colors come from styles.css). Re-run if the dashboard changes the look.
+  window.dismeighSeasonFx = () => {
+    document.querySelector('.season-fx')?.remove();
     const FX = {
       newyear: ['confetti', ['#e3a92b', '#b73b2c', '#3f8f8c', '#efe6d2']],
       valentines: ['heart', ['#f28ab2', '#b73b2c', '#efe6d2']],
@@ -142,7 +143,8 @@
       }
       document.body.append(fx);
     }
-  }
+  };
+  window.dismeighSeasonFx();
 
   // Secret 4: visit on Dismeigh's birthday or Twitch anniversary (the real date, not a preview)
   {
@@ -338,7 +340,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
 (() => {
   const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const getJSON = url => fetch(url).then(r => (r.ok ? r.json() : null)).catch(() => null);
-  const quotesReady = getJSON('/quotes.json').then(d => (d?.quotes || []).filter(q => q && q.text));
+  const quotesReady = getJSON('/api/content/quotes').then(d => (d?.quotes || []).filter(q => q && q.text));
 
   // Footer quote
   const footer = document.querySelector('.footer');
@@ -397,7 +399,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
 
     const build = async () => {
       const [crew, log, bounty, drag] = await Promise.all([
-        getJSON('/crew.json'), getJSON('/api/log'), getJSON('/api/arcade/scores?game=bounty'), getJSON('/api/arcade/scores?game=drag'),
+        getJSON('/api/content/crew'), getJSON('/api/log'), getJSON('/api/arcade/scores?game=bounty'), getJSON('/api/arcade/scores?game=drag'),
       ]);
       let visitor = null;
       try { visitor = Number(localStorage.getItem('dismeigh-visitor')) || null; } catch {}
@@ -467,7 +469,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   const slug = s => String(s).toLowerCase().replace(/[\u2018\u2019']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 6).join('-');
   const buildIndex = async () => {
     if (index) return index;
-    const [lore, quotes, crew, bounties, verdicts] = await Promise.all([getJSON('/lore.json'), quotesReady, getJSON('/crew.json'), getJSON('/bounties.json'), getJSON('/verdicts.json')]);
+    const [lore, quotes, crew, bounties, verdicts] = await Promise.all([getJSON('/api/content/lore'), quotesReady, getJSON('/api/content/crew'), getJSON('/api/content/bounties'), getJSON('/api/content/verdicts')]);
     index = [
       ...PAGES,
       ...(lore?.entries || []).map(e => ({ title: e.term, url: `/lore/#lore-${slug(e.term)}`, kind: 'Lore', text: e.what, words: e.game || '' })),
@@ -733,4 +735,43 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   };
   if (new URLSearchParams(location.search).has('livefavicon')) set(true);
   else { check(); setInterval(check, 180000); }
+})();
+
+// Site banner and holiday look set from the dashboard (/api/site), plus the private page-view count (/api/hit)
+(() => {
+  const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // Count this page view: page and day only, nothing about the visitor
+  try {
+    if (!/^\/(dashboard|spotted)/.test(location.pathname)) {
+      const body = JSON.stringify({ p: location.pathname });
+      if (!(navigator.sendBeacon && navigator.sendBeacon('/api/hit', new Blob([body], { type: 'application/json' })))) fetch('/api/hit', { method: 'POST', body, keepalive: true }).catch(() => {});
+    }
+  } catch {}
+
+  fetch('/api/site').then(r => (r.ok ? r.json() : null)).then(s => {
+    if (!s) return;
+    // Holiday look: cache it so the next page load applies it right away (see the head script), and apply it now
+    const previewing = new URLSearchParams(location.search).has('season');
+    const before = localStorage.getItem('dm-look');
+    try { s.look ? localStorage.setItem('dm-look', JSON.stringify(s.look)) : localStorage.removeItem('dm-look'); } catch {}
+    const after = s.look ? JSON.stringify(s.look) : null;
+    if (!previewing && before !== after) {
+      const root = document.documentElement;
+      if (s.look) { if (s.look.mode === 'off') delete root.dataset.season; else root.dataset.season = s.look.mode; }
+      else { try { const old = JSON.parse(before || 'null'); if (old?.mode && root.dataset.season === old.mode) delete root.dataset.season; } catch {} }
+      window.dismeighSeasonFx?.();
+    }
+    // Banner across the top of every page, until it ends or the visitor closes it
+    const b = s.banner;
+    let closed = null; try { closed = localStorage.getItem('dm-banner-closed'); } catch {}
+    if (!b || !b.text || String(b.id) === closed || document.querySelector('.site-banner')) return;
+    const safeLink = typeof b.link === 'string' && (/^https:\/\//.test(b.link) || /^\/(?!\/)/.test(b.link)) ? b.link : '';
+    const bar = document.createElement('div');
+    bar.className = 'site-banner';
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Announcement');
+    bar.innerHTML = `<p>${esc(b.text)}${safeLink ? ` <a href="${esc(safeLink)}"${/^https:/.test(safeLink) ? ' target="_blank" rel="noopener noreferrer"' : ''}>More</a>` : ''}</p><button type="button" aria-label="Close announcement">&times;</button>`;
+    bar.querySelector('button').addEventListener('click', () => { bar.remove(); try { localStorage.setItem('dm-banner-closed', String(b.id)); } catch {} });
+    document.body.prepend(bar);
+  }).catch(() => {});
 })();

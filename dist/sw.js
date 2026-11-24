@@ -1,7 +1,7 @@
 // Dismeigh site service worker: makes the site installable and gives it an offline page.
 // Pages are always fetched fresh when online; only static files are cached.
-const CACHE = 'dismeigh-v47';
-const PRECACHE = ['/offline.html', '/styles.css?v=64', '/app.js?v=46', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
+const CACHE = 'dismeigh-v48';
+const PRECACHE = ['/offline.html', '/styles.css?v=65', '/app.js?v=47', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -18,7 +18,17 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== location.origin) return;
-  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/dashboard') || url.pathname.endsWith('.json') || url.pathname.endsWith('.ics') || url.pathname.endsWith('.mp4')) return;
+  if (url.pathname.startsWith('/api/') || url.pathname.endsWith('.json') || url.pathname.endsWith('.ics') || url.pathname.endsWith('.mp4')) return;
+
+  // Dashboard app: always fresh when online; keeps a copy of the page so the installed app still opens offline
+  // (it shows an "offline" notice; nothing private is cached, the data always comes from /api/admin)
+  if (request.mode === 'navigate' && url.pathname.startsWith('/dashboard/')) {
+    event.respondWith(fetch(request).then(response => {
+      if (response.ok) { const copy = response.clone(); caches.open(CACHE).then(cache => cache.put('/dashboard/', copy)); }
+      return response;
+    }).catch(async () => (await caches.match('/dashboard/')) || caches.match('/offline.html')));
+    return;
+  }
 
   // Pages: network first, offline page as the fallback
   if (request.mode === 'navigate') {

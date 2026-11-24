@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=64">
+  <link rel="stylesheet" href="/styles.css?v=65">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "New Viewer Guide", "item": "https://www.denizen-dismeigh.com/guide/"}]}</script>
 </head>
@@ -103,6 +103,8 @@
       else if (M === 11 && D === 11) season = 'veterans';
       else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
       else if (M === 12) season = 'holiday';
+      // Holiday look forced on/off from the dashboard (cached here by app.js from /api/site)
+      try { const lk = JSON.parse(localStorage.getItem('dm-look') || 'null'); if (lk && lk.mode && (!lk.until || Date.now() < lk.until)) season = lk.mode === 'off' ? '' : lk.mode; } catch {}
       try {
         const override = new URLSearchParams(location.search).get('season');
         if (override) season = override === 'off' ? '' : override;
@@ -233,6 +235,6 @@
 
   }
   </script>
-  <script src="/app.js?v=46" defer></script>
+  <script src="/app.js?v=47" defer></script>
 </body>
 </html>

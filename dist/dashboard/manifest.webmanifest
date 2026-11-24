@@ -1,0 +1,17 @@
+{
+  "id": "/dashboard/",
+  "name": "Dismeigh Dashboard",
+  "short_name": "Dashboard",
+  "description": "Dismeigh's private site dashboard.",
+  "start_url": "/dashboard/",
+  "scope": "/dashboard/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14110f",
+  "theme_color": "#14110f",
+  "icons": [
+    { "src": "/dashboard/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/dashboard/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/dashboard/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -74,7 +74,9 @@
     const { status, data } = await api('goal');
     if (status === 401) return show('login');
     if (status !== 200) { show('login'); $('login-msg').textContent = data.error || 'The dashboard is offline.'; return; }
+    const first = $('panel').hidden;
     show('panel'); render(data);
+    if (first) document.dispatchEvent(new Event('dash:in'));
   }
 
   $('login-form').addEventListener('submit', async e => {
@@ -138,4 +140,254 @@
     setTimeout(() => { $('copy-hook').textContent = 'Copy'; }, 1600);
   });
   load();
+})();
+
+// Dashboard sections: tabs, stats, content editors, Ship's Log, leaderboards, banner and looks, login history, install
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const api = async (path, body) => {
+    const r = await fetch(`/api/admin/${path}`, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' } : { credentials: 'same-origin', cache: 'no-store' });
+    if (r.status === 401) { location.reload(); throw new Error('signed out'); }
+    return { status: r.status, data: await r.json().catch(() => ({})) };
+  };
+  const when = iso => new Date(iso).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const flash = (el, msg) => { el.textContent = msg; clearTimeout(el._t); el._t = setTimeout(() => { el.textContent = ''; }, 4000); };
+
+  // ---------- Tabs ----------
+  const loaders = {};
+  let current = 'overview';
+  function openTab(name, push = true) {
+    current = name;
+    document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== name; });
+    document.querySelectorAll('.dash-tabs [data-tab]').forEach(b => { if (b.dataset.tab === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    if (push) history.replaceState(null, '', `#${name}`);
+    loaders[name]?.();
+  }
+  document.querySelectorAll('.dash-tabs [data-tab]').forEach(b => b.addEventListener('click', () => { openTab(b.dataset.tab); $('panel').scrollIntoView({ block: 'start', behavior: 'smooth' }); }));
+  document.querySelectorAll('[data-refresh]').forEach(b => b.addEventListener('click', () => loaders[b.dataset.refresh]?.()));
+  document.addEventListener('dash:in', () => {
+    const want = location.hash.slice(1);
+    openTab(document.querySelector(`[data-panel="${want}"]`) ? want : 'overview', false);
+  });
+
+  // ---------- Overview: site stats ----------
+  loaders.overview = async () => {
+    const { data: s } = await api('stats');
+    const max = Math.max(1, ...s.daily.map(d => d.n));
+    const pageName = p => ({ '/': 'Home', other: 'Other' }[p] || p.replace(/\//g, ' ').trim().replace(/^\w/, c => c.toUpperCase()));
+    $('stats-body').innerHTML = `
+      <div class="dash-numbers">
+        <div><b>${s.views.today}</b><span>views today</span></div>
+        <div><b>${s.views.week}</b><span>views, 7 days</span></div>
+        <div><b>${s.views.month}</b><span>views, 30 days</span></div>
+        <div><b>${s.visitors.month}</b><span>new visitors, 30 days</span></div>
+        <div><b>${s.arcade.bounty.month + s.arcade.drag.month}</b><span>arcade plays, 30 days</span></div>
+        <div><b>${s.guestbook.month}</b><span>log signs, 30 days</span></div>
+      </div>
+      <h3 class="dash-h3">Last 14 days</h3>
+      <div class="dash-chart" role="img" aria-label="Page views per day for the last 14 days: ${s.daily.map(d => d.n).join(', ')}">
+        ${s.daily.map(d => `<span style="--h:${Math.round((d.n / max) * 100)}%" title="${esc(d.day)}: ${d.n}"><i></i><em>${new Date(`${d.day}T12:00:00Z`).getUTCDate()}</em></span>`).join('')}
+      </div>
+      <div class="dash-two-col">
+        <div><h3 class="dash-h3">Top pages, 30 days</h3>${s.topPages.length ? `<ol class="dash-rank">${s.topPages.map(r => `<li><span>${esc(pageName(r.path))}</span><b>${r.n}</b></li>`).join('')}</ol>` : '<p class="dash-note">No views counted yet.</p>'}</div>
+        <div><h3 class="dash-h3">Everything else</h3><ul class="dash-rank">
+          <li><span>Visitors, all time</span><b>${s.visitors.total}</b></li>
+          <li><span>Bounty Run plays (7 / 30 days)</span><b>${s.arcade.bounty.week} / ${s.arcade.bounty.month}</b></li>
+          <li><span>Launch Control plays (7 / 30 days)</span><b>${s.arcade.drag.week} / ${s.arcade.drag.month}</b></li>
+          <li><span>Ko-fi payments, 30 days</span><b>${s.kofi.month}</b></li>
+        </ul></div>
+      </div>
+      ${s.since ? `<p class="dash-hint">Counting page views since ${esc(s.since)}.</p>` : '<p class="dash-hint">Page views start counting from now.</p>'}`;
+  };
+
+  // ---------- Content editors ----------
+  const F = (key, label, type = 'text', extra = {}) => ({ key, label, type, ...extra });
+  const SCHEMA = {
+    bounties: { note: 'The Bounty Board on the home page shows the first 6. Mark one claimed to stamp it.', fields: [
+      F('title', 'Bounty', 'text', { max: 80, required: true }), F('details', 'Details', 'textarea', { max: 240 }), F('reward', 'Reward', 'text', { max: 120 }),
+      F('status', 'Status', 'select', { options: [['open', 'Open'], ['progress', 'In progress'], ['claimed', 'Claimed']] }), F('claimedBy', 'Claimed by (if claimed)', 'text', { max: 40 }),
+    ] },
+    quotes: { note: 'The Quote Board on the Lore page, newest first. A random one shows in every page footer.', fields: [
+      F('text', 'Quote', 'textarea', { max: 200, required: true }), F('game', 'Game', 'text', { max: 60 }), F('context', 'What was happening (optional)', 'text', { max: 160 }),
+    ] },
+    lore: { note: 'Channel Lore entries. Links: one per line as Label | https://link', fields: [
+      F('term', 'Name of the bit', 'text', { max: 60, required: true }), F('game', 'Game (or "Off the clock")', 'text', { max: 40 }),
+      F('what', 'What it is', 'textarea', { max: 400, required: true }), F('links', 'Links (Label | https://...)', 'links'),
+    ] },
+    verdicts: { note: 'Dismeigh’s Verdicts on the Shelf page.', fields: [
+      F('game', 'Game', 'text', { max: 60, required: true }), F('score', 'Score', 'select', { options: [[5, '5 · Masterpiece'], [4, '4 · Solid'], [3, '3 · Decent'], [2, '2 · Rough ride'], [1, '1 · Uninstalled']] }),
+      F('take', 'Hot take', 'text', { max: 160 }),
+    ] },
+    crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
+      F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
+    ] },
+    pinned: { single: true, note: 'Pins a clip at the top of Clips on the home page. Twitch, YouTube or TikTok links.', fields: [
+      F('url', 'Clip link (https://...)', 'text', { max: 300 }), F('title', 'Title (optional)', 'text', { max: 100 }), F('by', 'Clipped by', 'text', { max: 40 }),
+      F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
+    ] },
+  };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned' };
+  let kind = 'bounties', items = [], dirty = false;
+  const fieldHtml = (f, v, i) => {
+    const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
+    const attrs = `id="${id}" data-i="${i}" data-k="${f.key}"${f.max ? ` maxlength="${f.max}"` : ''}`;
+    let input;
+    if (f.type === 'textarea' || f.type === 'links') input = `<textarea ${attrs} rows="${f.type === 'links' ? 2 : 2}">${esc(val)}</textarea>`;
+    else if (f.type === 'select') input = `<select ${attrs}>${f.options.map(([o, l]) => `<option value="${esc(o)}"${String(o) === String(val) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+    else input = `<input ${attrs} type="${f.type === 'date' ? 'date' : 'text'}" value="${esc(val)}">`;
+    return `<div class="dash-field"><label for="${id}">${esc(f.label)}</label>${input}</div>`;
+  };
+  function drawContent() {
+    const s = SCHEMA[kind];
+    $('content-note').textContent = s.note;
+    if (s.single) {
+      $('content-body').innerHTML = `<div class="dash-item">${s.fields.map(f => fieldHtml(f, items[0]?.[f.key], 0)).join('')}
+        <div class="dash-item-actions"><button type="button" class="dash-btn dash-small" data-act="clearpin">Clear the pin</button></div></div>`;
+      return;
+    }
+    $('content-body').innerHTML = `<button type="button" class="dash-btn dash-add" data-act="add">+ Add new (goes to the top)</button>
+      ${items.length ? '' : '<p class="dash-note">Nothing here yet.</p>'}
+      ${items.map((it, i) => `<div class="dash-item"><div class="dash-item-num">#${i + 1}</div>${s.fields.map(f => fieldHtml(f, it[f.key], i)).join('')}
+        <div class="dash-item-actions">
+          <button type="button" class="dash-btn dash-small" data-act="up" data-i="${i}" ${i === 0 ? 'disabled' : ''} aria-label="Move #${i + 1} up">Up</button>
+          <button type="button" class="dash-btn dash-small" data-act="down" data-i="${i}" ${i === items.length - 1 ? 'disabled' : ''} aria-label="Move #${i + 1} down">Down</button>
+          <button type="button" class="dash-btn dash-small dash-danger" data-act="remove" data-i="${i}" aria-label="Remove #${i + 1}">Remove</button>
+        </div></div>`).join('')}`;
+  }
+  const blank = () => Object.fromEntries(SCHEMA[kind].fields.map(f => [f.key, f.type === 'links' ? [] : f.type === 'select' ? f.options[0][0] : '']));
+  const onEdit = e => {
+    const el = e.target.closest('[data-k]'); if (!el) return;
+    const i = Number(el.dataset.i), k = el.dataset.k, f = SCHEMA[kind].fields.find(x => x.key === k);
+    if (!items[i]) items[i] = blank();
+    items[i][k] = f.type === 'links'
+      ? el.value.split('\n').map(line => { const [label, ...rest] = line.split('|'); const url = rest.join('|').trim() || (/^https?:/.test(label.trim()) ? label.trim() : ''); return url ? { label: /^https?:/.test(label.trim()) ? 'Watch' : label.trim(), url } : null; }).filter(Boolean)
+      : f.key === 'score' ? Number(el.value) : el.value;
+    dirty = true; $('content-msg').textContent = 'Unsaved changes';
+  };
+  $('content-body').addEventListener('input', onEdit);
+  $('content-body').addEventListener('change', onEdit);
+  $('content-body').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const i = Number(b.dataset.i), act = b.dataset.act;
+    if (act === 'add') items.unshift(blank());
+    if (act === 'remove' && confirm('Remove this one? It’s gone from the site once you save.')) items.splice(i, 1);
+    if (act === 'up' && i > 0) [items[i - 1], items[i]] = [items[i], items[i - 1]];
+    if (act === 'down' && i < items.length - 1) [items[i + 1], items[i]] = [items[i], items[i + 1]];
+    if (act === 'clearpin') items = [];
+    if (['add', 'remove', 'up', 'down', 'clearpin'].includes(act)) { dirty = true; $('content-msg').textContent = 'Unsaved changes'; drawContent(); }
+    if (act === 'add') $('content-body').querySelector('[data-i="0"]')?.focus();
+  });
+  async function loadContent(k) {
+    if (dirty && !confirm('You have unsaved changes. Leave them?')) return false;
+    kind = k; dirty = false; $('content-msg').textContent = '';
+    document.querySelectorAll('#content-pick [data-content]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.content === k)));
+    $('content-body').innerHTML = '<p class="dash-note">Loading&hellip;</p>';
+    const { data } = await api(`content?key=${k}`);
+    const v = data[WRAP[k]];
+    items = SCHEMA[k].single ? (v ? [v] : []) : (Array.isArray(v) ? v.map(x => ({ ...x })) : []);
+    drawContent();
+    return true;
+  }
+  document.querySelectorAll('#content-pick [data-content]').forEach(b => b.addEventListener('click', () => loadContent(b.dataset.content)));
+  $('content-save').addEventListener('click', async () => {
+    // Read the pinned form directly (single item)
+    if (SCHEMA[kind].single) {
+      const it = {}; SCHEMA[kind].fields.forEach(f => { const el = $(`c-0-${f.key}`); if (el) it[f.key] = el.value.trim(); });
+      if (!items.length && !it.url) items = []; else items = it.url ? [it] : [];
+    }
+    const missing = SCHEMA[kind].single ? [] : items.map((it, i) => SCHEMA[kind].fields.filter(f => f.required && !String(it[f.key] ?? '').trim()).length ? i + 1 : 0).filter(Boolean);
+    if (missing.length) { $('content-msg').textContent = `Fill in the required boxes on #${missing.join(', #')}, or remove ${missing.length > 1 ? 'them' : 'it'}.`; return; }
+    $('content-msg').textContent = 'Saving…';
+    const { status, data } = await api('content', { key: kind, data: SCHEMA[kind].single ? (items[0] || null) : items });
+    if (status !== 200) { $('content-msg').textContent = data.error || 'Couldn’t save.'; return; }
+    const v = data[WRAP[kind]], sent = SCHEMA[kind].single ? (items[0] ? 1 : 0) : items.length, kept = SCHEMA[kind].single ? (v ? 1 : 0) : (v || []).length;
+    items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
+    flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (a link or Twitch name wasn’t valid).` : 'Saved. It’s live on the site now.');
+  });
+  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); };
+  addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+  // ---------- Ship's Log ----------
+  loaders.guestbook = async () => {
+    const { data } = await api('log');
+    const rows = data.entries || [];
+    $('log-body').innerHTML = rows.length ? `<ul class="dash-list">${rows.map(r => `
+      <li class="dash-row${r.hidden ? ' is-hidden' : ''}${r.pinned ? ' is-pinned' : ''}">
+        <div class="dash-row-main"><b>${esc(r.name)}</b> <span class="dash-meta">${esc(when(r.at))}${r.pinned ? ' · 📌 pinned' : ''}${r.hidden ? ' · hidden' : ''}</span><p>${esc(r.message)}</p></div>
+        <div class="dash-row-actions">
+          <button type="button" class="dash-btn dash-small" data-log="${r.pinned ? 'unpin' : 'pin'}" data-id="${r.id}">${r.pinned ? 'Unpin' : 'Pin'}</button>
+          <button type="button" class="dash-btn dash-small" data-log="${r.hidden ? 'unhide' : 'hide'}" data-id="${r.id}">${r.hidden ? 'Show' : 'Hide'}</button>
+          <button type="button" class="dash-btn dash-small dash-danger" data-log="delete" data-id="${r.id}">Delete</button>
+        </div></li>`).join('')}</ul>` : '<p class="dash-note">No entries yet.</p>';
+  };
+  $('log-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-log]'); if (!b) return;
+    if (b.dataset.log === 'delete' && !confirm('Delete this entry for good?')) return;
+    b.disabled = true; await api('log', { id: Number(b.dataset.id), action: b.dataset.log }); loaders.guestbook();
+  });
+
+  // ---------- Leaderboards ----------
+  let game = 'bounty';
+  loaders.arcade = async () => {
+    document.querySelectorAll('#arcade-pick [data-game]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.game === game)));
+    const { data } = await api(`scores?game=${game}`);
+    const fmt = v => (game === 'drag' ? `${v} ms` : Number(v).toLocaleString());
+    const table = (title, rows) => `<h3 class="dash-h3">${title}</h3>${rows.length ? `<ol class="dash-list dash-scores">${rows.map((r, i) => `
+      <li class="dash-row"><div class="dash-row-main"><b>${i + 1}. ${esc(r.name)}</b> <span class="dash-meta">${esc(fmt(r.score))} · ${esc(when(r.at))}</span></div>
+      <div class="dash-row-actions"><button type="button" class="dash-btn dash-small dash-danger" data-score="${r.id}">Remove score</button>
+      <button type="button" class="dash-btn dash-small dash-danger" data-name="${esc(r.name)}">Remove all by name</button></div></li>`).join('')}</ol>` : '<p class="dash-note">No scores yet.</p>'}`;
+    $('arcade-body').innerHTML = table('This week', data.week || []) + table('All time', data.all || []);
+  };
+  document.querySelectorAll('#arcade-pick [data-game]').forEach(b => b.addEventListener('click', () => { game = b.dataset.game; loaders.arcade(); }));
+  $('arcade-body').addEventListener('click', async e => {
+    const s = e.target.closest('[data-score]'), n = e.target.closest('[data-name]');
+    if (s && confirm('Remove this score?')) { await api('scores', { action: 'delete', id: Number(s.dataset.score) }); loaders.arcade(); }
+    if (n && confirm(`Remove every ${game === 'drag' ? 'Launch Control' : 'Bounty Run'} score by "${n.dataset.name}"?`)) { await api('scores', { action: 'deleteName', game, name: n.dataset.name }); loaders.arcade(); }
+  });
+
+  // ---------- Banner and looks ----------
+  const toLocal = ms => { if (!ms) return ''; const d = new Date(ms); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
+  const fromLocal = v => (v ? new Date(v).getTime() : null);
+  const NAMES = { newyear: 'New Year', mlk: 'MLK Day', valentines: 'Valentine’s', presidents: 'Presidents’ Day', stpatricks: 'St. Patrick’s', easter: 'Easter', mothers: 'Mother’s Day', memorial: 'Memorial Day', fathers: 'Father’s Day', juneteenth: 'Juneteenth', july4: 'Fourth of July', labor: 'Labor Day', spooky: 'Spooky (October)', veterans: 'Veterans Day', thanksgiving: 'Thanksgiving', holiday: 'Holidays (December)', birthday: 'Your birthday', anniversary: 'Twitch anniversary' };
+  loaders.site = async () => {
+    const { data } = await api('site');
+    const b = data.banner;
+    $('b-text').value = b?.text || ''; $('b-link').value = b?.link || ''; $('b-until').value = toLocal(b?.until);
+    $('banner-chip').className = `dash-chip ${b ? 'dash-chip-ok' : ''}`; $('banner-chip-text').textContent = b ? 'Showing' : 'Off';
+    $('l-mode').innerHTML = `<option value="auto">Automatic (by date)</option><option value="off">No holiday looks</option>${data.seasons.map(k => `<option value="${k}">${esc(NAMES[k] || k)}</option>`).join('')}`;
+    $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
+    updatePreview();
+  };
+  const updatePreview = () => { const m = $('l-mode').value; $('l-preview').href = m === 'auto' ? '/' : `/?season=${encodeURIComponent(m)}`; };
+  $('l-mode').addEventListener('change', updatePreview);
+  $('banner-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!$('b-text').value.trim()) return flash($('banner-msg'), 'Type a message first.');
+    const { data } = await api('site', { what: 'banner', text: $('b-text').value, link: $('b-link').value, until: fromLocal($('b-until').value) });
+    flash($('banner-msg'), data.error || 'Banner is showing on every page.'); loaders.site();
+  });
+  $('b-clear').addEventListener('click', async () => { await api('site', { what: 'banner', text: '' }); flash($('banner-msg'), 'Banner is off.'); loaders.site(); });
+  $('look-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { data } = await api('site', { what: 'look', mode: $('l-mode').value, until: fromLocal($('l-until').value) });
+    flash($('look-msg'), data.error || ($('l-mode').value === 'auto' ? 'Back to automatic.' : 'Saved. Visitors see it on their next page load.')); loaders.site();
+  });
+
+  // ---------- Login history ----------
+  loaders.security = async () => {
+    const { data } = await api('history');
+    const bad = ev => /wrong|blocked/i.test(ev);
+    $('sec-body').innerHTML = (data.history || []).length ? `<ul class="dash-list">${data.history.map(h => `
+      <li class="dash-row${bad(h.event) ? ' is-bad' : ''}"><div class="dash-row-main"><b>${esc(h.event)}</b> <span class="dash-meta">${esc(when(h.at))}</span><p>${esc(h.device)} · ${esc(h.place)}</p></div></li>`).join('')}</ul>` : '<p class="dash-note">Nothing yet.</p>';
+  };
+
+  // ---------- Install as an app ----------
+  let deferred = null;
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('install-btn').hidden = false; });
+  $('install-btn').addEventListener('click', async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice.catch(() => {}); deferred = null; $('install-btn').hidden = true; });
+  if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) $('install-note').textContent = 'You’re using the installed dashboard app.';
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+  const offline = () => { document.body.classList.toggle('dash-offline', !navigator.onLine); };
+  addEventListener('online', offline); addEventListener('offline', offline); offline();
 })();

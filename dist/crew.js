@@ -30,7 +30,7 @@
   }
 
   async function loadCrew() {
-    const r = await fetch('/crew.json', { cache: 'no-store' });
+    const r = await fetch('/api/content/crew', { cache: 'no-store' });
     const list = (await r.json()).crew || [];
     const out = await Promise.all(list.filter(f => f && f.twitch).map(check));
     return out.sort((a, b) => (b.live - a.live) || a.name.localeCompare(b.name));

@@ -55,3 +55,14 @@ Lost the phone? Change `DASHBOARD_PASSWORD`: that signs out every session and re
 How it works: `lib/admin.js` (password + authenticator code, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
 (webhook, goal, progress), `functions/api/admin/*` (login, twostep, logout, goal), `dist/dashboard.js`, `dist/qr.js`, `functions/api/kofi.js`, `functions/api/goal.js`, `dist/goal.js`.
 Ko-fi payments keep only amount, type, currency and time (tables `kofi_payments`, `site_settings` in the ARCADE D1 database).
+
+### Everything else in the dashboard
+
+Tabs: Overview (private stats), Ko-fi goal, Content (bounties, pinned clip, quotes, lore, verdicts, crew), Ship's Log
+moderation (pin, hide, delete), Arcade (remove scores or every score under a name), Banner & looks (site-wide banner,
+force or turn off holiday looks), Logins (last 90 days of logins and failed tries).
+
+- Content saved from the dashboard lives in D1 (`site_settings`, keys `content:*`) and wins over the JSON files in `dist/`.
+  Until a section is saved once, the site keeps using its file. The site reads content from `/api/content/<name>`.
+- Stats: `/api/hit` counts views per page per day (table `page_views`), with no IP, cookie or browser details.
+- The dashboard installs as its own app (`/dashboard/manifest.webmanifest`, scope `/dashboard/`).

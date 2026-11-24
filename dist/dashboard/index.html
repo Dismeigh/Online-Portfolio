@@ -9,10 +9,16 @@
   <meta name="theme-color" content="#14110f">
   <meta name="color-scheme" content="dark">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/dashboard/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Dashboard">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=64">
+  <link rel="stylesheet" href="/styles.css?v=65">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -60,12 +66,31 @@
     </section>
 
     <div id="panel" hidden>
+      <nav class="dash-tabs" aria-label="Dashboard sections">
+        <button type="button" data-tab="overview" aria-current="page">Overview</button>
+        <button type="button" data-tab="goal">Ko-fi goal</button>
+        <button type="button" data-tab="content">Content</button>
+        <button type="button" data-tab="guestbook">Ship&rsquo;s Log</button>
+        <button type="button" data-tab="arcade">Arcade</button>
+        <button type="button" data-tab="site">Banner &amp; looks</button>
+        <button type="button" data-tab="security">Logins</button>
+      </nav>
+
+      <div data-panel="overview">
       <section class="dash-stats" aria-label="At a glance">
         <div class="dash-stat"><span class="dash-stat-k">Goal bar</span><b id="st-goal">Off</b></div>
         <div class="dash-stat"><span class="dash-stat-k">Raised</span><b id="st-raised">$0</b></div>
         <div class="dash-stat"><span class="dash-stat-k">Ko-fi</span><b id="st-kofi">Not connected</b></div>
       </section>
 
+        <section class="dash-card dash-card-stats" aria-labelledby="stats-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Private</p><h2 id="stats-h">Site stats</h2></div><button type="button" class="dash-btn dash-small" data-refresh="stats">Refresh</button></div>
+          <div id="stats-body"><p class="dash-note">Loading&hellip;</p></div>
+          <p class="dash-hint">Page views are counted per page per day only. Nothing about who visited is kept.</p>
+        </section>
+      </div>
+
+      <div data-panel="goal" hidden>
       <section class="dash-card dash-card-goal" aria-labelledby="goal-h">
         <div class="dash-card-head">
           <div>
@@ -131,9 +156,91 @@
         </details>
         <p class="dash-hint">The site only keeps each payment&rsquo;s amount, type and time. Names, emails and messages are never stored.</p>
       </section>
+      </div>
+
+      <div data-panel="content" hidden>
+        <section class="dash-card dash-card-content" aria-labelledby="content-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Edit the site</p><h2 id="content-h">Content</h2></div></div>
+          <div class="dash-sub" id="content-pick" role="group" aria-label="What to edit">
+            <button type="button" data-content="bounties" aria-pressed="true">Bounties</button>
+            <button type="button" data-content="pinned">Pinned clip</button>
+            <button type="button" data-content="quotes">Quotes</button>
+            <button type="button" data-content="lore">Lore</button>
+            <button type="button" data-content="verdicts">Verdicts</button>
+            <button type="button" data-content="crew">Crew</button>
+          </div>
+          <p class="dash-note" id="content-note"></p>
+          <div id="content-body"></div>
+          <div class="dash-actions dash-sticky-save">
+            <button type="button" class="dash-btn dash-primary" id="content-save">Save changes</button>
+            <span class="dash-msg" id="content-msg" role="status"></span>
+          </div>
+        </section>
+      </div>
+
+      <div data-panel="guestbook" hidden>
+        <section class="dash-card dash-card-log" aria-labelledby="log-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Moderation</p><h2 id="log-h">Ship&rsquo;s Log</h2></div><button type="button" class="dash-btn dash-small" data-refresh="guestbook">Refresh</button></div>
+          <p class="dash-note">Pinned entries stay forever. Hidden ones disappear from the site but stay here so you can bring them back. Entries expire after 60 days unless pinned.</p>
+          <div id="log-body"></div>
+        </section>
+      </div>
+
+      <div data-panel="arcade" hidden>
+        <section class="dash-card dash-card-arcade" aria-labelledby="arcade-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Cleanup</p><h2 id="arcade-h">Leaderboards</h2></div></div>
+          <div class="dash-sub" id="arcade-pick" role="group" aria-label="Which game">
+            <button type="button" data-game="bounty" aria-pressed="true">Bounty Run</button>
+            <button type="button" data-game="drag">Launch Control</button>
+          </div>
+          <p class="dash-note">Remove one bad score, or every score under a name (for names that slipped past the filter).</p>
+          <div id="arcade-body"></div>
+        </section>
+      </div>
+
+      <div data-panel="site" hidden>
+        <section class="dash-card dash-card-banner" aria-labelledby="banner-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Every page</p><h2 id="banner-h">Site banner</h2></div><span class="dash-chip" id="banner-chip"><span class="dash-dot" aria-hidden="true"></span><span id="banner-chip-text">Off</span></span></div>
+          <form id="banner-form">
+            <label for="b-text">Message</label>
+            <input id="b-text" maxlength="140" placeholder="No stream tonight, back Friday at 8 PM!">
+            <label for="b-link">Link <span>(optional, a site page like /garage/ or a full https:// link)</span></label>
+            <input id="b-link" maxlength="200" placeholder="/#schedule">
+            <label for="b-until">Show until <span>(optional)</span></label>
+            <input id="b-until" type="datetime-local">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Show banner</button><button type="button" class="dash-btn" id="b-clear">Turn banner off</button></div>
+            <p class="dash-msg" id="banner-msg" role="status"></p>
+          </form>
+        </section>
+        <section class="dash-card dash-card-look" aria-labelledby="look-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Holiday looks</p><h2 id="look-h">Site look</h2></div></div>
+          <p class="dash-note">Normally the site picks its holiday look by date. Force one on, turn them off, or preview any of them.</p>
+          <form id="look-form">
+            <label for="l-mode">Look</label>
+            <select id="l-mode"></select>
+            <label for="l-until">Until <span>(optional, then it goes back to automatic)</span></label>
+            <input id="l-until" type="datetime-local">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save look</button><a class="dash-btn" id="l-preview" href="/" target="_blank" rel="noopener">Preview</a></div>
+            <p class="dash-msg" id="look-msg" role="status"></p>
+          </form>
+        </section>
+      </div>
+
+      <div data-panel="security" hidden>
+        <section class="dash-card dash-card-security" aria-labelledby="sec-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Security</p><h2 id="sec-h">Login history</h2></div><button type="button" class="dash-btn dash-small" data-refresh="security">Refresh</button></div>
+          <p class="dash-note">Logins and failed tries from the last 90 days. If you see one that wasn&rsquo;t you, change DASHBOARD_PASSWORD in Cloudflare right away. That signs everyone out and resets two-step login.</p>
+          <div id="sec-body"></div>
+        </section>
+        <section class="dash-card" aria-labelledby="app-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">On your phone</p><h2 id="app-h">Install the dashboard</h2></div></div>
+          <p class="dash-note" id="install-note">Add the dashboard to your home screen to use it like an app. On iPhone: Share &rarr; Add to Home Screen. On Android: the menu &rarr; Install app.</p>
+          <button type="button" class="dash-btn dash-primary" id="install-btn" hidden>Install the dashboard</button>
+        </section>
+      </div>
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=3" defer></script>
+  <script src="/dashboard.js?v=4" defer></script>
 </body>
 </html>
