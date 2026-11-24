@@ -3038,3 +3038,5 @@ html:has(.dash-body) { background: var(--ink); }
 .site-banner.is-party { background: repeating-linear-gradient(-45deg, var(--mustard) 0 16px, #d89a20 16px 32px); color: var(--ink); }
 .site-banner.is-party a { color: var(--ink); }
 .footer-est { margin: 0.1rem 0 0; font-family: var(--typed); font-size: 0.8rem; color: var(--paper-dim); letter-spacing: 0.04em; }
+
+.dash-miss { font-style: normal; font-size: 0.8rem; color: #f08a75; margin-left: 0.3rem; }

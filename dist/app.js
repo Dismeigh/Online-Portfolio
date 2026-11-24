@@ -531,10 +531,21 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   const input = dlg.querySelector('input');
   const list = dlg.querySelector('.search-results');
   const none = dlg.querySelector('.search-empty');
+  // Count what people searched for (the words only), once they stop typing or pick a result
+  let logged = '', logTimer = 0, lastCount = 0;
+  const logTerm = () => {
+    clearTimeout(logTimer);
+    const t = input.value.trim().toLowerCase();
+    if (t.length < 2 || t === logged) return;
+    logged = t;
+    const body = JSON.stringify({ t, n: lastCount });
+    try { navigator.sendBeacon ? navigator.sendBeacon('/api/searchlog', new Blob([body], { type: 'text/plain' })) : fetch('/api/searchlog', { method: 'POST', body, keepalive: true }); } catch {}
+  };
   const render = async () => {
     const q = input.value;
     const results = search(await buildIndex(), q);
     if (q !== input.value) return;
+    lastCount = results.length; clearTimeout(logTimer); logTimer = setTimeout(logTerm, 2500);
     list.innerHTML = results.map(r => `
       <li><a href="${esc(r.url)}"><span class="search-kind">${esc(r.kind)}</span><strong>${esc(r.title)}</strong>${r.text ? `<small>${esc(r.text)}</small>` : ''}</a></li>`).join('');
     none.hidden = !q.trim() || results.length > 0;
@@ -555,12 +566,12 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     if (e.key === 'ArrowUp' && i > -1) { e.preventDefault(); (i === 0 ? input : links[i - 1]).focus(); }
   });
   // Close after picking a result (also handles links to a spot on the same page)
-  list.addEventListener('click', e => { if (e.target.closest('a')) dlg.close(); });
+  list.addEventListener('click', e => { if (e.target.closest('a')) { logTerm(); dlg.close(); } });
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
-  dlg.addEventListener('close', () => document.documentElement.classList.remove('search-open'));
+  dlg.addEventListener('close', () => { logTerm(); document.documentElement.classList.remove('search-open'); });
   const open = (query) => {
     if (typeof query === 'string') input.value = query;
-    if (dlg.open) return;
+    if (dlg.open) { if (typeof query === 'string') render(); return; }
     document.querySelector('#nav-menu:not([hidden])') && document.querySelector('.nav-more')?.click();
     dlg.showModal();
     document.documentElement.classList.add('search-open');
