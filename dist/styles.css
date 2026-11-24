@@ -3514,3 +3514,10 @@ html:has(.dash-body) { background: var(--ink); }
 .split-main .new-text { margin: 0; color: var(--paper); }
 .new-link { display: inline-flex; align-items: center; min-height: 2.25rem; margin-top: 0.2rem; color: var(--mustard); }
 .split-main .meet-date, .split-main .meet-date span, .split-main .meet-date b { color: var(--ink); }
+.log-stamp-pick.is-limited { border-color: var(--red); border-style: dashed; }
+.log-section .log-stamp-note { margin: 0.4rem 0 0; font-size: 0.8rem; color: #5a4c41; }
+.meet-check { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.9rem; margin-top: 0.6rem; }
+.meet-check-btn { min-height: 2.75rem; padding: 0 1rem; background: var(--mustard); color: var(--ink); border: 2px solid var(--mustard); font-family: var(--display); font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; }
+.meet-check-btn:hover, .meet-check-btn:focus-visible { background: var(--paper); border-color: var(--paper); }
+.meet-check-btn[aria-pressed="true"] { background: transparent; color: var(--mustard); cursor: default; }
+.meet-check-n { font-family: var(--typed); font-size: 0.9rem; color: var(--paper); }

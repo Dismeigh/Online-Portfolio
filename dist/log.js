@@ -10,7 +10,13 @@
   };
   // Stamps visitors can sign with (keys match functions/api/log/index.js)
   const STAMPS = { rocket: ['\u{1F680}', 'Rocket'], cowboy: ['\u{1F920}', 'Space cowboy'], wrench: ['\u{1F527}', 'Wrench'], car: ['\u{1F3CE}\uFE0F', 'Race car'], controller: ['\u{1F3AE}', 'Controller'],
-    moon: ['\u{1F319}', 'Moon'], star: ['\u2B50', 'Star'], alien: ['\u{1F47E}', 'Space invader'], mic: ['\u{1F399}\uFE0F', 'Mic'], coffee: ['\u2615', 'Coffee'] };
+    moon: ['\u{1F319}', 'Moon'], star: ['\u2B50', 'Star'], alien: ['\u{1F47E}', 'Space invader'], mic: ['\u{1F399}\uFE0F', 'Mic'], coffee: ['\u2615', 'Coffee'],
+    party: ['\u{1F389}', 'Party popper'], heart: ['\u{1F498}', 'Heart'], clover: ['\u2618\uFE0F', 'Clover'], chick: ['\u{1F423}', 'Chick'], firework: ['\u{1F386}', 'Fireworks'],
+    pumpkin: ['\u{1F383}', 'Pumpkin'], ghost: ['\u{1F47B}', 'Ghost'], turkey: ['\u{1F983}', 'Turkey'], snowflake: ['\u2744\uFE0F', 'Snowflake'], gift: ['\u{1F381}', 'Gift'], cake: ['\u{1F382}', 'Cake'] };
+  const BASE = ['rocket', 'cowboy', 'wrench', 'car', 'controller', 'moon', 'star', 'alien', 'mic', 'coffee'];
+  // Holiday stamps: only offered while that holiday look is on (see the season script at the top of each page)
+  const HOLIDAY = { newyear: ['party'], valentines: ['heart'], stpatricks: ['clover'], easter: ['chick'], july4: ['firework'], spooky: ['pumpkin', 'ghost'],
+    thanksgiving: ['turkey'], holiday: ['snowflake', 'gift'], birthday: ['cake'], anniversary: ['cake'] };
   window.dismeighLogStamps = STAMPS;
   const render = (list, entries, emptyEl, emptyText, limit) => {
     const rows = entries.slice(0, limit);
@@ -76,11 +82,15 @@
     const picker = document.getElementById('log-stamps');
     let stamp = ''; try { stamp = localStorage.getItem('dm-log-stamp') || ''; } catch {}
     if (picker) {
-      picker.replaceChildren(...['', ...Object.keys(STAMPS)].map(k => {
-        const b = document.createElement('button'); b.type = 'button'; b.dataset.stamp = k; b.className = 'log-stamp-pick';
-        b.textContent = k ? STAMPS[k][0] : 'None'; b.setAttribute('aria-label', k ? STAMPS[k][1] : 'No stamp'); b.setAttribute('aria-pressed', String(k === stamp));
+      const limited = HOLIDAY[document.documentElement.dataset.season] || [];
+      if (!BASE.includes(stamp) && !limited.includes(stamp)) stamp = '';
+      picker.replaceChildren(...['', ...limited, ...BASE].map(k => {
+        const b = document.createElement('button'); b.type = 'button'; b.dataset.stamp = k; b.className = `log-stamp-pick${limited.includes(k) ? ' is-limited' : ''}`;
+        b.textContent = k ? STAMPS[k][0] : 'None'; b.setAttribute('aria-label', k ? `${STAMPS[k][1]}${limited.includes(k) ? ' (holiday stamp, limited time)' : ''}` : 'No stamp'); b.setAttribute('aria-pressed', String(k === stamp));
+        if (limited.includes(k)) b.title = 'Holiday stamp: only here for a limited time';
         return b;
       }));
+      if (limited.length) { const note = document.createElement('p'); note.className = 'log-stamp-note'; note.textContent = 'Holiday stamps (outlined in red) are only here for a limited time. They stay on your entry after.'; picker.after(note); }
       picker.addEventListener('click', e => { const b = e.target.closest('[data-stamp]'); if (!b) return; stamp = b.dataset.stamp; picker.querySelectorAll('[data-stamp]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
     }
     try { nameIn.value = localStorage.getItem('dismeigh-arcade-name') || ''; } catch {}

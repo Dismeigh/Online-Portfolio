@@ -15,7 +15,9 @@ export async function ensureTable(db) {
   try { await db.prepare("ALTER TABLE guestbook ADD COLUMN stamp TEXT NOT NULL DEFAULT ''").run(); } catch {}  // already there
   ready = true;
 }
-export const STAMPS = ['rocket', 'cowboy', 'wrench', 'car', 'controller', 'moon', 'star', 'alien', 'mic', 'coffee'];
+// Base stamps, plus holiday ones the log page only offers during that holiday look (they stay on the entry afterwards)
+export const STAMPS = ['rocket', 'cowboy', 'wrench', 'car', 'controller', 'moon', 'star', 'alien', 'mic', 'coffee',
+  'party', 'heart', 'clover', 'chick', 'firework', 'pumpkin', 'ghost', 'turkey', 'snowflake', 'gift', 'cake'];
 // Entries expire after 60 days unless pinned (pinned = 1 keeps one forever and puts it on top).
 export const KEEP_DAYS = 60;
 const cutoff = () => Date.now() - KEEP_DAYS * 86400000;
