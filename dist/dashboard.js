@@ -195,7 +195,20 @@
   });
 
   // ---------- Overview: site stats ----------
+  // Activity feed
+  let acts = [], actK = 'all';
+  const ICON = { log: '\u270e', kofi: '$', arcade: '\u2605', secret: '?' };
+  function drawActs() {
+    const list = acts.filter(a => actK === 'all' || a.kind === actK).slice(0, 30);
+    $('act-body').innerHTML = list.length ? `<ul class="dash-feed">${list.map(a => `<li class="feed-${esc(a.kind)}"><span class="feed-ic" aria-hidden="true">${ICON[a.kind] || '\u2022'}</span><div><b>${esc(a.text)}</b>${a.hidden ? ' <small class="dash-hint">(hidden)</small>' : ''}${a.detail ? `<p>${esc(a.detail)}</p>` : ''}<span class="dash-meta">${esc(when(a.at))}</span></div></li>`).join('')}</ul>` : '<p class="dash-note">Nothing yet.</p>';
+  }
+  const loadActs = async () => { const { data } = await api('activity'); acts = data.items || []; drawActs(); };
+  $('act-refresh').addEventListener('click', loadActs);
+  document.querySelectorAll('#act-filter [data-act-k]').forEach(b => b.addEventListener('click', () => {
+    actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
+  }));
   loaders.overview = async () => {
+    loadActs();
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
     const pageName = p => ({ '/': 'Home', other: 'Other' }[p] || p.replace(/\//g, ' ').trim().replace(/^\w/, c => c.toUpperCase()));

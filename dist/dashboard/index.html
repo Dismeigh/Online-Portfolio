@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=84">
+  <link rel="stylesheet" href="/styles.css?v=86">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -89,6 +89,13 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">Private</p><h2 id="stats-h">Site stats</h2></div><button type="button" class="dash-btn dash-small" data-refresh="stats">Refresh</button></div>
           <div id="stats-body"><p class="dash-note">Loading&hellip;</p></div>
           <p class="dash-hint">Page views are counted per page per day only. Nothing about who visited is kept.</p>
+        </section>
+        <section class="dash-card dash-card-activity" aria-labelledby="act-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Last 30 days</p><h2 id="act-h">Activity</h2></div><button type="button" class="dash-btn dash-small" id="act-refresh">Refresh</button></div>
+          <div class="dash-sub" id="act-filter" role="group" aria-label="Show">
+            <button type="button" data-act-k="all" aria-pressed="true">All</button><button type="button" data-act-k="log" aria-pressed="false">Ship&rsquo;s Log</button><button type="button" data-act-k="kofi" aria-pressed="false">Ko-fi</button><button type="button" data-act-k="arcade" aria-pressed="false">Arcade</button><button type="button" data-act-k="secret" aria-pressed="false">Secrets</button>
+          </div>
+          <div id="act-body"><p class="dash-note">Loading&hellip;</p></div>
         </section>
       </div>
 
@@ -436,6 +443,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=21" defer></script>
+  <script src="/dashboard.js?v=22" defer></script>
 </body>
 </html>

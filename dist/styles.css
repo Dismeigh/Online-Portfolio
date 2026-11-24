@@ -2924,3 +2924,12 @@ html:has(.dash-body) { background: var(--ink); }
 .site-banner.is-live { background: #a3301f; }
 
 .dash-code { display: block; margin-top: 0.4rem; padding: 0.35rem 0.5rem; background: #0b0908; border: 1px solid var(--line); font-size: 0.85rem; word-break: break-all; color: var(--paper); user-select: all; }
+
+/* Dashboard activity feed */
+.dash-feed { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.1rem; }
+.dash-feed li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 0.7rem; align-items: start; padding: 0.6rem 0; border-bottom: 1px dashed var(--line); }
+.dash-feed b { color: var(--paper); font-weight: 600; }
+.dash-feed p { margin: 0.15rem 0 0.2rem; color: var(--paper-dim); overflow-wrap: anywhere; }
+.feed-ic { display: grid; place-items: center; width: 2rem; height: 2rem; border: 2px solid currentColor; font-family: var(--display); font-size: 1rem; }
+.feed-log .feed-ic { color: var(--teal); } .feed-kofi .feed-ic { color: var(--mustard); } .feed-arcade .feed-ic { color: #d85fa0; } .feed-secret .feed-ic { color: #8fb8ff; }
+.dash-feed .dash-meta { display: block; margin-top: 0.1rem; }
