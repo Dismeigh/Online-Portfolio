@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stream overlay | Dismeigh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <!-- OBS browser sources. Add one per overlay:
+       /overlay/?w=goal    Ko-fi goal bar          (suggested 700 x 220)
+       /overlay/?w=log     Ship's Log messages     (suggested 700 x 150)
+       /overlay/?w=arcade  Weekly arcade top 5     (suggested 420 x 330)
+       Add &bg=1 for a solid background instead of see-through. Public info only; nothing here is counted or tracked. -->
+  <style>
+    :root { --ink: #14110f; --ink-2: #1d1916; --paper: #efe6d2; --dim: #cfc4ad; --mustard: #e3a92f; --red: #b73b2c; --teal: #3f8f8c; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: transparent; color: var(--paper); font: 600 20px/1.35 "Work Sans", sans-serif; overflow: hidden; }
+    body.solid { background: var(--ink); }
+    .ov { margin: 12px; padding: 16px 20px 18px; background: rgba(20, 17, 15, 0.92); border: 3px solid var(--paper); border-left: 10px solid var(--mustard); box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.55); }
+    .ov[hidden] { display: none; }
+    .k { display: inline-block; padding: 2px 10px 0; background: var(--mustard); color: var(--ink); font: 400 18px/1.4 Anton, Impact, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; transform: rotate(-2deg); }
+    .t { margin: 8px 0 0; font: 400 34px/1.05 Anton, Impact, sans-serif; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar { position: relative; height: 26px; margin-top: 12px; background: #0b0908; border: 3px solid var(--dim); overflow: hidden; }
+    .bar span { position: absolute; inset: 0 auto 0 0; background: repeating-linear-gradient(-45deg, var(--mustard) 0 14px, #c98f1c 14px 28px); transition: width 1.2s ease; animation: slide 1.6s linear infinite; background-size: 40px 40px; }
+    @keyframes slide { to { background-position: 40px 0; } }
+    .nums { display: flex; justify-content: space-between; margin-top: 8px; font-family: "Special Elite", monospace; color: var(--dim); }
+    .nums b { color: var(--paper); font: 400 24px Anton, Impact, sans-serif; }
+    .msg { margin: 10px 0 0; font-size: 24px; transition: opacity 0.5s ease, transform 0.5s ease; }
+    .msg.out { opacity: 0; transform: translateY(8px); }
+    .msg b { color: var(--mustard); }
+    .rows { list-style: none; margin: 10px 0 0; padding: 0; counter-reset: r; }
+    .rows li { display: flex; gap: 12px; align-items: baseline; padding: 4px 0; border-bottom: 1px dashed rgba(239, 230, 210, 0.2); counter-increment: r; }
+    .rows li::before { content: counter(r, decimal-leading-zero); font: 400 22px Anton, Impact, sans-serif; color: var(--mustard); width: 30px; }
+    .rows li span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .rows li em { font: 400 22px Anton, Impact, sans-serif; font-style: normal; }
+    .empty { margin: 10px 0 0; font-family: "Special Elite", monospace; color: var(--dim); }
+    .pop { animation: pop 0.6s ease; }
+    @keyframes pop { 0% { transform: scale(0.96); } 50% { transform: scale(1.02); } 100% { transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="ov" id="ov" hidden></div>
+  <script>
+  (() => {
+    const q = new URLSearchParams(location.search), w = q.get('w') || 'goal', box = document.getElementById('ov');
+    if (q.get('bg') === '1') document.body.classList.add('solid');
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const usd = n => `$${Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+    const get = url => fetch(url, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+
+    // Ko-fi goal: hidden while no goal is switched on
+    async function goal() {
+      const g = await get('/api/goal');
+      if (!g?.on) { box.hidden = true; return; }
+      const pct = Math.max(0, Math.min(100, Math.round(Number(g.pct) || 0)));
+      const was = box.dataset.raised;
+      box.innerHTML = `<span class="k">Ko-fi goal</span><p class="t">${esc(g.title)}</p>
+        <div class="bar"><span style="width:${pct}%"></span></div>
+        <div class="nums"><span><b>${esc(usd(g.raised))}</b> of ${esc(usd(g.target))}</span><span>${pct}% &middot; ko-fi.com/dismeigh</span></div>`;
+      box.hidden = false;
+      if (was && was !== String(g.raised)) { box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop'); }
+      box.dataset.raised = String(g.raised);
+    }
+
+    // Ship's Log: rotates through the newest five, newest first when one comes in
+    let entries = [], at = 0, newest = null;
+    async function log() {
+      const d = await get('/api/log');
+      entries = (d?.entries || []).filter(e => !e.pinned).slice(0, 5);
+      if (!entries.length) { box.innerHTML = '<span class="k">Ship’s Log</span><p class="empty">Sign the log at denizen-dismeigh.com/log</p>'; box.hidden = false; return; }
+      if (newest !== null && entries[0].id !== newest) at = 0;
+      newest = entries[0].id; showLog();
+    }
+    function showLog() {
+      const e = entries[at % entries.length]; if (!e) return;
+      const fresh = !box.querySelector('.msg');
+      if (fresh) box.innerHTML = '<span class="k">Ship’s Log</span><p class="msg"></p>';
+      const m = box.querySelector('.msg');
+      m.classList.add('out');
+      setTimeout(() => { m.innerHTML = `<b>${esc(e.name)}:</b> ${esc(e.message)}`; m.classList.remove('out'); }, fresh ? 0 : 450);
+      box.hidden = false;
+    }
+
+    // Arcade: this week's top 5, switching games every 15 seconds
+    const GAMES = [['bounty', 'Bounty Run', v => Number(v).toLocaleString()], ['drag', 'Launch Control', v => `${v} ms`]];
+    let gi = 0;
+    async function arcade() {
+      const [key, name, fmt] = GAMES[gi % GAMES.length];
+      const d = await get(`/api/arcade/scores?game=${key}`);
+      const rows = (d?.week || []).slice(0, 5);
+      box.innerHTML = `<span class="k">This week &middot; ${esc(name)}</span>${rows.length
+        ? `<ol class="rows">${rows.map(r => `<li><span>${esc(r.name)}</span><em>${esc(fmt(r.score))}</em></li>`).join('')}</ol>`
+        : '<p class="empty">No scores yet this week. Play at denizen-dismeigh.com</p>'}`;
+      box.hidden = false;
+    }
+
+    if (w === 'log') { log(); setInterval(log, 30000); setInterval(() => { at++; showLog(); }, 9000); }
+    else if (w === 'arcade') { arcade(); setInterval(() => { gi++; arcade(); }, 15000); }
+    else { goal(); setInterval(goal, 30000); }
+  })();
+  </script>
+</body>
+</html>

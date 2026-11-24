@@ -568,6 +568,15 @@
     flash($('look-msg'), data.error || ($('l-mode').value === 'auto' ? 'Back to automatic.' : 'Saved. Visitors see it on their next page load.')); loaders.site();
   });
 
+  // ---------- Stream overlays ----------
+  const OVERLAYS = [['goal', 'Ko-fi goal bar', '700 \u00d7 220', 'Hidden while no goal is on. Pops when a tip lands.'], ['log', 'Ship\u2019s Log messages', '700 \u00d7 150', 'Cycles through the newest five entries.'], ['arcade', 'Arcade top 5 this week', '420 \u00d7 330', 'Switches between Bounty Run and Launch Control.']];
+  $('ovl-list').innerHTML = OVERLAYS.map(([k, name, size, note]) => `<li class="dash-row"><div class="dash-row-main"><b>${name}</b> <span class="dash-meta">${size}</span><p>${note}</p><code class="dash-code">${location.origin}/overlay/?w=${k}</code></div>
+    <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-ovl="${k}">Copy link</button><a class="dash-btn dash-small" href="/overlay/?w=${k}&bg=1" target="_blank" rel="noopener">Preview</a></div></li>`).join('');
+  $('ovl-list').addEventListener('click', async e => {
+    const b = e.target.closest('[data-ovl]'); if (!b) return;
+    try { await navigator.clipboard.writeText(`${location.origin}/overlay/?w=${b.dataset.ovl}`); flash($('ovl-msg'), 'Copied. Paste it into an OBS Browser source.'); } catch { flash($('ovl-msg'), 'Couldn\u2019t copy. Press and hold the link to copy it.'); }
+  });
+
   // ---------- Backup and restore ----------
   const saveFile = (obj, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
   $('bk-form').addEventListener('submit', async e => {

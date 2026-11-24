@@ -2922,3 +2922,5 @@ html:has(.dash-body) { background: var(--ink); }
 .site-nav .site-banner a { display: inline; min-height: 0; padding: 0; background: none; font: inherit; font-weight: 800; letter-spacing: normal; text-transform: none; text-decoration: underline; text-underline-offset: 3px; color: inherit; box-shadow: none; }
 .site-nav .site-banner a:hover { background: none; color: inherit; }
 .site-banner.is-live { background: #a3301f; }
+
+.dash-code { display: block; margin-top: 0.4rem; padding: 0.35rem 0.5rem; background: #0b0908; border: 1px solid var(--line); font-size: 0.85rem; word-break: break-all; color: var(--paper); user-select: all; }

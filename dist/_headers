@@ -55,3 +55,7 @@
 /dashboard/manifest.webmanifest
   Cache-Control: public, max-age=3600
   X-Robots-Tag: noindex
+
+# Stream overlays for OBS: not for search engines
+/overlay/*
+  X-Robots-Tag: noindex, nofollow
