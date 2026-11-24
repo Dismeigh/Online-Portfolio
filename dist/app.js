@@ -781,14 +781,28 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       if (s.now?.text) { rn.innerHTML = `<span class="right-now-k">Right now</span> ${esc(s.now.text)}`; rn.hidden = false; }
       else rn.hidden = true;
     }
-    // Commissions open/closed badge on the Voice and Work pages
+    // Commissions open/closed: voice, web and discord each have their own switch. "work" shows both web and discord.
+    const cm = s.commissions || {}, NAME = { voice: 'Voice acting', web: 'Websites', discord: 'Discord servers' };
+    const shown = k => cm[k] === 'open' || cm[k] === 'closed';
     document.querySelectorAll('[data-commissions]').forEach(el => {
-      const st = s.commissions?.[el.dataset.commissions];
-      if (st !== 'open' && st !== 'closed') { el.hidden = true; return; }
-      el.className = `commission-badge is-${st}`;
-      el.innerHTML = `<span class="commission-dot" aria-hidden="true"></span><b>Commissions ${st}</b>${s.commissions.note ? `<span>${esc(s.commissions.note)}</span>` : ''}`;
+      const k = el.dataset.commissions;
+      if (k === 'work') {
+        const parts = ['web', 'discord'].filter(shown);
+        if (!parts.length) { el.hidden = true; return; }
+        const anyOpen = parts.some(p => cm[p] === 'open');
+        el.className = `commission-badge is-${anyOpen ? 'open' : 'closed'}`;
+        el.innerHTML = `<span class="commission-dot" aria-hidden="true"></span>${parts.map(p => `<b>${NAME[p]}: ${cm[p]}</b>${cm.notes?.[p] ? `<span>${esc(cm.notes[p])}</span>` : ''}`).join('<i class="commission-sep" aria-hidden="true">&middot;</i>')}`;
+        el.hidden = false; return;
+      }
+      if (!shown(k)) { el.hidden = true; return; }
+      el.className = `${el.classList.contains('rate-status') ? 'rate-status ' : ''}commission-badge is-${cm[k]}`;
+      el.innerHTML = `<span class="commission-dot" aria-hidden="true"></span><b>${el.classList.contains('rate-status') ? cm[k] : `${k === 'voice' ? 'Commissions' : NAME[k]} ${cm[k]}`}</b>${cm.notes?.[k] ? `<span>${esc(cm.notes[k])}</span>` : ''}`;
       el.hidden = false;
     });
+    // Quote button on the Work page: a waitlist when both web and discord are closed
+    const qb = document.getElementById('rates-quote');
+    if (qb && cm.web === 'closed' && cm.discord === 'closed') { qb.textContent = 'Join the waitlist'; qb.href = 'mailto:denizen.dismeigh@gmail.com?subject=Waitlist'; }
+    window.dismeighCommissions = cm;
     // "Live now" strip on every page while streaming (the home page has its own On Air bar)
     if (s.liveBar !== false && !document.getElementById('onair-bar') && !/^\/(dashboard|spotted)/.test(location.pathname)) {
       const nav = document.querySelector('.site-nav');

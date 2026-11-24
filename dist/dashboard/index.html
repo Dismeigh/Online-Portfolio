@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=91">
+  <link rel="stylesheet" href="/styles.css?v=92">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -385,12 +385,18 @@
         <section class="dash-card dash-card-comm" aria-labelledby="comm-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Voice and Work pages</p><h2 id="comm-h">Commissions</h2></div></div>
           <form id="comm-form">
-            <div class="dash-two">
+            <div class="dash-comm-row">
               <div><label for="cm-voice">Voice acting</label><select id="cm-voice"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
-              <div><label for="cm-work">Websites &amp; Discord</label><select id="cm-work"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-voice-note">Note <span>(optional)</span></label><input id="cm-voice-note" maxlength="120" placeholder="Booking for January"></div>
             </div>
-            <label for="cm-note">Short note <span>(optional, shown with both)</span></label>
-            <input id="cm-note" maxlength="120" placeholder="Booking for January">
+            <div class="dash-comm-row">
+              <div><label for="cm-web">Websites</label><select id="cm-web"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-web-note">Note <span>(optional)</span></label><input id="cm-web-note" maxlength="120" placeholder="1 spot left this month"></div>
+            </div>
+            <div class="dash-comm-row">
+              <div><label for="cm-discord">Discord servers</label><select id="cm-discord"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-discord-note">Note <span>(optional)</span></label><input id="cm-discord-note" maxlength="120" placeholder="Usually done in 2&ndash;3 days"></div>
+            </div>
             <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
             <p class="dash-msg" id="comm-msg" role="status"></p>
           </form>
@@ -457,6 +463,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=25" defer></script>
+  <script src="/dashboard.js?v=26" defer></script>
 </body>
 </html>

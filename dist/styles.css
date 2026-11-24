@@ -2986,3 +2986,11 @@ html:has(.dash-body) { background: var(--ink); }
 .rate-card li { margin: 0.2rem 0; }
 .rates-cta { margin: 1.4rem 0 0; text-align: center; }
 .rate-card .rate-price { color: var(--mustard) !important; }
+
+/* Commissions: one switch each */
+.dash-comm-row { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: 0.6rem; align-items: end; margin-bottom: 0.4rem; }
+@media (max-width: 480px) { .dash-comm-row { grid-template-columns: 1fr; gap: 0; } }
+.commission-sep { font-style: normal; color: var(--paper-dim); }
+.rate-status { margin: 0 0 0 0.5rem; padding: 0.1rem 0.6rem; font-size: 0.8rem; vertical-align: 0.1em; letter-spacing: 0; text-transform: none; }
+.rate-status[hidden] { display: none; }
+.rate-status b { font-size: 0.95rem; }

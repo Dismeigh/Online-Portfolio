@@ -517,7 +517,7 @@
     $('l-mode').innerHTML = `<option value="auto">Automatic (by date)</option><option value="off">No holiday looks</option>${data.seasons.map(k => `<option value="${k}">${esc(NAMES[k] || k)}</option>`).join('')}`;
     $('n-text').value = data.now?.text || ''; $('n-until').value = toLocal(data.now?.until);
     $('now-chip').className = `dash-chip ${data.now ? 'dash-chip-ok' : ''}`; $('now-chip-text').textContent = data.now ? 'Showing' : 'Off';
-    $('cm-voice').value = data.commissions?.voice || 'off'; $('cm-work').value = data.commissions?.work || 'off'; $('cm-note').value = data.commissions?.note || '';
+    for (const k of ['voice', 'web', 'discord']) { $(`cm-${k}`).value = data.commissions?.[k] || 'off'; $(`cm-${k}-note`).value = data.commissions?.notes?.[k] || ''; }
     $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
     updatePreview();
     const m = (await api('maintenance')).data.maintenance || {};
@@ -588,7 +588,8 @@
   $('n-clear').addEventListener('click', async () => { await api('site', { what: 'now', text: '' }); flash($('now-msg'), 'Cleared.'); loaders.site(); });
   $('comm-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const { data } = await api('site', { what: 'commissions', voice: $('cm-voice').value, work: $('cm-work').value, note: $('cm-note').value });
+    const { data } = await api('site', { what: 'commissions', voice: $('cm-voice').value, web: $('cm-web').value, discord: $('cm-discord').value,
+      notes: { voice: $('cm-voice-note').value, web: $('cm-web-note').value, discord: $('cm-discord-note').value } });
     flash($('comm-msg'), data.error || 'Saved. It shows on the Voice and Work pages now.'); loaders.site();
   });
   $('look-form').addEventListener('submit', async e => {
