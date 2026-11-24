@@ -1,0 +1,29 @@
+{
+  "note": "FAQ on the Work page. Edit from the dashboard (Content tab, Work FAQ); once saved there, this file is only the fallback.",
+  "faq": [
+    {
+      "q": "How long does it take?",
+      "a": "Discord setups usually take 2 to 4 days. One-page sites take about 1 to 2 weeks, and bigger sites 3 to 6 weeks, depending on how fast content and feedback come back."
+    },
+    {
+      "q": "How does payment work?",
+      "a": "Discord work is paid up front. For websites, half is paid to start and the rest before the site goes live. Monthly care is billed at the start of each month and you can cancel anytime."
+    },
+    {
+      "q": "What counts as a round of changes?",
+      "a": "One list of tweaks sent together, like \"swap this photo, change this color, reword this line.\" Bigger new features or pages are quoted separately."
+    },
+    {
+      "q": "Do I own the site or server when it's done?",
+      "a": "Yes. The domain, the site and the server are yours. I can hand everything over, or keep looking after it with monthly care."
+    },
+    {
+      "q": "Do I need to know anything about tech?",
+      "a": "Nope. Tell me what you want it to do and who it's for, and I'll handle the rest and show you how to make simple updates."
+    },
+    {
+      "q": "What do you need from me to start?",
+      "a": "Your logo or colors if you have them, the text and photos you want to use, and links to anything you like the look of. For Discord, admin access to the server (or I can build a fresh one)."
+    }
+  ]
+}

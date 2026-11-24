@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=93">
+  <link rel="stylesheet" href="/styles.css?v=95">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Work", "item": "https://www.denizen-dismeigh.com/work/"}]}</script>
 </head>
@@ -217,7 +217,34 @@
             <div class="rate-group" data-rate-group="discord"><h4 class="rate-group-title">Discord <span class="rate-status" data-commissions="discord" hidden></span></h4><article class="rate-card"><div class="rate-top"><h4>Discord server setup</h4><p class="rate-price">from $50</p></div><p class="rate-sum">A clean, organized server built around your community.</p><ul><li>Categories, channels and roles with the right permissions</li><li>Welcome, rules and verification</li><li>Up to 3 bots set up (moderation, roles, leveling or music)</li><li>Basic AutoMod and anti-spam</li></ul></article><article class="rate-card"><div class="rate-top"><h4>Mod team setup &amp; training</h4><p class="rate-price">from $35</p></div><p class="rate-sum">Give your mods the tools and the playbook.</p><ul><li>AutoMod rules, word filters and raid protection</li><li>Mod roles, private mod channels and a log channel</li><li>A short mod handbook: when to warn, mute, ban or escalate</li><li>Optional 1-hour walkthrough with your mods</li></ul></article><article class="rate-card"><div class="rate-top"><h4>Monthly server care</h4><p class="rate-price">$25/month</p></div><p class="rate-sum">Keep things running while you focus on your community.</p><ul><li>Bot updates and replacements when they break</li><li>Channel and role changes as you grow</li><li>A monthly permissions check</li><li>Event and seasonal setups</li></ul></article></div>
             <div class="rate-group" data-rate-group="web"><h4 class="rate-group-title">Websites <span class="rate-status" data-commissions="web" hidden></span></h4><article class="rate-card"><div class="rate-top"><h4>One-page website</h4><p class="rate-price">from $300</p></div><p class="rate-sum">A single, polished page that sends people where you want them.</p><ul><li>Custom design that fits your brand</li><li>Works on phones, fast to load</li><li>Links, socials, a contact or signup form</li><li>Hosting setup and connecting your domain</li><li>2 rounds of changes</li></ul></article><article class="rate-card"><div class="rate-top"><h4>Multi-page website</h4><p class="rate-price">from $750</p></div><p class="rate-sum">A full site with room to grow, like 757animeclub.com.</p><ul><li>Up to 5 pages, custom design</li><li>Extras like events, galleries, a shop link or a members area</li><li>An easy way to update your own content (quoted per feature)</li><li>Hosting, domain and search basics</li><li>3 rounds of changes</li></ul></article><article class="rate-card"><div class="rate-top"><h4>Monthly site care</h4><p class="rate-price">$30/month</p></div><p class="rate-sum">Updates and fixes without the headache.</p><ul><li>Small text and photo updates</li><li>Fixes if anything breaks</li><li>Hosting and domain checks</li><li>Help with questions as they come up</li></ul></article></div>
           </div>
-          <p class="rates-cta"><a class="social-btn" id="rates-quote" href="mailto:denizen.dismeigh@gmail.com?subject=Quote%20request">Get a free quote</a></p>
+          <p class="rates-cta"><a class="social-btn" id="rates-quote" href="#quote">Get a free quote</a></p>
+        </div>
+
+        <div class="faq" id="faq">
+          <h3>Questions</h3>
+          <div class="faq-list" id="faq-list"><details class="faq-item"><summary>How long does it take?</summary><p>Discord setups usually take 2 to 4 days. One-page sites take about 1 to 2 weeks, and bigger sites 3 to 6 weeks, depending on how fast content and feedback come back.</p></details><details class="faq-item"><summary>How does payment work?</summary><p>Discord work is paid up front. For websites, half is paid to start and the rest before the site goes live. Monthly care is billed at the start of each month and you can cancel anytime.</p></details><details class="faq-item"><summary>What counts as a round of changes?</summary><p>One list of tweaks sent together, like &quot;swap this photo, change this color, reword this line.&quot; Bigger new features or pages are quoted separately.</p></details><details class="faq-item"><summary>Do I own the site or server when it&#x27;s done?</summary><p>Yes. The domain, the site and the server are yours. I can hand everything over, or keep looking after it with monthly care.</p></details><details class="faq-item"><summary>Do I need to know anything about tech?</summary><p>Nope. Tell me what you want it to do and who it&#x27;s for, and I&#x27;ll handle the rest and show you how to make simple updates.</p></details><details class="faq-item"><summary>What do you need from me to start?</summary><p>Your logo or colors if you have them, the text and photos you want to use, and links to anything you like the look of. For Discord, admin access to the server (or I can build a fresh one).</p></details></div>
+        </div>
+
+        <div class="quote" id="quote">
+          <h3>Get a free quote</h3>
+          <p class="rates-intro">Tell me what you&rsquo;re after and I&rsquo;ll get back to you, usually within a couple of days. Prefer email? <a href="mailto:denizen.dismeigh@gmail.com?subject=Quote%20request">denizen.dismeigh@gmail.com</a></p>
+          <form class="log-form quote-form" id="quote-form" novalidate>
+            <div class="log-fields quote-fields">
+              <label class="log-field"><span>Your name <small>(or your server or business)</small></span><input id="q-name" name="name" maxlength="60" autocomplete="name" required></label>
+              <label class="log-field"><span>Email or Discord username</span><input id="q-contact" name="contact" maxlength="120" autocomplete="email" spellcheck="false" required></label>
+              <label class="log-field"><span>What do you need?</span><select id="q-service" name="service" required><option value="">Pick one</option><option>Discord server setup</option><option>Mod team setup &amp; training</option><option>Monthly server care</option><option>One-page website</option><option>Multi-page website</option><option>Monthly site care</option><option>Voice acting</option><option>Something else</option></select></label>
+              <label class="log-field"><span>Budget</span><select id="q-budget" name="budget"><option>Under $100</option><option>$100 to $300</option><option>$300 to $750</option><option>$750 to $1,500</option><option>$1,500+</option><option selected>Not sure yet</option></select></label>
+              <label class="log-field"><span>When do you need it?</span><select id="q-timeline" name="timeline"><option>As soon as possible</option><option>Within a month</option><option>1 to 3 months</option><option selected>No rush</option></select></label>
+              <label class="log-field"><span>Links <small>(optional: your server, current site, or sites you like)</small></span><input id="q-links" name="links" maxlength="900" inputmode="url" spellcheck="false" placeholder="https://..."></label>
+              <label class="log-field quote-wide"><span>About the project</span><textarea id="q-message" name="message" maxlength="1500" rows="5" required placeholder="Who it's for, what it should do, anything you already have..."></textarea></label>
+              <label class="log-trap" aria-hidden="true">Website <input id="q-website" name="website" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <div class="log-submit-row">
+              <button type="submit" class="game-start log-submit" id="q-submit">Send request</button>
+              <p class="log-msg" id="q-msg" role="alert"></p>
+            </div>
+            <p class="log-rules">Your request is only seen by me, and it&rsquo;s deleted after 90 days unless we end up working together.</p>
+          </form>
         </div>
       </section>
 
@@ -243,6 +270,32 @@
     }, { threshold: 0.15 });
     document.querySelectorAll('.sweep').forEach(el => io.observe(el));
 
+    // FAQ: the dashboard's saved copy replaces the built-in one
+    fetch('/api/content/faq').then(r => (r.ok ? r.json() : null)).then(d => {
+      const list = d?.faq; if (!Array.isArray(list) || !list.length) return;
+      document.getElementById('faq-list').innerHTML = list.map(f => `<details class="faq-item"><summary>${String(f.q).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))}</summary><p>${String(f.a).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))}</p></details>`).join('');
+    }).catch(() => {});
+
+    // Quote request form
+    {
+      const form = document.getElementById('quote-form'), msg = document.getElementById('q-msg'), opened = Date.now();
+      const want = new URLSearchParams(location.search).get('service');
+      if (want === 'voice') document.getElementById('q-service').value = 'Voice acting';
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const v = id => document.getElementById(id).value;
+        const btn = document.getElementById('q-submit'); btn.disabled = true; msg.textContent = 'Sending\u2026'; msg.style.color = '';
+        try {
+          const r = await fetch('/api/quote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+            name: v('q-name'), contact: v('q-contact'), service: v('q-service'), budget: v('q-budget'), timeline: v('q-timeline'), links: v('q-links'), message: v('q-message'), website: v('q-website'), elapsed: Date.now() - opened }) });
+          const d = await r.json().catch(() => ({}));
+          if (!r.ok) { msg.textContent = d.error || 'That didn\u2019t send. Try again, or email me.'; if (d.field) document.getElementById(d.field)?.focus(); }
+          else { form.innerHTML = '<p class="quote-done"><b>Request sent!</b> Thanks. I\u2019ll get back to you soon, usually within a couple of days.</p>'; form.querySelector('.quote-done').setAttribute('tabindex', '-1'); form.querySelector('.quote-done').focus(); }
+        } catch { msg.textContent = 'That didn\u2019t send. Check your connection, or email me.'; }
+        btn.disabled = false;
+      });
+    }
+
     // Rates: the page ships with a copy; the dashboard's saved version replaces it
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     fetch('/api/content/pricing').then(r => (r.ok ? r.json() : null)).then(d => {
@@ -255,6 +308,6 @@
 
   }
   </script>
-  <script src="/app.js?v=56" defer></script>
+  <script src="/app.js?v=57" defer></script>
 </body>
 </html>

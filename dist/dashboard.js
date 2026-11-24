@@ -219,7 +219,7 @@
     actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
   }));
   loaders.overview = async () => {
-    loadActs(); loadHealth();
+    loadActs(); loadHealth(); api('clients').then(r => { if (r.status === 200) drawBoard(r.data); }).catch(() => {});
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
     const pageName = p => ({ '/': 'Home', other: 'Other' }[p] || p.replace(/\//g, ' ').trim().replace(/^\w/, c => c.toUpperCase()));
@@ -273,6 +273,9 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    faq: { note: 'Questions and answers on the Work page, in this order.', fields: [
+      F('q', 'Question', 'text', { max: 140, required: true }), F('a', 'Answer', 'textarea', { max: 600, required: true }),
+    ] },
     pricing: { note: 'Rates on the Work page. What\u2019s included: one point per line.', fields: [
       F('group', 'Section', 'select', { options: [['discord', 'Discord'], ['web', 'Websites']] }), F('name', 'Service', 'text', { max: 60, required: true }),
       F('price', 'Price (e.g. from $50, $25/month)', 'text', { max: 30 }), F('summary', 'One-line description', 'text', { max: 160 }),
@@ -283,7 +286,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -689,6 +692,83 @@
     saveFile(data, 'dismeigh-backup-before-restore.json');
   });
 
+  // ---------- Clients: quote requests + job board ----------
+  const STAGE = { quote: 'Quote', booked: 'Booked', deposit: 'Deposit paid', progress: 'In progress', done: 'Done' };
+  let board = { requests: [], jobs: [], services: [] }, rqView = 'open', jbView = 'active', editingJob = null;
+  const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+  function drawRequests() {
+    const list = board.requests.filter(r => (rqView === 'archived' ? r.status === 'archived' : r.status !== 'archived'));
+    const n = board.requests.filter(r => r.status === 'new').length;
+    $('cl-new').hidden = !n; $('cl-new').textContent = n;
+    $('rq-body').innerHTML = list.length ? `<ul class="dash-list">${list.map(r => `
+      <li class="dash-row dash-req${r.status === 'new' ? ' is-new' : ''}"><div class="dash-row-main">
+        <b>${esc(r.name)}</b> <span class="dash-meta">${esc(r.service)} · ${esc(when(r.at))}${r.status === 'new' ? ' · <span class="dash-new">New</span>' : r.status === 'replied' ? ' · replied' : ''}</span>
+        <p class="dash-req-meta">${esc(r.contact)} · Budget: ${esc(r.budget || 'not given')} · ${esc(r.timeline || '')}</p>
+        <p class="dash-note-text">${esc(r.message)}</p>
+        ${r.links.length ? `<p class="dash-req-links">${r.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer nofollow">${esc(u.replace(/^https:\/\//, ''))}</a>`).join(' ')}</p>` : ''}
+        <span class="dash-meta">${r.keep ? 'Kept' : `Deletes ${esc(when(r.expires))}`}</span></div>
+        <div class="dash-row-actions">
+          ${isEmail(r.contact) ? `<a class="dash-btn dash-small" href="mailto:${esc(r.contact)}?subject=${encodeURIComponent(`Your ${r.service} quote`)}">Email</a>` : ''}
+          ${r.status === 'new' ? `<button type="button" class="dash-btn dash-small" data-rq-act="replied" data-id="${r.id}">Mark replied</button>` : ''}
+          <button type="button" class="dash-btn dash-small dash-primary" data-rq-act="job" data-id="${r.id}">Make it a job</button>
+          <button type="button" class="dash-btn dash-small" data-rq-act="${r.keep ? 'unkeep' : 'keep'}" data-id="${r.id}">${r.keep ? 'Don\u2019t keep' : 'Keep'}</button>
+          ${r.status !== 'archived' ? `<button type="button" class="dash-btn dash-small" data-rq-act="archive" data-id="${r.id}">Archive</button>` : ''}
+          <button type="button" class="dash-btn dash-small dash-danger" data-rq-act="delete" data-id="${r.id}">Delete</button>
+        </div></li>`).join('')}</ul>` : `<p class="dash-note">${rqView === 'archived' ? 'Nothing archived.' : 'No requests right now.'}</p>`;
+  }
+  const jobForm = (j = {}) => `<form class="dash-job-form" data-job-form="${j.id || ''}">
+    <div class="dash-two"><div><label for="jf-client">Client</label><input id="jf-client" maxlength="80" value="${esc(j.client || '')}" required></div>
+      <div><label for="jf-contact">Contact</label><input id="jf-contact" maxlength="120" value="${esc(j.contact || '')}"></div></div>
+    <div class="dash-two"><div><label for="jf-service">Service</label><input id="jf-service" maxlength="60" list="jf-services" value="${esc(j.service || '')}"><datalist id="jf-services">${(board.services || []).map(s => `<option value="${esc(s)}">`).join('')}</datalist></div>
+      <div><label for="jf-price">Price</label><input id="jf-price" maxlength="40" placeholder="$300" value="${esc(j.price || '')}"></div></div>
+    <div class="dash-two"><div><label for="jf-stage">Stage</label><select id="jf-stage">${Object.entries(STAGE).map(([k, v]) => `<option value="${k}"${(j.stage || 'quote') === k ? ' selected' : ''}>${v}</option>`).join('')}</select></div>
+      <div><label for="jf-due">Due</label><input id="jf-due" type="date" value="${esc(j.due || '')}"></div></div>
+    <label for="jf-notes">Notes</label><textarea id="jf-notes" rows="4" maxlength="3000">${esc(j.notes || '')}</textarea>
+    <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save job</button><button type="button" class="dash-btn" data-job-cancel>Cancel</button></div></form>`;
+  function drawJobs() {
+    const list = board.jobs.filter(j => (jbView === 'active' ? j.stage !== 'done' : j.stage === jbView));
+    const today = new Date().toISOString().slice(0, 10);
+    $('jb-body').innerHTML = (editingJob === 'new' ? jobForm() : '') + (list.length ? `<ul class="dash-list">${list.map(j => editingJob === j.id ? `<li class="dash-row">${jobForm(j)}</li>` : `
+      <li class="dash-row dash-job stage-${esc(j.stage)}"><div class="dash-row-main">
+        <b>${esc(j.client)}</b> <span class="dash-meta">${esc(j.service || '')}${j.price ? ` · ${esc(j.price)}` : ''}</span>
+        <p class="dash-req-meta">${esc(STAGE[j.stage])}${j.due ? ` · due ${esc(j.due)}${j.stage !== 'done' && j.due < today ? ' <span class="dash-late">overdue</span>' : ''}` : ''}${j.contact ? ` · ${esc(j.contact)}` : ''}</p>
+        ${j.notes ? `<p class="dash-note-text">${esc(j.notes)}</p>` : ''}</div>
+        <div class="dash-row-actions">
+          <label class="sr-only" for="js-${j.id}">Stage</label><select id="js-${j.id}" data-job-stage="${j.id}">${Object.entries(STAGE).map(([k, v]) => `<option value="${k}"${j.stage === k ? ' selected' : ''}>${v}</option>`).join('')}</select>
+          <button type="button" class="dash-btn dash-small" data-job-edit="${j.id}">Edit</button>
+          <button type="button" class="dash-btn dash-small dash-danger" data-job-del="${j.id}">Delete</button>
+        </div></li>`).join('')}</ul>` : `<p class="dash-note">${jbView === 'active' ? 'No active jobs.' : 'Nothing here.'}</p>`);
+  }
+  const drawBoard = d => { if (d && d.requests) board = d; drawRequests(); drawJobs(); };
+  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); };
+  const clientAct = async body => { const { status, data } = await api('clients', body); if (status !== 200) return flash($('jb-msg'), data.error || 'Couldn\u2019t save.'); drawBoard(data); return data; };
+  $('rq-refresh').addEventListener('click', loaders.clients);
+  document.querySelectorAll('#rq-filter [data-rq]').forEach(b => b.addEventListener('click', () => { rqView = b.dataset.rq; document.querySelectorAll('#rq-filter [data-rq]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRequests(); }));
+  document.querySelectorAll('#jb-filter [data-jb]').forEach(b => b.addEventListener('click', () => { jbView = b.dataset.jb; document.querySelectorAll('#jb-filter [data-jb]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawJobs(); }));
+  $('rq-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-rq-act]'); if (!b) return;
+    const id = Number(b.dataset.id), a = b.dataset.rqAct;
+    if (a === 'delete' && !confirm('Delete this request for good?')) return;
+    const body = { replied: { action: 'reqStatus', status: 'replied' }, archive: { action: 'reqStatus', status: 'archived' }, keep: { action: 'reqKeep', keep: true }, unkeep: { action: 'reqKeep', keep: false }, delete: { action: 'reqDelete' }, job: { action: 'toJob' } }[a];
+    const d = await clientAct({ ...body, id });
+    if (d && a === 'job') { flash($('jb-msg'), 'Added to your jobs as a Quote.'); $('jb-h').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+  $('jb-new').addEventListener('click', () => { editingJob = 'new'; drawJobs(); $('jf-client').focus(); });
+  $('jb-body').addEventListener('click', async e => {
+    if (e.target.closest('[data-job-cancel]')) { editingJob = null; return drawJobs(); }
+    const ed = e.target.closest('[data-job-edit]'); if (ed) { editingJob = Number(ed.dataset.jobEdit); drawJobs(); return $('jf-client').focus(); }
+    const del = e.target.closest('[data-job-del]'); if (del && confirm('Delete this job?')) await clientAct({ action: 'jobDelete', id: Number(del.dataset.jobDel) });
+  });
+  $('jb-body').addEventListener('change', async e => {
+    const s = e.target.closest('[data-job-stage]'); if (!s) return;
+    await clientAct({ action: 'jobStage', id: Number(s.dataset.jobStage), stage: s.value }); flash($('jb-msg'), `Moved to ${STAGE[s.value]}.`);
+  });
+  $('jb-body').addEventListener('submit', async e => {
+    const f = e.target.closest('[data-job-form]'); if (!f) return; e.preventDefault();
+    const d = await clientAct({ action: 'jobSave', id: Number(f.dataset.jobForm) || 0, client: $('jf-client').value, contact: $('jf-contact').value, service: $('jf-service').value, price: $('jf-price').value, stage: $('jf-stage').value, due: $('jf-due').value, notes: $('jf-notes').value });
+    if (d) { editingJob = null; drawJobs(); flash($('jb-msg'), 'Saved.'); }
+  });
+
   // ---------- Private notes ----------
   const CAT = { stream: 'Stream idea', bounty: 'Bounty idea', quote: 'Future quote', other: 'Other' };
   let notes = [], noteFilter = 'all', editing = null;
@@ -739,7 +819,7 @@
   // ---------- Phone alerts (Web Push) ----------
   const alertKinds = () => [...document.querySelectorAll('#al-kinds input:checked')].map(i => i.value);
   const deviceName = () => { const u = navigator.userAgent; return /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? 'Android phone' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows PC' : 'Device'; };
-  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins', recap: 'Weekly recap', health: 'Site health' };
+  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins', recap: 'Weekly recap', health: 'Site health', quote: 'Quote requests' };
   const toKey = s => { const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4)); return Uint8Array.from(b, c => c.charCodeAt(0)); };
   let pushKey = '', mySub = null;
   const pushOk = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;

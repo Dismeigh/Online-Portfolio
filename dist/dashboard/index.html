@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=93">
+  <link rel="stylesheet" href="/styles.css?v=95">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -72,6 +72,7 @@
         <button type="button" data-tab="content">Content</button>
         <button type="button" data-tab="guestbook">Ship&rsquo;s Log</button>
         <button type="button" data-tab="arcade">Arcade</button>
+        <button type="button" data-tab="clients">Clients <span class="dash-count" id="cl-new" hidden></span></button>
         <button type="button" data-tab="notes">Notes</button>
         <button type="button" data-tab="alerts">Alerts</button>
         <button type="button" data-tab="site">Site</button>
@@ -196,6 +197,7 @@
             <button type="button" data-content="verdicts">Verdicts</button>
             <button type="button" data-content="crew">Crew</button>
             <button type="button" data-content="pricing">Rates</button>
+            <button type="button" data-content="faq">Work FAQ</button>
           </div>
           <p class="dash-note" id="content-note"></p>
           <div id="content-body"></div>
@@ -290,6 +292,25 @@
         </section>
       </div>
 
+      <div data-panel="clients" hidden>
+        <section class="dash-card" aria-labelledby="rq-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">From the Work page form</p><h2 id="rq-h">Quote requests</h2></div><button type="button" class="dash-btn dash-small" id="rq-refresh">Refresh</button></div>
+          <div class="dash-sub" id="rq-filter" role="group" aria-label="Show">
+            <button type="button" data-rq="open" aria-pressed="true">New &amp; replied</button><button type="button" data-rq="archived" aria-pressed="false">Archived</button>
+          </div>
+          <div id="rq-body"></div>
+          <p class="dash-hint">Requests delete themselves 90 days after they come in, unless you keep them or make them a job.</p>
+        </section>
+        <section class="dash-card" aria-labelledby="jb-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Your client board</p><h2 id="jb-h">Jobs</h2></div><button type="button" class="dash-btn dash-small dash-primary" id="jb-new">+ New job</button></div>
+          <div class="dash-sub" id="jb-filter" role="group" aria-label="Show">
+            <button type="button" data-jb="active" aria-pressed="true">Active</button><button type="button" data-jb="quote" aria-pressed="false">Quote</button><button type="button" data-jb="booked" aria-pressed="false">Booked</button><button type="button" data-jb="deposit" aria-pressed="false">Deposit paid</button><button type="button" data-jb="progress" aria-pressed="false">In progress</button><button type="button" data-jb="done" aria-pressed="false">Done</button>
+          </div>
+          <div id="jb-body"></div>
+          <p class="dash-msg" id="jb-msg" role="status"></p>
+        </section>
+      </div>
+
       <div data-panel="notes" hidden>
         <section class="dash-card dash-card-notes" aria-labelledby="notes-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Only you can see these</p><h2 id="notes-h">Notes</h2></div></div>
@@ -326,6 +347,7 @@
             <label><input type="checkbox" value="goal" checked> <span>Goal milestones <small>(25, 50, 75, 100%)</small></span></label>
             <label><input type="checkbox" value="login" checked> <span>Failed dashboard logins <small>(at most every 10 min)</small></span></label>
             <label><input type="checkbox" value="health" checked> <span>Something on the site breaks <small>(YouTube feed, stream calendar, Twitch check)</small></span></label>
+            <label><input type="checkbox" value="quote" checked> <span>New quote requests <small>(from the Work page form)</small></span></label>
             <label><input type="checkbox" value="recap" checked> <span>Weekly recap <small>(Monday mornings: views, visitors, log signs, tips, arcade plays)</small></span></label>
           </fieldset>
           <div class="dash-actions">
@@ -444,7 +466,7 @@
         </section>
         <section class="dash-card dash-card-backup" aria-labelledby="bk-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Just in case</p><h2 id="bk-h">Backup and restore</h2></div></div>
-          <p class="dash-note">One file with everything you&rsquo;ve typed in here: content, site settings, Ko-fi goals, arcade targets, notes and Ship&rsquo;s Log entries. No passwords, login codes or visitor info.</p>
+          <p class="dash-note">One file with everything you&rsquo;ve typed in here: content, site settings, Ko-fi goals, arcade targets, notes, client jobs and Ship&rsquo;s Log entries. No passwords, login codes or visitor info.</p>
           <div class="dash-actions"><a class="dash-btn dash-primary" id="bk-download" href="/api/admin/backup" download>Download backup</a></div>
           <form id="bk-form">
             <label for="bk-file">Restore from a backup file</label>
@@ -457,6 +479,7 @@
               <label><input type="checkbox" value="arcade" checked> <span>Arcade targets</span></label>
               <label><input type="checkbox" value="notes" checked> <span>Notes</span></label>
               <label><input type="checkbox" value="guestbook" checked> <span>Ship&rsquo;s Log <small>(only adds missing entries)</small></span></label>
+              <label><input type="checkbox" value="jobs" checked> <span>Client jobs <small>(only adds missing jobs)</small></span></label>
             </fieldset>
             <div class="dash-actions"><button type="submit" class="dash-btn dash-danger">Restore</button><button type="button" class="dash-btn" id="bk-before">Download pre-restore copy</button></div>
             <p class="dash-msg" id="bk-msg" role="status"></p>
@@ -491,6 +514,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=27" defer></script>
+  <script src="/dashboard.js?v=28" defer></script>
 </body>
 </html>
