@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice | Denizen Technologies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#14110f">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=98">
+</head>
+<body class="client-page invoice-page">
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <main class="client-wrap">
+    <article class="invoice" id="inv" aria-live="polite">
+      <header class="inv-head">
+        <div><p class="inv-brand">Denizen Technologies</p><p class="inv-from">Dismeigh &middot; denizen.dismeigh@gmail.com &middot; denizen-dismeigh.com</p></div>
+        <div class="inv-meta"><p class="inv-word">Invoice</p><p id="inv-num"></p><p id="inv-date"></p></div>
+      </header>
+      <p class="inv-loading" id="inv-loading">Loading&hellip;</p>
+      <div id="inv-body" hidden>
+        <p class="inv-to"><span>Bill to</span><b id="inv-client"></b><span id="inv-service"></span></p>
+        <table class="inv-table"><thead><tr><th scope="col">Description</th><th scope="col" class="num">Amount</th></tr></thead><tbody id="inv-items"></tbody>
+          <tfoot><tr><th scope="row">Total</th><td class="num" id="inv-total"></td></tr><tr id="inv-dep-row" hidden><th scope="row" id="inv-dep-label"></th><td class="num" id="inv-dep"></td></tr></tfoot></table>
+        <p class="inv-stamp" id="inv-stamp" hidden></p>
+        <p class="inv-terms" id="inv-terms" hidden></p>
+        <p class="inv-actions"><a class="social-btn inv-pay" id="inv-pay" target="_blank" rel="noopener noreferrer" hidden></a><button type="button" class="social-btn" id="inv-print">Print or save as PDF</button></p>
+      </div>
+    </article>
+    <p class="client-foot">This invoice is private: only people with this link can see it.</p>
+  </main>
+  <script>
+  (() => {
+    const $ = id => document.getElementById(id);
+    const usd = c => (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    const code = new URLSearchParams(location.search).get('i') || '';
+    history.replaceState(null, '', location.pathname + '?i=' + encodeURIComponent(code));
+    $('inv-print').addEventListener('click', () => print());
+    fetch('/api/job?i=' + encodeURIComponent(code), { cache: 'no-store' }).then(r => r.json()).then(d => {
+      if (d.error) { $('inv-loading').textContent = d.error; return; }
+      $('inv-num').textContent = `No. ${d.number}`;
+      $('inv-date').textContent = new Date(d.issued + 'T12:00:00').toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+      $('inv-client').textContent = d.client; $('inv-service').textContent = d.service || '';
+      const rows = $('inv-items');
+      for (const i of d.items) { const tr = document.createElement('tr'); const a = document.createElement('td'); a.textContent = i.desc; const b = document.createElement('td'); b.className = 'num'; b.textContent = usd(i.cents); tr.append(a, b); rows.append(tr); }
+      const total = d.items.reduce((s, i) => s + i.cents, 0);
+      $('inv-total').textContent = usd(total);
+      if (d.deposit && d.status === 'unpaid') { $('inv-dep-label').textContent = `Deposit due now (${d.deposit}%)`; $('inv-dep').textContent = usd(Math.round(total * d.deposit / 100)); $('inv-dep-row').hidden = false; }
+      if (d.status === 'deposit') { $('inv-dep-label').textContent = 'Balance due'; $('inv-dep').textContent = usd(total - Math.round(total * d.deposit / 100)); $('inv-dep-row').hidden = false; }
+      if (d.status === 'paid' || d.status === 'deposit') { $('inv-stamp').textContent = d.status === 'paid' ? 'Paid in full' : 'Deposit received'; $('inv-stamp').className = `inv-stamp is-${d.status}`; $('inv-stamp').hidden = false; }
+      if (d.terms) { $('inv-terms').textContent = d.terms; $('inv-terms').hidden = false; }
+      if (d.payLink && d.status !== 'paid') { $('inv-pay').href = d.payLink; $('inv-pay').textContent = d.payLabel || 'Pay now'; $('inv-pay').hidden = false; }
+      $('inv-loading').hidden = true; $('inv-body').hidden = false;
+    }).catch(() => { $('inv-loading').textContent = 'Couldn’t load. Check your connection and refresh.'; });
+  })();
+  </script>
+</body>
+</html>

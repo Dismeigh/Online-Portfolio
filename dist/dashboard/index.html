@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=97">
+  <link rel="stylesheet" href="/styles.css?v=98">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -309,6 +309,18 @@
           <div id="jb-body"></div>
           <p class="dash-msg" id="jb-msg" role="status"></p>
         </section>
+        <section class="dash-card" aria-labelledby="cal-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Due dates and streams</p><h2 id="cal-h">Calendar</h2></div>
+            <div class="dash-cal-nav"><button type="button" class="dash-btn dash-small" id="cal-prev" aria-label="Previous month">&larr;</button><b id="cal-month"></b><button type="button" class="dash-btn dash-small" id="cal-next" aria-label="Next month">&rarr;</button></div></div>
+          <div class="dash-cal" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
+          <p class="dash-hint"><span class="cal-key cal-job"></span> job due <span class="cal-key cal-stream"></span> stream (from your stream calendar, a few weeks ahead) &middot; Tap a day to see what&rsquo;s on it.</p>
+          <div id="cal-day" class="dash-cal-day" aria-live="polite"></div>
+        </section>
+        <section class="dash-card" aria-labelledby="inc-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Money in</p><h2 id="inc-h">Income</h2></div><button type="button" class="dash-btn dash-small" id="inc-csv">Download spreadsheet</button></div>
+          <div id="inc-body"><p class="dash-note">Loading&hellip;</p></div>
+          <p class="dash-hint">Ko-fi counts automatically (tips, memberships, shop and commissions). Client payments come from what you record on each job. Not tax advice: give the spreadsheet to whoever does your taxes.</p>
+        </section>
       </div>
 
       <div data-panel="notes" hidden>
@@ -514,6 +526,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=29" defer></script>
+  <script src="/dashboard.js?v=30" defer></script>
 </body>
 </html>

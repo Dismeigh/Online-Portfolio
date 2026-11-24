@@ -726,6 +726,47 @@
       <div><label for="jf-due">Due</label><input id="jf-due" type="date" value="${esc(j.due || '')}"></div></div>
     <label for="jf-notes">Notes</label><textarea id="jf-notes" rows="4" maxlength="3000">${esc(j.notes || '')}</textarea>
     <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save job</button><button type="button" class="dash-btn" data-job-cancel>Cancel</button></div></form>`;
+  const money = c => (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const paidFor = id => (board.payments || []).filter(p => p.job_id === id).reduce((s, p) => s + p.amount_cents, 0);
+  let openMore = null;
+  const invRow = (i = {}) => `<div class="dash-inv-row"><label class="sr-only">Line</label><input data-inv="desc" maxlength="120" placeholder="Discord server setup" value="${esc(i.desc || '')}"><label class="sr-only">Amount</label><input data-inv="amount" inputmode="decimal" placeholder="50" value="${i.cents ? (i.cents / 100).toFixed(2) : ''}"><button type="button" class="dash-btn dash-small dash-danger" data-inv-del>Remove</button></div>`;
+  function jobTools(j) {
+    const inv = j.invoice || {}, today = new Date().toISOString().slice(0, 10);
+    const pays = (board.payments || []).filter(p => p.job_id === j.id);
+    return `<div class="dash-tools">
+      <h4>Client status link</h4>
+      <p class="dash-hint">A private page where ${esc(j.client)} can see the stage, due date and your note. No price, contact info or private notes.</p>
+      <div class="dash-actions">${j.token ? `<button type="button" class="dash-btn dash-small dash-primary" data-tool="copy-status" data-id="${j.id}">Copy link</button><a class="dash-btn dash-small" href="/status/?s=${esc(j.token)}" target="_blank" rel="noopener noreferrer">View</a><button type="button" class="dash-btn dash-small dash-danger" data-tool="status-off" data-id="${j.id}">Turn off</button>`
+        : `<button type="button" class="dash-btn dash-small dash-primary" data-tool="status-on" data-id="${j.id}">Turn on client link</button>`}</div>
+      <label for="cn-${j.id}">Note for the client <span>(shows on their page)</span></label>
+      <textarea id="cn-${j.id}" rows="2" maxlength="600" placeholder="Homepage is done. Waiting on your photos for the gallery.">${esc(j.client_note || '')}</textarea>
+      <button type="button" class="dash-btn dash-small" data-tool="note" data-id="${j.id}">Save note</button>
+      <h4>Invoice</h4>
+      <div class="dash-inv" id="inv-${j.id}">${(inv.items?.length ? inv.items : [{}]).map(invRow).join('')}</div>
+      <button type="button" class="dash-btn dash-small" data-tool="inv-add" data-id="${j.id}">+ Add a line</button>
+      <div class="dash-two">
+        <div><label for="idp-${j.id}">Deposit %</label><input id="idp-${j.id}" type="number" min="0" max="100" inputmode="numeric" value="${inv.deposit ?? 50}"></div>
+        <div><label for="ist-${j.id}">Status</label><select id="ist-${j.id}">${[['unpaid', 'Unpaid'], ['deposit', 'Deposit paid'], ['paid', 'Paid in full']].map(([k, v]) => `<option value="${k}"${(inv.status || 'unpaid') === k ? ' selected' : ''}>${v}</option>`).join('')}</select></div>
+      </div>
+      <div class="dash-two">
+        <div><label for="ipl-${j.id}">Pay link <span>(Ko-fi, PayPal, Stripe&hellip;)</span></label><input id="ipl-${j.id}" type="url" placeholder="https://ko-fi.com/..." value="${esc(inv.payLink || '')}"></div>
+        <div><label for="ipb-${j.id}">Button text</label><input id="ipb-${j.id}" maxlength="40" placeholder="Pay on Ko-fi" value="${esc(inv.payLabel || '')}"></div>
+      </div>
+      <label for="itm-${j.id}">Terms <span>(optional)</span></label>
+      <textarea id="itm-${j.id}" rows="2" maxlength="600" placeholder="Half up front, the rest before launch.">${esc(inv.terms || '')}</textarea>
+      <div class="dash-actions"><button type="button" class="dash-btn dash-small dash-primary" data-tool="inv-save" data-id="${j.id}">Save invoice</button>
+        ${j.invoice ? (j.inv_token ? `<button type="button" class="dash-btn dash-small" data-tool="copy-inv" data-id="${j.id}">Copy invoice link</button><a class="dash-btn dash-small" href="/invoice/?i=${esc(j.inv_token)}" target="_blank" rel="noopener noreferrer">View</a><button type="button" class="dash-btn dash-small dash-danger" data-tool="inv-off" data-id="${j.id}">Turn off link</button>` : `<button type="button" class="dash-btn dash-small" data-tool="inv-on" data-id="${j.id}">Turn link back on</button>`) : ''}</div>
+      <h4>Payments received</h4>
+      ${pays.length ? `<ul class="dash-pays">${pays.map(p => `<li>${esc(p.day)} · <b>${esc(money(p.amount_cents))}</b> · ${esc(p.method)}${p.note ? ` · ${esc(p.note)}` : ''} <button type="button" class="dash-btn dash-small dash-danger" data-tool="pay-del" data-pid="${p.id}" data-id="${j.id}">Delete</button></li>`).join('')}</ul>` : '<p class="dash-hint">None recorded yet.</p>'}
+      <div class="dash-pay-form">
+        <div><label for="pa-${j.id}">Amount</label><input id="pa-${j.id}" inputmode="decimal" placeholder="150"></div>
+        <div><label for="pd-${j.id}">Date</label><input id="pd-${j.id}" type="date" value="${today}"></div>
+        <div><label for="pm-${j.id}">How</label><select id="pm-${j.id}">${(board.methods || []).map(m => `<option>${esc(m)}</option>`).join('')}</select></div>
+        <button type="button" class="dash-btn dash-small dash-primary" data-tool="pay-add" data-id="${j.id}">Record payment</button>
+      </div>
+      <p class="dash-hint">Ko-fi payments already count in Income automatically, so recording one here just ties it to this job.</p>
+    </div>`;
+  }
   function drawJobs() {
     const list = board.jobs.filter(j => (jbView === 'active' ? j.stage !== 'done' : j.stage === jbView));
     const today = new Date().toISOString().slice(0, 10);
@@ -733,15 +774,61 @@
       <li class="dash-row dash-job stage-${esc(j.stage)}"><div class="dash-row-main">
         <b>${esc(j.client)}</b> <span class="dash-meta">${esc(j.service || '')}${j.price ? ` · ${esc(j.price)}` : ''}</span>
         <p class="dash-req-meta">${esc(STAGE[j.stage])}${j.due ? ` · due ${esc(j.due)}${j.stage !== 'done' && j.due < today ? ' <span class="dash-late">overdue</span>' : ''}` : ''}${j.contact ? ` · ${esc(j.contact)}` : ''}</p>
-        ${j.notes ? `<p class="dash-note-text">${esc(j.notes)}</p>` : ''}</div>
+        ${j.notes ? `<p class="dash-note-text">${esc(j.notes)}</p>` : ''}
+        <p class="dash-job-tags">${j.token ? '<span>Client link on</span>' : ''}${j.invoice ? `<span>Invoice ${esc(j.invoice.number)} · ${esc({ unpaid: 'unpaid', deposit: 'deposit paid', paid: 'paid' }[j.invoice.status])}${j.inv_token ? '' : ' · link off'}</span>` : ''}${paidFor(j.id) ? `<span>Received ${esc(money(paidFor(j.id)))}</span>` : ''}</p>
+        <details class="dash-job-more" data-job-more="${j.id}"${openMore === j.id ? ' open' : ''}><summary>Client link, invoice &amp; payments</summary>${jobTools(j)}</details></div>
         <div class="dash-row-actions">
           <label class="sr-only" for="js-${j.id}">Stage</label><select id="js-${j.id}" data-job-stage="${j.id}">${Object.entries(STAGE).map(([k, v]) => `<option value="${k}"${j.stage === k ? ' selected' : ''}>${v}</option>`).join('')}</select>
           <button type="button" class="dash-btn dash-small" data-job-edit="${j.id}">Edit</button>
           <button type="button" class="dash-btn dash-small dash-danger" data-job-del="${j.id}">Delete</button>
         </div></li>`).join('')}</ul>` : `<p class="dash-note">${jbView === 'active' ? 'No active jobs.' : 'Nothing here.'}</p>`);
   }
-  const drawBoard = d => { if (d && d.requests) board = d; drawRequests(); drawJobs(); };
-  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); };
+  // Calendar: job due dates + upcoming streams
+  let calMonth = new Date(); calMonth.setDate(1); let streams = null, calPick = null;
+  const dkey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  async function drawCal() {
+    if (streams === null) { streams = []; try { const r = await fetch('/api/schedule'); const d = await r.json(); streams = (d.upcoming || []).map(s => ({ day: dkey(new Date(s.start)), title: s.title || 'Stream', time: new Date(s.start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) })); } catch {} }
+    const y = calMonth.getFullYear(), m = calMonth.getMonth(), first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate(), today = dkey(new Date());
+    $('cal-month').textContent = first.toLocaleDateString([], { month: 'long', year: 'numeric' });
+    const due = {}; board.jobs.filter(j => j.due && j.stage !== 'done').forEach(j => (due[j.due] ||= []).push(j));
+    const st = {}; streams.forEach(s => (st[s.day] ||= []).push(s));
+    let cells = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => `<span class="cal-h" aria-hidden="true">${d}</span>`).join('') + '<span></span>'.repeat(first.getDay());
+    for (let d = 1; d <= days; d++) {
+      const k = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, J = due[k] || [], S = st[k] || [];
+      cells += `<button type="button" class="cal-d${k === today ? ' is-today' : ''}${k === calPick ? ' is-pick' : ''}${J.length && k < today ? ' is-late' : ''}" data-day="${k}" aria-label="${d}${J.length ? `, ${J.length} job${J.length > 1 ? 's' : ''} due` : ''}${S.length ? `, ${S.length} stream${S.length > 1 ? 's' : ''}` : ''}">${d}<i>${J.length ? '<b class="cal-job"></b>' : ''}${S.length ? '<b class="cal-stream"></b>' : ''}</i></button>`;
+    }
+    $('cal-grid').innerHTML = cells;
+    const P = calPick && (due[calPick] || st[calPick]) ? calPick : null;
+    $('cal-day').innerHTML = P ? `<b>${esc(new Date(P + 'T12:00:00').toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }))}</b><ul>${(due[P] || []).map(j => `<li>Due: ${esc(j.client)} (${esc(j.service || 'job')}, ${esc(STAGE[j.stage])})</li>`).join('')}${(st[P] || []).map(s => `<li>Stream ${esc(s.time)}: ${esc(s.title)}</li>`).join('')}</ul>` : '';
+  }
+  $('cal-prev').addEventListener('click', () => { calMonth.setMonth(calMonth.getMonth() - 1); drawCal(); });
+  $('cal-next').addEventListener('click', () => { calMonth.setMonth(calMonth.getMonth() + 1); drawCal(); });
+  $('cal-grid').addEventListener('click', e => { const b = e.target.closest('[data-day]'); if (b) { calPick = b.dataset.day; drawCal(); } });
+
+  // Income
+  let incomeMonths = [];
+  async function loadIncome() {
+    const { data } = await api('clients?income=1'); incomeMonths = data.months || [];
+    const sum = k => incomeMonths.reduce((s, m) => s + m[k], 0);
+    const yr = String(new Date().getFullYear()), ytd = incomeMonths.filter(m => m.month.startsWith(yr)).reduce((s, m) => s + m.total, 0);
+    const name = k => new Date(k + '-15').toLocaleDateString([], { month: 'short', year: 'numeric' });
+    $('inc-body').innerHTML = incomeMonths.length ? `<p class="dash-inc-ytd">${yr} so far: <b>${esc(money(ytd))}</b></p>
+      <div class="dash-table-wrap"><table class="dash-table"><thead><tr><th scope="col">Month</th><th scope="col">Tips</th><th scope="col">Memberships</th><th scope="col">Ko-fi sales</th><th scope="col">Clients</th><th scope="col">Total</th></tr></thead>
+      <tbody>${incomeMonths.slice(0, 12).map(m => `<tr><th scope="row">${esc(name(m.month))}</th><td>${money(m.tips)}</td><td>${money(m.memberships)}</td><td>${money(m.kofiSales)}</td><td>${money(m.clients)}</td><td><b>${money(m.total)}</b></td></tr>`).join('')}</tbody></table></div>`
+      : '<p class="dash-note">Nothing yet. Ko-fi payments and payments you record on jobs show up here.</p>';
+  }
+  $('inc-csv').addEventListener('click', () => {
+    const q = v => `"${String(v).replace(/"/g, '""')}"`, rows = [['Month', 'Tips', 'Memberships', 'Ko-fi sales', 'Client payments', 'Total']];
+    incomeMonths.forEach(m => rows.push([m.month, ...['tips', 'memberships', 'kofiSales', 'clients', 'total'].map(k => (m[k] / 100).toFixed(2))]));
+    rows.push([], ['Client payments'], ['Date', 'Client', 'Amount', 'How', 'Note']);
+    (board.payments || []).forEach(p => rows.push([p.day, board.jobs.find(j => j.id === p.job_id)?.client || '', (p.amount_cents / 100).toFixed(2), p.method, p.note || '']));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([rows.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' }));
+    a.download = `dismeigh-income-${new Date().toISOString().slice(0, 10)}.csv`; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  });
+
+  const drawBoard = d => { if (d && d.requests) board = d; drawRequests(); drawJobs(); if ($('cal-grid')) drawCal(); };
+  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); };
   const clientAct = async body => { const { status, data } = await api('clients', body); if (status !== 200) return flash($('jb-msg'), data.error || 'Couldn\u2019t save.'); drawBoard(data); return data; };
   $('rq-refresh').addEventListener('click', loaders.clients);
   document.querySelectorAll('#rq-filter [data-rq]').forEach(b => b.addEventListener('click', () => { rqView = b.dataset.rq; document.querySelectorAll('#rq-filter [data-rq]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRequests(); }));
@@ -760,6 +847,35 @@
     const ed = e.target.closest('[data-job-edit]'); if (ed) { editingJob = Number(ed.dataset.jobEdit); drawJobs(); return $('jf-client').focus(); }
     const del = e.target.closest('[data-job-del]'); if (del && confirm('Delete this job?')) await clientAct({ action: 'jobDelete', id: Number(del.dataset.jobDel) });
   });
+  $('jb-body').addEventListener('toggle', e => { const d = e.target.closest?.('[data-job-more]'); if (d) openMore = d.open ? Number(d.dataset.jobMore) : (openMore === Number(d.dataset.jobMore) ? null : openMore); }, true);
+  $('jb-body').addEventListener('click', async e => {
+    const t = e.target.closest('[data-tool]'); if (!t) return;
+    const id = Number(t.dataset.id), job = board.jobs.find(j => j.id === id), act = t.dataset.tool;
+    const copy = async (url, what) => { try { await navigator.clipboard.writeText(url); flash($('jb-msg'), `${what} copied. Send it to ${job.client}.`); } catch { prompt('Copy this link:', url); } };
+    openMore = id;
+    if (act === 'copy-status') return copy(`${location.origin}/status/?s=${job.token}`, 'Client link');
+    if (act === 'copy-inv') return copy(`${location.origin}/invoice/?i=${job.inv_token}`, 'Invoice link');
+    if (act === 'inv-add') { $(`inv-${id}`).insertAdjacentHTML('beforeend', invRow()); return; }
+    if (act === 'status-off' && !confirm('Turn off this client link? The old link stops working.')) return;
+    if (act === 'inv-off' && !confirm('Turn off the invoice link? The old link stops working.')) return;
+    if (act === 'pay-del' && !confirm('Delete this payment?')) return;
+    const body = {
+      'status-on': { action: 'jobShare', on: true }, 'status-off': { action: 'jobShare', on: false },
+      note: { action: 'jobClientNote', note: $(`cn-${id}`)?.value },
+      'inv-off': { action: 'invoiceOff' }, 'inv-on': { action: 'invoiceNewLink' },
+      'inv-save': { action: 'invoiceSave', invoice: {
+        number: job.invoice?.number, issued: job.invoice?.issued, deposit: $(`idp-${id}`).value, status: $(`ist-${id}`).value,
+        payLink: $(`ipl-${id}`).value, payLabel: $(`ipb-${id}`).value, terms: $(`itm-${id}`).value,
+        items: [...$(`inv-${id}`).querySelectorAll('.dash-inv-row')].map(r => ({ desc: r.querySelector('[data-inv="desc"]').value, amount: r.querySelector('[data-inv="amount"]').value })) } },
+      'pay-add': { action: 'payAdd', job_id: id, amount: $(`pa-${id}`)?.value, day: $(`pd-${id}`)?.value, method: $(`pm-${id}`)?.value, note: '' },
+      'pay-del': { action: 'payDelete', id: Number(t.dataset.pid) },
+    }[act];
+    if (!body) return;
+    const d = await clientAct({ id, ...body });
+    if (d && (act === 'pay-add' || act === 'pay-del')) loadIncome();
+    if (d) flash($('jb-msg'), { 'status-on': 'Client link is on. Tap Copy link to send it.', note: 'Note saved. The client sees it on their page.', 'inv-save': 'Invoice saved.', 'pay-add': 'Payment recorded.' }[act] || 'Saved.');
+  });
+  $('jb-body').addEventListener('click', e => { if (e.target.closest('[data-inv-del]')) e.target.closest('.dash-inv-row').remove(); });
   $('jb-body').addEventListener('change', async e => {
     const s = e.target.closest('[data-job-stage]'); if (!s) return;
     await clientAct({ action: 'jobStage', id: Number(s.dataset.jobStage), stage: s.value }); flash($('jb-msg'), `Moved to ${STAGE[s.value]}.`);

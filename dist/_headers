@@ -59,3 +59,13 @@
 # Stream overlays for OBS: not for search engines
 /overlay/*
   X-Robots-Tag: noindex, nofollow
+
+# Private client pages (status and invoice links): never indexed, never leak the link
+/status/*
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store
+/invoice/*
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  Cache-Control: no-store

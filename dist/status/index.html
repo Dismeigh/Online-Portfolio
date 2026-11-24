@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project status | Denizen Technologies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=98">
+</head>
+<body class="client-page">
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <main class="client-wrap">
+    <p class="client-brand"><a href="/work/">Denizen Technologies</a></p>
+    <section class="client-card" id="card" aria-live="polite">
+      <p class="client-kicker">Project status</p>
+      <h1 class="client-title" id="title">Loading&hellip;</h1>
+      <p class="client-sub" id="sub"></p>
+      <ol class="client-steps" id="steps" hidden></ol>
+      <p class="client-due" id="due" hidden></p>
+      <div class="client-note" id="note" hidden></div>
+      <p class="client-updated" id="updated"></p>
+    </section>
+    <p class="client-foot">Questions? <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a>. This page is private: only people with this link can see it.</p>
+  </main>
+  <script>
+  (() => {
+    const $ = id => document.getElementById(id);
+    const STEPS = [['quote', 'Quote'], ['booked', 'Booked'], ['deposit', 'Deposit paid'], ['progress', 'In progress'], ['done', 'Done']];
+    const code = new URLSearchParams(location.search).get('s') || '';
+    history.replaceState(null, '', location.pathname + '?s=' + encodeURIComponent(code)); // keep only the code
+    fetch('/api/job?s=' + encodeURIComponent(code), { cache: 'no-store' }).then(r => r.json()).then(d => {
+      if (d.error) { $('title').textContent = 'Link not active'; $('sub').textContent = d.error; return; }
+      $('title').textContent = d.client;
+      $('sub').textContent = d.service || '';
+      const at = STEPS.findIndex(s => s[0] === d.stage);
+      $('steps').innerHTML = STEPS.map(([k, name], i) => `<li class="${i < at ? 'is-done' : i === at ? 'is-now' : ''}"><span>${name}</span></li>`).join('');
+      $('steps').hidden = false;
+      if (d.due) { $('due').textContent = `${d.stage === 'done' ? 'Finished' : 'Expected'}: ${new Date(d.due + 'T12:00:00').toLocaleDateString([], { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}`; $('due').hidden = false; }
+      if (d.note) { $('note').textContent = d.note; $('note').hidden = false; }
+      $('updated').textContent = `Last updated ${new Date(d.updated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`;
+    }).catch(() => { $('title').textContent = 'Couldn’t load'; $('sub').textContent = 'Check your connection and refresh.'; });
+  })();
+  </script>
+</body>
+</html>
