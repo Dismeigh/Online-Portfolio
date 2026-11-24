@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=99">
+  <link rel="stylesheet" href="/styles.css?v=100">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -40,8 +40,9 @@
         <label for="pw">Password</label>
         <input id="pw" type="password" autocomplete="current-password" required maxlength="200">
         <div id="code-wrap" hidden>
-          <label for="code">6-digit code from your authenticator app</label>
-          <input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]*" maxlength="7">
+          <label for="code" id="code-label">6-digit code from your authenticator app</label>
+          <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="9" autocapitalize="characters" spellcheck="false">
+          <button type="button" class="dash-linkbtn" id="use-backup">Lost your phone? Use a backup code</button>
         </div>
         <button type="submit" class="dash-btn dash-primary">Log in</button>
         <p class="dash-msg" id="login-msg" role="alert"></p>
@@ -512,6 +513,17 @@
       </div>
 
       <div data-panel="security" hidden>
+        <section class="dash-card" aria-labelledby="bc-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">If you lose your phone</p><h2 id="bc-h">Backup codes</h2></div></div>
+          <p class="dash-note" id="bc-info">Loading&hellip;</p>
+          <p class="dash-note">Each code works once, in place of the 6-digit code. Keep them somewhere safe that isn&rsquo;t your phone, like printed out or in a password manager. Using one pings your phone.</p>
+          <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="bc-make">Make new codes</button></div>
+          <div id="bc-show" hidden>
+            <p class="dash-msg">Save these now. They won&rsquo;t be shown again.</p>
+            <ol class="dash-codes" id="bc-list"></ol>
+            <div class="dash-actions"><button type="button" class="dash-btn" id="bc-copy">Copy</button><button type="button" class="dash-btn" id="bc-save">Download as a text file</button></div>
+          </div>
+        </section>
         <section class="dash-card dash-card-security" aria-labelledby="sec-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Security</p><h2 id="sec-h">Login history</h2></div><button type="button" class="dash-btn dash-small" data-refresh="security">Refresh</button></div>
           <p class="dash-note">Logins and failed tries from the last 90 days. If you see one that wasn&rsquo;t you, change DASHBOARD_PASSWORD in Cloudflare right away. That signs everyone out and resets two-step login.</p>
@@ -526,6 +538,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=30" defer></script>
+  <script src="/dashboard.js?v=31" defer></script>
 </body>
 </html>

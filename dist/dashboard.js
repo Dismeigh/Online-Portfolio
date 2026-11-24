@@ -88,6 +88,10 @@
     if (first) document.dispatchEvent(new Event('dash:in'));
   }
 
+  $('use-backup').addEventListener('click', () => {
+    const c = $('code'); c.value = ''; c.setAttribute('inputmode', 'text'); c.setAttribute('autocomplete', 'off');
+    $('code-label').textContent = 'Backup code (like ABCD-EF23)'; $('use-backup').hidden = true; c.focus();
+  });
   $('login-form').addEventListener('submit', async e => {
     e.preventDefault();
     $('login-msg').textContent = '';
@@ -927,6 +931,7 @@
 
   // ---------- Login history ----------
   loaders.security = async () => {
+    loadBackup();
     const { data } = await api('history');
     const bad = ev => /wrong|blocked/i.test(ev);
     $('sec-body').innerHTML = (data.history || []).length ? `<ul class="dash-list">${data.history.map(h => `
@@ -983,6 +988,21 @@
     if (mySub && b.dataset.unsub === mySub.endpoint) await mySub.unsubscribe().catch(() => {});
     loaders.alerts();
   });
+
+  // ---------- Backup codes ----------
+  let shownCodes = [];
+  const loadBackup = async () => {
+    const { data } = await api('backupcodes');
+    $('bc-info').textContent = data.made ? `${data.left} of 10 left, made ${when(data.made)}.${data.left <= 3 ? ' Running low: make a fresh set.' : ''}` : 'You don\u2019t have any yet. Make a set now, before you need them.';
+  };
+  $('bc-make').addEventListener('click', async () => {
+    if (!confirm('Make a new set of 10 backup codes? Any old ones stop working.')) return;
+    const { data } = await api('backupcodes', { action: 'make' }); shownCodes = data.codes || [];
+    $('bc-list').innerHTML = shownCodes.map(c => `<li><code>${esc(c)}</code></li>`).join(''); $('bc-show').hidden = false; loadBackup();
+  });
+  const codesText = () => `Dismeigh dashboard backup codes (made ${new Date().toLocaleDateString()})\nEach works once instead of the 6-digit code.\n\n${shownCodes.join('\n')}\n`;
+  $('bc-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(codesText()); flash($('bc-info'), 'Copied.'); } catch {} });
+  $('bc-save').addEventListener('click', () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([codesText()], { type: 'text/plain' })); a.download = 'dismeigh-backup-codes.txt'; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); });
 
   // ---------- Install as an app ----------
   let deferred = null;

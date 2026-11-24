@@ -3126,3 +3126,9 @@ html:has(.dash-body) { background: var(--ink); }
 .log-react button[aria-pressed="true"] { border-color: var(--mustard); background: rgba(227, 169, 47, 0.2); }
 .log-react button:disabled { opacity: 0.5; cursor: default; }
 .log-react button:not(:disabled):hover, .log-react button:focus-visible { border-color: var(--mustard); }
+
+/* Dashboard backup codes */
+.dash-linkbtn { margin: 0.4rem 0 0; padding: 0.3rem 0; border: 0; background: none; color: var(--mustard); font: inherit; font-size: 0.9rem; text-decoration: underline; cursor: pointer; }
+.dash-linkbtn[hidden] { display: none; }
+.dash-codes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem 1rem; margin: 0.6rem 0; padding-left: 1.4rem; }
+.dash-codes code { font-size: 1.1rem; letter-spacing: 0.08em; color: var(--paper); }

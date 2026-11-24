@@ -54,7 +54,7 @@ Maintenance mode (Site tab) swaps every public page for the "Ship's in the shop"
 
 Phone alerts (Alerts tab) use Web Push from `lib/push.js`: the site's push key is made on first use and stored encrypted with the dashboard password (changing the password means turning alerts on again). Alerts go out for Ship's Log entries, Ko-fi payments (amount only), goal milestones and failed logins (at most every 10 minutes). Alert text is end-to-end encrypted; only Apple/Google/Mozilla/Microsoft push addresses are accepted.
 
-Lost the phone? Change `DASHBOARD_PASSWORD`: that signs out every session and resets two-step login.
+Lost the phone? Use one of the backup codes (Logins tab → Backup codes; each works once in place of the 6-digit code). No codes left? Change `DASHBOARD_PASSWORD`: that signs out every session, resets two-step login and voids old backup codes.
 
 How it works: `lib/admin.js` (password + authenticator code, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
 (webhook, goal, progress), `functions/api/admin/*` (login, twostep, logout, goal), `dist/dashboard.js`, `dist/qr.js`, `functions/api/kofi.js`, `functions/api/goal.js`, `dist/goal.js`.
