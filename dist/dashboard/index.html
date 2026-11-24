@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=124">
+  <link rel="stylesheet" href="/styles.css?v=125">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -93,6 +93,12 @@
         <div class="dash-stat"><span class="dash-stat-k">Ko-fi</span><b id="st-kofi">Not connected</b></div>
       </section>
 
+        <section class="dash-card" aria-labelledby="fb-h2">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">From the footer of every page</p><h2 id="fb-h2">Site feedback</h2></div><button type="button" class="dash-btn dash-small" id="fbk-refresh">Refresh</button></div>
+          <p class="dash-msg" id="fbk-msg" role="status"></p>
+          <div id="fbk-body"></div>
+          <p class="dash-hint">Each note shows the page it came from, screen width and browser, to help you find the bug. Notes delete themselves after 120 days.</p>
+        </section>
         <section class="dash-card" aria-labelledby="lc-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">What people tap</p><h2 id="lc-h">Link taps</h2></div>
             <label class="sr-only" for="lc-days">Time range</label><select id="lc-days" class="dash-small-select"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select></div>
@@ -498,6 +504,7 @@
             <label><input type="checkbox" value="ask" checked> <span>New questions for the captain <small>(from the Ask page)</small></span></label>
             <label><input type="checkbox" value="collab" checked> <span>New collab requests <small>(from the press kit page)</small></span></label>
             <label><input type="checkbox" value="suggest" checked> <span>New quote and clip suggestions <small>(from viewers)</small></span></label>
+            <label><input type="checkbox" value="feedback" checked> <span>New site feedback <small>(bugs and ideas from the footer)</small></span></label>
             <label><input type="checkbox" value="recap" checked> <span>Weekly recap &amp; monthly report <small>(Monday mornings, and the 1st of each month)</small></span></label>
           </fieldset>
           <div class="dash-actions">
@@ -741,6 +748,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=45" defer></script>
+  <script src="/dashboard.js?v=46" defer></script>
 </body>
 </html>

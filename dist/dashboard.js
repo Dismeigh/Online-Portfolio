@@ -275,7 +275,7 @@
     actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
   }));
   loaders.overview = async () => {
-    loadToday(); loadClicks();
+    loadToday(); loadClicks(); loadFb();
     loadActs(); loadHealth(); loadReport(); api('clients').then(r => { if (r.status === 200) drawBoard(r.data); }).catch(() => {});
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
@@ -1282,6 +1282,25 @@
   const boothLink = () => { const on = [...document.querySelectorAll('#booth-clips input:checked')].map(x => x.value); $('booth-open').href = `/booth/?clips=${on.length ? on.join(',') : 'none'}`; try { localStorage.setItem('dm-booth-clips', on.join(',') || 'none'); } catch {} };
   try { const saved = localStorage.getItem('dm-booth-clips'); if (saved) document.querySelectorAll('#booth-clips input').forEach(x => { x.checked = saved !== 'none' && saved.split(',').includes(x.value); }); } catch {}
   $('booth-clips').addEventListener('change', boothLink); boothLink();
+  // Site feedback
+  let fbRows = [];
+  const FBT = { bug: 'Bug', idea: 'Idea', other: 'Other' };
+  function drawFb() {
+    $('fbk-body').innerHTML = fbRows.length ? `<ul class="dash-list">${fbRows.map(f => `
+      <li class="dash-row${f.done ? ' is-hidden' : ''}" data-focus="fb-${f.id}"><div class="dash-row-main"><b>${esc(FBT[f.type] || 'Other')}</b> <span class="dash-meta">${esc(when(f.at))}${f.done ? ' · done' : ''}</span>
+        <p class="dash-note-text">${esc(f.message)}</p>
+        <p class="dash-req-meta">${f.page ? `Page: <a href="${esc(f.page)}" target="_blank" rel="noopener">${esc(f.page)}</a> · ` : ''}${f.width ? `${f.width}px wide · ` : ''}${esc(f.browser || '')}${f.contact ? ` · Reply to: <b>${esc(f.contact)}</b>` : ''}</p></div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-fbk="${f.done ? 'undone' : 'done'}" data-id="${f.id}">${f.done ? 'Not done' : 'Done'}</button><button type="button" class="dash-btn dash-small dash-danger" data-fbk="delete" data-id="${f.id}">Delete</button></div></li>`).join('')}</ul>` : '<p class="dash-note">No feedback yet.</p>';
+  }
+  const loadFb = async () => { fbRows = (await api('feedback')).data.feedback || []; drawFb(); };
+  $('fbk-refresh').addEventListener('click', loadFb);
+  $('fbk-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-fbk]'); if (!b) return;
+    if (b.dataset.fbk === 'delete' && !confirm('Delete this note?')) return;
+    const { status, data } = await api('feedback', { action: b.dataset.fbk, id: Number(b.dataset.id) });
+    if (status !== 200) return flash($('fbk-msg'), data.error || 'Couldn’t save.');
+    fbRows = data.feedback || []; drawFb();
+  });
   // Link taps
   async function loadClicks() {
     const d = (await api(`clicks?days=${$('lc-days').value}`)).data, list = d.links || [], top = Math.max(1, ...list.map(x => x.n));
@@ -1292,7 +1311,7 @@
   async function loadToday() {
     $('td-date').textContent = new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     const get = p => api(p).then(r => r.data).catch(() => ({}));
-    const [sched, ckd, ask, cl, co] = await Promise.all([fetch('/api/schedule', { cache: 'no-store' }).then(r => r.json()).catch(() => ({})), get('checklist'), get('ask'), get('clients'), get('collab')]);
+    const [sched, ckd, ask, cl, co, fbk, sug] = await Promise.all([fetch('/api/schedule', { cache: 'no-store' }).then(r => r.json()).catch(() => ({})), get('checklist'), get('ask'), get('clients'), get('collab'), get('feedback'), get('suggest')]);
     const items = [], next = sched.next;
     const todayKey = todayET(), nextDay = next ? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date(next.start)) : '';
     if (next) items.push({ tab: 'streams', icon: next.live ? '🔴' : '📺', text: next.live ? `Live now: <b>${esc(next.title)}</b>` : `${nextDay === todayKey ? 'Streaming today' : 'Next stream'}: <b>${esc(next.title)}</b>, ${esc(etWhen(next.start))} ET` });
@@ -1301,6 +1320,8 @@
     const waiting = (ask.questions || []).filter(q => !q.answered_at).length; if (waiting) items.push({ tab: 'guestbook', icon: '❓', text: `<b>${waiting}</b> question${waiting === 1 ? '' : 's'} waiting for an answer` });
     const newReq = (cl.requests || []).filter(r => r.status === 'new').length; if (newReq) items.push({ tab: 'clients', icon: '📥', text: `<b>${newReq}</b> new quote request${newReq === 1 ? '' : 's'}` });
     const newCo = (co.collabs || []).filter(c => !c.replied).length; if (newCo) items.push({ tab: 'clients', icon: '🤝', text: `<b>${newCo}</b> collab request${newCo === 1 ? '' : 's'} to answer` });
+    const newFb = (fbk.feedback || []).filter(f => !f.done).length; if (newFb) items.push({ tab: 'overview', icon: '\ud83d\udee0\ufe0f', text: `<b>${newFb}</b> site feedback note${newFb === 1 ? '' : 's'} to read` });
+    const newSug = (sug.suggestions || []).length; if (newSug) items.push({ tab: 'content', icon: '\ud83d\udcac', text: `<b>${newSug}</b> quote or clip suggestion${newSug === 1 ? '' : 's'} waiting` });
     const dueSoon = (cl.jobs || []).filter(j => j.due && j.stage !== 'done' && j.due <= plusDays(todayKey, 3)).length; if (dueSoon) items.push({ tab: 'clients', icon: '⏰', text: `<b>${dueSoon}</b> job${dueSoon === 1 ? '' : 's'} due in the next 3 days` });
     if (items.length === 1 && next) items.push({ tab: '', icon: '✨', text: 'Nothing else needs you right now.' });
     $('td-list').innerHTML = items.map(i => `<li>${i.tab ? `<button type="button" data-td="${i.tab}">` : '<span>'}<span aria-hidden="true">${i.icon}</span> <span>${i.text}</span>${i.tab ? '</button>' : '</span>'}</li>`).join('');

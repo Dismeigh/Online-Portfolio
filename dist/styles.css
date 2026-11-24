@@ -3643,3 +3643,38 @@ html:has(.dash-body) { background: var(--ink); }
 .suggest-box button[type="submit"]:hover, .suggest-box button[type="submit"]:focus-visible { background: var(--red); color: var(--paper); }
 .suggest-box .suggest-msg { margin: 0.2rem 0 0; font-weight: 700; color: #9e3326; }
 .suggest-box .suggest-fine { margin: 0; font-size: 0.8rem; color: #4a3e35; }
+
+/* Cat sightings */
+.cat-peek { position: absolute; z-index: 40; padding: 0; background: none; border: 0; line-height: 0; cursor: pointer; transform: translateY(-100%); }
+.cat-peek svg { display: block; }
+.cat-peek:focus-visible { outline: 3px solid var(--mustard); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .cat-peek { animation: catPeek 0.6s cubic-bezier(.2, 1.4, .5, 1) both; }
+  .cat-peek.is-gone { animation: catDuck 0.4s ease-in forwards; }
+}
+.cat-peek.is-gone { opacity: 0; transition: opacity 0.4s; }
+@keyframes catPeek { from { transform: translateY(-30%); opacity: 0; } to { transform: translateY(-100%); opacity: 1; } }
+@keyframes catDuck { from { transform: translateY(-100%); } to { transform: translateY(-20%); opacity: 0; } }
+.cat-peek-tag { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 4px; padding: 2px 8px; white-space: nowrap; background: var(--mustard); color: var(--ink); font: 700 0.8rem var(--typed); line-height: 1.4; }
+
+/* Footer feedback box */
+.footer-feedback { margin-top: 0.6rem; }
+.footer-feedback button { min-height: 2.25rem; padding: 0; background: none; border: 0; color: var(--mustard); font: inherit; font-size: 0.85rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.fb-dialog { width: min(30rem, calc(100vw - 2rem)); padding: 0; border: 3px solid var(--ink); background: var(--paper); color: var(--ink); box-shadow: 8px 8px 0 var(--red); }
+.fb-dialog::backdrop { background: rgba(10, 8, 7, 0.7); }
+.fb-form { display: grid; gap: 0.35rem; padding: 1.1rem 1.2rem; }
+.fb-form h2 { margin: 0 0 0.3rem; font-family: var(--display); font-weight: 400; font-size: 1.8rem; text-transform: uppercase; color: var(--ink); }
+.fb-types { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; border: 0; }
+.fb-types legend { margin-bottom: 0.3rem; font-family: var(--typed); color: #4a3e35; }
+.fb-types label { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 2.5rem; padding: 0 0.8rem; border: 2px solid var(--ink); cursor: pointer; }
+.fb-types label:has(input:checked) { background: var(--mustard); }
+.fb-form > label { margin-top: 0.4rem; font-family: var(--typed); color: #4a3e35; }
+.fb-form > label span { font-size: 0.8rem; }
+.fb-form textarea, .fb-form input:not([type="radio"]) { width: 100%; min-height: 2.75rem; padding: 0.5rem 0.7rem; border: 3px solid var(--ink); border-radius: 0; background: #fffaf0; color: var(--ink); font: inherit; font-size: 1rem; }
+.fb-fine { margin: 0.3rem 0 0; font-size: 0.8rem; color: #4a3e35; }
+.fb-actions { display: flex; gap: 0.6rem; margin-top: 0.6rem; }
+.fb-send, .fb-close { min-height: 2.75rem; padding: 0 1.2rem; font-family: var(--display); font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border: 3px solid var(--ink); }
+.fb-send { background: var(--ink); color: var(--mustard); }
+.fb-close { background: transparent; color: var(--ink); }
+.fb-msg { margin: 0.2rem 0 0; font-weight: 700; color: #9e3326; }
+.fb-msg.is-ok { color: var(--ink); }

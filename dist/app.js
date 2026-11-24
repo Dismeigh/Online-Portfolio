@@ -27,7 +27,7 @@
   }
 
   // Secret achievements: hidden easter eggs, tracked in this browser
-  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer', spotted: 'Spotted in the wild', konami: 'Cheat code', nightowl: 'Night owl', arcade: 'Arcade master', lorebuff: 'Lore buff', tourgrad: 'Tour graduate', stowaway: 'Stowaway' };
+  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer', spotted: 'Spotted in the wild', konami: 'Cheat code', nightowl: 'Night owl', arcade: 'Arcade master', lorebuff: 'Lore buff', tourgrad: 'Tour graduate', stowaway: 'Stowaway', catspotter: 'Cat spotter' };
   const KEY = 'dismeigh-secrets';
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
@@ -58,7 +58,7 @@
   }
 
   // Reward for finding every secret: a downloadable "Certified Bounty Hunter" license wallpaper
-  const LICENSE = '/assets/wallpapers/certified-bounty-hunter-x9m2.jpg';
+  const LICENSE = '/assets/wallpapers/certified-bounty-hunter-k7w3.jpg';
   function showReward() {
     let dlg = document.getElementById('reward-dialog');
     if (!dlg) {
@@ -70,7 +70,7 @@
         <p class="reward-kicker">All secrets found</p>
         <h2 id="reward-title">Certified Bounty Hunter</h2>
         <p class="reward-text">You found every hidden thing on the ship. Here&rsquo;s your license, sized as a phone wallpaper.</p>
-        <img src="/assets/wallpapers/certified-bounty-hunter-x9m2-thumb.webp" width="360" height="780" alt="Bounty Hunter License wallpaper: Certified Bounty Hunter, 13 of 13 secrets, with Dismeigh's art and a Verified stamp">
+        <img src="/assets/wallpapers/certified-bounty-hunter-k7w3-thumb.webp" width="360" height="780" alt="Bounty Hunter License wallpaper: Certified Bounty Hunter, 14 of 14 secrets, with Dismeigh's art and a Verified stamp">
         <div class="reward-actions"><a class="reward-dl" href="${LICENSE}" download="dismeigh-bounty-hunter-license.jpg">Download license</a><button type="button" class="reward-close">Close</button></div>`;
       document.body.append(dlg);
       dlg.querySelector('.reward-close').addEventListener('click', () => dlg.close());
@@ -349,6 +349,45 @@
     if (!still) setInterval(() => { if (!document.hidden) tick(); }, 220);
     addEventListener('dismeigh:live', tick);
 
+    // Cat sightings: now and then the cat peeks out from behind something on the page. Catch it for a bonus treat;
+    // catch it 5 times for the "Cat spotter" secret.
+    const PEEK = ['..o.....o...', '..oo...oo...', '..ooooooo...', '.ooeoooeoo..', '.oooopoooo..', '..ooooooo...', 'oo.......oo.'];
+    const peekSvg = () => {
+      const hat = HATS[document.documentElement.dataset.season], top = hat ? hat.length - 1 : 0; let r = '';
+      PEEK.forEach((row, y) => [...row].forEach((c, x) => { if (COL[c]) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${COL[c]}"/>`; }));
+      if (hat) hat.forEach((row, y) => [...row].forEach((c, x) => { if (HC[c]) r += `<rect x="${3 + x}" y="${y - top}" width="1.02" height="1.02" fill="${HC[c]}"/>`; }));
+      return `<svg viewBox="0 ${-top} 12 ${PEEK.length + top}" width="48" height="${(PEEK.length + top) * 4}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+    };
+    function peekOut() {
+      if (live() || document.querySelector('.cat-peek')) return;
+      const vh = innerHeight, picks = [...document.querySelectorAll('main section, main article, .content-section > div, .clip-stage, .split-title, main h2, main img, .site-nav')]
+        .filter(el => { const r = el.getBoundingClientRect(); return r.width > 120 && r.top > vh * 0.18 && r.top < vh * 0.8 && getComputedStyle(el).visibility !== 'hidden'; });
+      if (!picks.length) return false;
+      const t = picks[Math.floor(Math.random() * picks.length)], r = t.getBoundingClientRect();
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'cat-peek'; b.innerHTML = peekSvg();
+      b.setAttribute('aria-label', 'The ship’s cat is peeking out! Tap to catch it.');
+      b.style.left = `${Math.round(scrollX + r.left + 16 + Math.random() * Math.max(0, r.width - 80))}px`;
+      b.style.top = `${Math.round(scrollY + r.top)}px`;
+      document.body.append(b);
+      const gone = setTimeout(() => { b.classList.add('is-gone'); setTimeout(() => b.remove(), 400); }, 7000);
+      b.addEventListener('click', async () => {
+        clearTimeout(gone); b.classList.add('is-caught'); window.dismeighBuzz?.([20, 30, 20]);
+        let n = 0; try { n = Number(localStorage.getItem('dm-cat-spots') || 0) + 1; localStorage.setItem('dm-cat-spots', String(n)); } catch {}
+        const tag = document.createElement('span'); tag.className = 'cat-peek-tag'; tag.textContent = n >= 5 ? 'Caught!' : `Caught! (${Math.min(n, 5)}/5)`; b.append(tag);
+        if (n >= 5) window.dismeighUnlock?.('catspotter');
+        try { const d = await (await fetch('/api/cat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"spot":true}' })).json(); if (d && d.food != null) { st = d; draw(); } } catch {}
+        setTimeout(() => { b.classList.add('is-gone'); setTimeout(() => b.remove(), 400); }, 1400);
+      }, { once: true });
+      return true;
+    }
+    // About 1 in 4 page views, sometime between 10 and 40 seconds in (only while the page is open and someone's looking)
+    if (Math.random() < 0.25 || new URLSearchParams(location.search).has('catpeek')) {
+      let tries = 0;
+      const wait = new URLSearchParams(location.search).has('catpeek') ? 1500 : 10000 + Math.random() * 30000;
+      const go = () => { if (document.hidden) return setTimeout(go, 3000); if (peekOut() === false && ++tries < 5) setTimeout(go, 5000); };
+      setTimeout(go, wait);
+    }
+
     // A treat from you, once a day (the server makes sure). Everything else that feeds it happens on the server.
     const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
     function treatedToday() { try { return localStorage.getItem('dm-cat-fed') === todayKey; } catch { return false; } }
@@ -366,6 +405,51 @@
       } catch { b.setAttribute('aria-disabled', 'false'); }
     }
     fetch('/api/cat').then(r => (r.ok ? r.json() : null)).then(d => { if (d && d.food != null) { st = d; tick(); } }).catch(() => {});
+  })();
+
+  // Site feedback box: a small link in every footer that sends a note to the dashboard
+  (() => {
+    const foot = document.querySelector('.footer');
+    if (!foot || /^\/(dashboard|overlay|booth)/.test(location.pathname)) return;
+    const p = document.createElement('p'); p.className = 'footer-feedback';
+    const open = document.createElement('button'); open.type = 'button'; open.textContent = 'Spot a bug or have an idea?';
+    p.append(open); foot.append(p);
+    let dlg = null, opened = 0;
+    const browser = () => { const u = navigator.userAgent; return /SamsungBrowser/.test(u) ? 'Samsung Internet' : /Edg\//.test(u) ? 'Edge' : /OPR\//.test(u) ? 'Opera' : /Firefox|FxiOS/.test(u) ? 'Firefox' : /Chrome|CriOS/.test(u) ? 'Chrome' : /Safari/.test(u) ? 'Safari' : 'Other'; };
+    open.addEventListener('click', () => {
+      if (!dlg) {
+        dlg = document.createElement('dialog'); dlg.className = 'fb-dialog'; dlg.setAttribute('aria-labelledby', 'fb-h');
+        dlg.innerHTML = `<form class="fb-form" novalidate>
+          <h2 id="fb-h">Tell Dismeigh</h2>
+          <fieldset class="fb-types"><legend>What is it?</legend>
+            <label><input type="radio" name="type" value="bug" checked> Something&rsquo;s broken</label>
+            <label><input type="radio" name="type" value="idea"> An idea</label>
+            <label><input type="radio" name="type" value="other"> Something else</label></fieldset>
+          <label for="fb-message">What happened, or what&rsquo;s the idea?</label><textarea id="fb-message" name="message" rows="4" maxlength="1000" required></textarea>
+          <label for="fb-contact">How to reach you <span>(optional, if you want a reply)</span></label><input id="fb-contact" name="contact" maxlength="100" placeholder="Email or Discord name">
+          <label class="log-trap" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+          <p class="fb-fine">To help fix bugs, this also sends which page you&rsquo;re on, your screen width and your browser name. Nothing else.</p>
+          <div class="fb-actions"><button type="submit" class="fb-send">Send</button><button type="button" class="fb-close">Close</button></div>
+          <p class="fb-msg" role="alert"></p></form>`;
+        document.body.append(dlg);
+        const form = dlg.querySelector('form'), msg = dlg.querySelector('.fb-msg');
+        dlg.querySelector('.fb-close').addEventListener('click', () => dlg.close());
+        dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+        form.addEventListener('submit', async e => {
+          e.preventDefault(); msg.textContent = ''; msg.classList.remove('is-ok'); const btn = form.querySelector('.fb-send'); btn.disabled = true;
+          const data = Object.fromEntries(new FormData(form));
+          Object.assign(data, { page: location.pathname, width: innerWidth, browser: browser(), elapsed: Date.now() - opened });
+          try {
+            const r = await fetch('/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok) { msg.textContent = d.error || 'Couldn’t send that. Try again.'; if (d.field) document.getElementById(d.field)?.focus(); }
+            else { msg.textContent = 'Sent. Thank you!'; msg.classList.add('is-ok'); form.reset(); setTimeout(() => dlg.open && dlg.close(), 1600); }
+          } catch { msg.textContent = 'Couldn’t send that. Check your connection.'; }
+          btn.disabled = false;
+        });
+      }
+      opened = Date.now(); dlg.querySelector('.fb-msg').textContent = ''; dlg.showModal(); dlg.querySelector('#fb-message').focus();
+    });
   })();
 
   // Link tap counts for the dashboard: only which kind of outside link (Twitch, Discord, Ko-fi...), nothing about who tapped
