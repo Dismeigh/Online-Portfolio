@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=76">
+  <link rel="stylesheet" href="/styles.css?v=77">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -323,6 +323,26 @@
             <p class="dash-msg" id="comm-msg" role="status"></p>
           </form>
         </section>
+        <section class="dash-card dash-card-backup" aria-labelledby="bk-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Just in case</p><h2 id="bk-h">Backup and restore</h2></div></div>
+          <p class="dash-note">One file with everything you&rsquo;ve typed in here: content, site settings, Ko-fi goals, arcade targets, notes and Ship&rsquo;s Log entries. No passwords, login codes or visitor info.</p>
+          <div class="dash-actions"><a class="dash-btn dash-primary" id="bk-download" href="/api/admin/backup" download>Download backup</a></div>
+          <form id="bk-form">
+            <label for="bk-file">Restore from a backup file</label>
+            <input id="bk-file" type="file" accept="application/json,.json">
+            <fieldset class="dash-checks" id="bk-only">
+              <legend>Restore these parts</legend>
+              <label><input type="checkbox" value="content" checked> <span>Content <small>(bounties, quotes, lore, crew&hellip;)</small></span></label>
+              <label><input type="checkbox" value="site" checked> <span>Site settings <small>(banner, look, right now, commissions)</small></span></label>
+              <label><input type="checkbox" value="goal" checked> <span>Ko-fi goal and past goals</span></label>
+              <label><input type="checkbox" value="arcade" checked> <span>Arcade targets</span></label>
+              <label><input type="checkbox" value="notes" checked> <span>Notes</span></label>
+              <label><input type="checkbox" value="guestbook" checked> <span>Ship&rsquo;s Log <small>(only adds missing entries)</small></span></label>
+            </fieldset>
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-danger">Restore</button><button type="button" class="dash-btn" id="bk-before">Download pre-restore copy</button></div>
+            <p class="dash-msg" id="bk-msg" role="status"></p>
+          </form>
+        </section>
         <section class="dash-card dash-card-look" aria-labelledby="look-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Holiday looks</p><h2 id="look-h">Site look</h2></div></div>
           <p class="dash-note">Normally the site picks its holiday look by date. Force one on, turn them off, or preview any of them.</p>
@@ -352,6 +372,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=13" defer></script>
+  <script src="/dashboard.js?v=14" defer></script>
 </body>
 </html>

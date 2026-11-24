@@ -2890,3 +2890,7 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-checks label { display: flex; gap: 0.6rem; align-items: center; margin: 0; font-weight: 600; color: var(--paper); min-height: 2rem; }
 .dash-checks label small { color: var(--paper-dim); font-weight: 400; font-size: 0.9em; }
 .dash-checks input { width: 1.2rem; height: 1.2rem; accent-color: var(--mustard); flex: 0 0 auto; }
+
+/* Dashboard backup */
+#bk-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--line); }
+#bk-file { padding: 0.6rem; width: 100%; color: var(--paper); }

@@ -442,6 +442,25 @@
     flash($('look-msg'), data.error || ($('l-mode').value === 'auto' ? 'Back to automatic.' : 'Saved. Visitors see it on their next page load.')); loaders.site();
   });
 
+  // ---------- Backup and restore ----------
+  const saveFile = (obj, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
+  $('bk-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = $('bk-file').files[0]; if (!f) return flash($('bk-msg'), 'Pick a backup file first.');
+    let backup; try { backup = JSON.parse(await f.text()); } catch { return flash($('bk-msg'), 'That file couldn\u2019t be read.'); }
+    if (backup?.app !== 'dismeigh-dashboard-backup') return flash($('bk-msg'), 'That isn\u2019t a dashboard backup file.');
+    const only = [...document.querySelectorAll('#bk-only input:checked')].map(i => i.value);
+    if (!only.length) return flash($('bk-msg'), 'Pick at least one part to restore.');
+    if (!confirm(`Restore from the backup made ${when(backup.at)}? The parts you picked get replaced (the Ship\u2019s Log only gets missing entries added).`)) return;
+    const { data } = await api('backup', { backup, only });
+    flash($('bk-msg'), data.error || `Restored: ${data.done.join(', ')}.`); $('bk-file').value = '';
+  });
+  $('bk-before').addEventListener('click', async () => {
+    const { status, data } = await api('backup', { action: 'before' });
+    if (status !== 200) return flash($('bk-msg'), data.error || 'Couldn\u2019t get it.');
+    saveFile(data, 'dismeigh-backup-before-restore.json');
+  });
+
   // ---------- Private notes ----------
   const CAT = { stream: 'Stream idea', bounty: 'Bounty idea', quote: 'Future quote', other: 'Other' };
   let notes = [], noteFilter = 'all', editing = null;
