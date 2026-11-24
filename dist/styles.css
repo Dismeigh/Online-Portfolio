@@ -3253,3 +3253,41 @@ html:has(.dash-body) { background: var(--ink); }
     to { clip-path: polygon(0 0, 112% 0, 100% 100%, -12% 100%); filter: none; }
   }
 }
+
+/* Wanted poster maker (wallpapers page) */
+.poster-section { margin-top: 3rem; }
+.poster-maker { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 2rem; align-items: start; margin-top: 1.4rem; }
+.poster-form { display: grid; gap: 0.45rem; }
+.poster-form label { font-family: var(--typed); color: var(--paper-dim); margin-top: 0.6rem; }
+.poster-form input[type="text"] { min-height: 2.75rem; padding: 0 0.8rem; background: var(--ink-2); color: var(--paper); border: 2px solid var(--line); font: inherit; font-size: 1rem; }
+.poster-form input[type="text"]:focus-visible { outline: 3px solid var(--mustard); outline-offset: 2px; }
+.poster-form input[type="file"] { color: var(--paper-dim); font: inherit; }
+.poster-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.poster-chips button { min-height: 2.25rem; padding: 0 0.8rem; background: transparent; color: var(--paper); border: 1px solid var(--line); border-radius: 999px; font: inherit; font-size: 0.85rem; cursor: pointer; }
+.poster-chips button:hover, .poster-chips button:focus-visible { border-color: var(--mustard); color: var(--mustard); }
+.poster-link { justify-self: start; min-height: 2.25rem; background: none; border: 0; color: var(--mustard); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+.poster-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1rem; }
+.poster-actions .wp-dl { background: transparent; color: var(--mustard); font-size: 1rem; cursor: pointer; }
+.poster-actions .wp-dl:hover, .poster-actions .wp-dl:focus-visible { background: var(--mustard); color: var(--ink); }
+.poster-canvas { width: 100%; height: auto; border: 4px solid var(--paper); box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5); }
+@media (max-width: 760px) { .poster-maker { grid-template-columns: 1fr; } .poster-canvas { max-width: 340px; justify-self: center; order: -1; } }
+
+/* Press kit */
+.press-h { margin: 2.4rem 0 0.6rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; text-transform: uppercase; color: var(--mustard); }
+.press-copy { max-width: 42rem; }
+.press-bio { display: flex; gap: 1rem; align-items: flex-start; max-width: 46rem; padding: 1rem 1.1rem; background: var(--ink-2); border-left: 4px solid var(--mustard); }
+.press-bio p { margin: 0; flex: 1; }
+.press-copy-btn { flex: none; min-height: 2.5rem; padding: 0 1rem; background: transparent; color: var(--mustard); border: 2px solid var(--mustard); font-family: var(--display); letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.press-copy-btn:hover, .press-copy-btn:focus-visible { background: var(--mustard); color: var(--ink); }
+.press-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.4rem; }
+.press-grid li { display: grid; gap: 0.7rem; justify-items: start; }
+.press-grid img { width: 100%; height: auto; border: 3px solid var(--paper); }
+.press-swatches { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1rem 1.6rem; }
+.press-swatches li { display: flex; align-items: center; gap: 0.6rem; }
+.press-swatches span { width: 2.2rem; height: 2.2rem; border: 2px solid var(--paper); }
+.press-font-anton { font-family: var(--display); font-size: 1.2em; }
+.press-font-typed { font-family: var(--typed); }
+.press-font-body { font-family: var(--body); font-weight: 800; }
+.press-links { columns: 2 14rem; padding-left: 1.2rem; }
+.press-links li { margin: 0.35rem 0; }
+@media (max-width: 560px) { .press-bio { flex-direction: column; } }
