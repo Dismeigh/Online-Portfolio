@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=65">
+  <link rel="stylesheet" href="/styles.css?v=66">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -72,7 +72,7 @@
         <button type="button" data-tab="content">Content</button>
         <button type="button" data-tab="guestbook">Ship&rsquo;s Log</button>
         <button type="button" data-tab="arcade">Arcade</button>
-        <button type="button" data-tab="site">Banner &amp; looks</button>
+        <button type="button" data-tab="site">Site</button>
         <button type="button" data-tab="security">Logins</button>
       </nav>
 
@@ -212,6 +212,19 @@
             <p class="dash-msg" id="banner-msg" role="status"></p>
           </form>
         </section>
+        <section class="dash-card dash-card-comm" aria-labelledby="comm-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Voice and Work pages</p><h2 id="comm-h">Commissions</h2></div></div>
+          <form id="comm-form">
+            <div class="dash-two">
+              <div><label for="cm-voice">Voice acting</label><select id="cm-voice"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-work">Websites &amp; Discord</label><select id="cm-work"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+            </div>
+            <label for="cm-note">Short note <span>(optional, shown with both)</span></label>
+            <input id="cm-note" maxlength="120" placeholder="Booking for January">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
+            <p class="dash-msg" id="comm-msg" role="status"></p>
+          </form>
+        </section>
         <section class="dash-card dash-card-look" aria-labelledby="look-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Holiday looks</p><h2 id="look-h">Site look</h2></div></div>
           <p class="dash-note">Normally the site picks its holiday look by date. Force one on, turn them off, or preview any of them.</p>
@@ -241,6 +254,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=4" defer></script>
+  <script src="/dashboard.js?v=5" defer></script>
 </body>
 </html>

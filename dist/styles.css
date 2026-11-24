@@ -2819,3 +2819,11 @@ html:has(.dash-body) { background: var(--ink); }
   .dash-two-col { grid-template-columns: 1fr; }
   .dash-chart { height: 7rem; gap: 2px; }
 }
+
+/* Commissions badge (Voice and Work pages, set from the dashboard) */
+.commission-badge { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.6rem; margin: 0.2rem 0 1rem; padding: 0.45rem 0.9rem; border: 2px solid; border-radius: 999px; font-size: 0.95rem; }
+.commission-badge b { font-family: var(--display); font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; }
+.commission-badge span:not(.commission-dot) { color: var(--paper-dim); }
+.commission-dot { width: 0.65rem; height: 0.65rem; border-radius: 50%; }
+.commission-badge.is-open { border-color: #6fbf73; color: var(--paper); } .is-open .commission-dot { background: #6fbf73; box-shadow: 0 0 8px #6fbf73; }
+.commission-badge.is-closed { border-color: #e2725b; color: var(--paper); } .is-closed .commission-dot { background: #e2725b; }

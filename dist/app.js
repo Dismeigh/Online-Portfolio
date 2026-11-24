@@ -761,6 +761,14 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       else { try { const old = JSON.parse(before || 'null'); if (old?.mode && root.dataset.season === old.mode) delete root.dataset.season; } catch {} }
       window.dismeighSeasonFx?.();
     }
+    // Commissions open/closed badge on the Voice and Work pages
+    document.querySelectorAll('[data-commissions]').forEach(el => {
+      const st = s.commissions?.[el.dataset.commissions];
+      if (st !== 'open' && st !== 'closed') { el.hidden = true; return; }
+      el.className = `commission-badge is-${st}`;
+      el.innerHTML = `<span class="commission-dot" aria-hidden="true"></span><b>Commissions ${st}</b>${s.commissions.note ? `<span>${esc(s.commissions.note)}</span>` : ''}`;
+      el.hidden = false;
+    });
     // Banner across the top of every page, until it ends or the visitor closes it
     const b = s.banner;
     let closed = null; try { closed = localStorage.getItem('dm-banner-closed'); } catch {}
