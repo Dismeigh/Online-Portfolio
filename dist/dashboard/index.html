@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=81">
+  <link rel="stylesheet" href="/styles.css?v=79">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -135,7 +135,10 @@
 
           <aside class="dash-preview" id="preview" aria-label="Preview">
             <p class="dash-card-kicker">Preview <span id="pv-dirty" hidden>&middot; unsaved changes</span></p>
-            <div id="pv-card" inert>
+            <div class="goal-card"><div class="goal-head"><span class="goal-label">Ko-fi goal</span><b id="pv-title">No goal yet</b></div>
+              <p class="goal-blurb" id="pv-blurb" hidden></p>
+              <div class="goal-bar" aria-hidden="true"><span id="pv-fill" style="width:0%"></span></div>
+              <div class="goal-foot"><span><b id="pv-raised">$0</b> of <span id="pv-target">$0</span> &middot; <span id="pv-pct">0</span>%</span></div>
             </div>
             <p class="dash-hint" id="pv-count"></p>
           </aside>
@@ -422,7 +425,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/goal.js?v=4" defer></script>
-  <script src="/dashboard.js?v=18" defer></script>
+  <script src="/dashboard.js?v=17" defer></script>
 </body>
 </html>
