@@ -51,7 +51,10 @@
       get.type = 'button'; get.className = 'footer-license'; get.textContent = 'Get your Bounty Hunter license';
       get.addEventListener('click', showReward);
       line.append(get);
-    } else line.textContent = `Secrets found: ${found.length} of ${total}`;
+    } else {
+      const a = document.createElement('a'); a.href = '/secrets/'; a.textContent = 'Need a hint?';
+      line.replaceChildren(`Secrets found: ${found.length} of ${total}. `, a);
+    }
   }
 
   // Reward for finding every secret: a downloadable "Certified Bounty Hunter" license wallpaper
@@ -107,6 +110,7 @@
       const send = sid => { const body = JSON.stringify({ id: sid }); if (!(navigator.sendBeacon && navigator.sendBeacon('/api/secret', new Blob([body], { type: 'application/json' })))) fetch('/api/secret', { method: 'POST', body, keepalive: true }).catch(() => {}); };
       send(id); if (count >= total) send('license');
     } catch {}
+    document.dispatchEvent(new CustomEvent('dismeigh:secret', { detail: id }));
     toast(SECRETS[id], count >= total ? `Secret ${count} of ${total}: all found!` : `Secret found: ${count} of ${total}`);
     if (count >= total) setTimeout(showReward, 2400);
     buzz(count >= total ? [40, 60, 40, 60, 120] : [30, 50, 60]);
@@ -468,6 +472,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     ['Wallpapers', '/wallpapers/', 'Page', 'Free phone wallpapers with Dismeigh\u2019s art.', 'wallpaper wallpapers lock screen background download free phone'],
     ['Wanted poster maker', '/wallpapers/#poster', 'Page', 'Make your own Bebop-style wanted poster.', 'wanted poster maker bounty profile picture pfp woolongs make generator'],
     ['Ask the Captain', '/ask/', 'Page', 'Send Dismeigh a question and read the answers.', 'ask question questions q&a qa answer captain faq'],
+    ['Secret hints', '/secrets/', 'Page', 'Clues for the hidden secrets around the site.', 'secret secrets hint hints achievements easter eggs clue clues license bounty hunter'],
     ['Ship map', '/map/', 'Page', 'A deck plan of the ship: every room is a page.', 'map ship deck plan rooms directory sitemap navigate'],
     ['Clip of the Month', '/#highlights', 'Page', 'Vote for your favorite home page clip.', 'clip of the month vote voting favorite clips'],
     ['Press kit', '/press/', 'Page', 'Bios, images, colors and links for events and collabs.', 'press kit media kit bio logo avatar colors fonts collab event feature contact'],
