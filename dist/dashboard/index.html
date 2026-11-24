@@ -383,7 +383,7 @@
             <label><input type="checkbox" value="log" checked> <span>New Ship&rsquo;s Log entries</span></label>
             <label><input type="checkbox" value="kofi" checked> <span>Ko-fi tips and payments <small>(amount only)</small></span></label>
             <label><input type="checkbox" value="goal" checked> <span>Goal milestones <small>(25, 50, 75, 100%)</small></span></label>
-            <label><input type="checkbox" value="login" checked> <span>Failed dashboard logins <small>(at most every 10 min)</small></span></label>
+            <label><input type="checkbox" value="login" checked> <span>Dashboard logins <small>(failed tries at most every 10 min, plus any new device)</small></span></label>
             <label><input type="checkbox" value="health" checked> <span>Something on the site breaks <small>(YouTube feed, stream calendar, Twitch check)</small></span></label>
             <label><input type="checkbox" value="quote" checked> <span>New quote requests <small>(from the Work page form)</small></span></label>
             <label><input type="checkbox" value="recap" checked> <span>Weekly recap &amp; monthly report <small>(Monday mornings, and the 1st of each month)</small></span></label>
@@ -568,6 +568,12 @@
       </div>
 
       <div data-panel="security" hidden>
+        <section class="dash-card" aria-labelledby="dv-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Phones and computers that have logged in</p><h2 id="dv-h">Your devices</h2></div><button type="button" class="dash-btn dash-small dash-danger" id="dv-out">Sign out everywhere</button></div>
+          <p class="dash-note">A login from a device that isn&rsquo;t on this list pings your phone (Alerts tab, failed logins switch). Sign out everywhere logs out every other device at once; you stay in here.</p>
+          <p class="dash-msg" id="dv-msg" role="status"></p>
+          <div id="dv-body"></div>
+        </section>
         <section class="dash-card" aria-labelledby="bc-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">If you lose your phone</p><h2 id="bc-h">Backup codes</h2></div></div>
           <p class="dash-note" id="bc-info">Loading&hellip;</p>
@@ -593,6 +599,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=34" defer></script>
+  <script src="/dashboard.js?v=35" defer></script>
 </body>
 </html>

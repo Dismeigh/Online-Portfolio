@@ -8,6 +8,8 @@
     const data = await r.json().catch(() => ({}));
     return { status: r.status, data };
   };
+  // A random ID for this browser, so the dashboard can tell a new device from one it has seen before
+  const deviceId = () => { try { let v = localStorage.getItem('dm-dash-device'); if (!v) { v = [...crypto.getRandomValues(new Uint8Array(18))].map(b => b.toString(16).padStart(2, '0')).join(''); localStorage.setItem('dm-dash-device', v); } return v; } catch { return ''; } };
   const show = which => { for (const id of ['login', 'setup', 'panel']) $(id).hidden = which !== id; $('hero-bar').hidden = which !== 'panel'; };
   const money = v => Math.max(0, Number(String(v ?? '').replace(/[$,\s]/g, '')) || 0);
 
@@ -95,7 +97,7 @@
   $('login-form').addEventListener('submit', async e => {
     e.preventDefault();
     $('login-msg').textContent = '';
-    const { status, data } = await api('login', { password: $('pw').value, code: $('code').value });
+    const { status, data } = await api('login', { password: $('pw').value, code: $('code').value, device: deviceId() });
     if (data.setup) {
       $('pw').value = '';
       $('setup-key').textContent = data.secret.replace(/(.{4})/g, '$1 ').trim();
@@ -114,7 +116,7 @@
   });
   $('setup-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const { status, data } = await api('twostep', { code: $('setup-code').value });
+    const { status, data } = await api('twostep', { code: $('setup-code').value, device: deviceId() });
     if (status === 200) { $('setup-code').value = ''; $('qr').innerHTML = ''; $('setup-key').textContent = ''; return load(); }
     $('setup-msg').textContent = data.error || 'Couldn\u2019t turn it on.';
     if (status === 401 && /timed out/i.test(data.error || '')) setTimeout(() => show('login'), 2500);
@@ -1042,7 +1044,7 @@
 
   // ---------- Login history ----------
   loaders.security = async () => {
-    loadBackup();
+    loadBackup(); loadDevices();
     const { data } = await api('history');
     const bad = ev => /wrong|blocked/i.test(ev);
     $('sec-body').innerHTML = (data.history || []).length ? `<ul class="dash-list">${data.history.map(h => `
@@ -1106,6 +1108,19 @@
     document.querySelectorAll('.dash-help-item').forEach(d => { const hit = !q || d.textContent.toLowerCase().includes(q); d.hidden = !hit; d.open = !!q && hit; if (hit) shown++; });
     document.querySelectorAll('.dash-help h3').forEach(h => { let n = h.nextElementSibling, any = false; while (n && n.matches('.dash-help-item')) { if (!n.hidden) any = true; n = n.nextElementSibling; } h.hidden = !any; });
     $('help-none').hidden = shown > 0;
+  });
+
+  // ---------- Known devices + sign out everywhere ----------
+  async function loadDevices() {
+    const { data } = await api('devices'); const list = data.devices || [];
+    $('dv-body').innerHTML = list.length ? `<ul class="dash-list">${list.map(d => `<li class="dash-row"><div class="dash-row-main"><b>${esc(d.label)}</b> <span class="dash-meta">${esc(d.place)}</span><p class="dash-req-meta">First seen ${esc(when(d.first))} · last login ${esc(when(d.last))}</p></div>
+      <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-dv="${esc(d.h)}">Forget</button></div></li>`).join('')}</ul>` : '<p class="dash-note">No devices remembered yet. They\u2019re added the next time you log in.</p>';
+  }
+  $('dv-body').addEventListener('click', async e => { const b = e.target.closest('[data-dv]'); if (!b || !confirm('Forget this device? Its next login will count as new and ping your phone.')) return; await api('devices', { action: 'forget', h: b.dataset.dv }); loadDevices(); });
+  $('dv-out').addEventListener('click', async () => {
+    if (!confirm('Sign out everywhere? Every other phone and computer gets logged out right away. You stay logged in here.')) return;
+    const { status } = await api('devices', { action: 'signout' });
+    flash($('dv-msg'), status === 200 ? 'Done. Everywhere else is signed out.' : 'That didn\u2019t work. Try again.');
   });
 
   // ---------- Backup codes ----------

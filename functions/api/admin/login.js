@@ -12,6 +12,10 @@ export async function onRequestPost({ request, env, waitUntil }) {
     }
     if (res.status === 200) {
       const d = await res.clone().json().catch(() => ({}));
+      if (d.newDevice && !d.usedBackup) {
+        const job = alert(env, 'login', { title: 'New device logged in', body: `${d.deviceLabel} in ${d.devicePlace} just logged in to your dashboard. If that wasn\u2019t you, tap Sign out everywhere in the Logins tab and change DASHBOARD_PASSWORD.`, tab: 'security' });
+        if (waitUntil) waitUntil(job); else await job;
+      }
       if (d.usedBackup) {
         const job = alert(env, 'login', { title: 'Backup code used', body: `Someone logged in to the dashboard with a backup code. ${d.backupLeft} left. If that wasn\u2019t you, change DASHBOARD_PASSWORD now.`, tab: 'security' });
         if (waitUntil) waitUntil(job); else await job;
