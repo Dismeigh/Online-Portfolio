@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=119">
+  <link rel="stylesheet" href="/styles.css?v=120">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Ship's Log", "item": "https://www.denizen-dismeigh.com/log/"}]}</script>
 </head>
@@ -160,6 +160,7 @@
         <h1 class="split-title">Ship&rsquo;s Log</h1>
         <p class="log-lede">Swing by, leave a note, and let the crew know you were here.</p>
 
+        <p class="log-bday" id="log-bday" hidden><span aria-hidden="true">&#127874;</span> It&rsquo;s Dismeigh&rsquo;s birthday! Every entry signed today is kept forever on the <a href="/birthday/">Birthday Wall</a>.</p>
         <form class="log-form" id="log-form" novalidate>
           <div class="log-fields">
             <label class="log-field"><span>Your name</span>
@@ -180,6 +181,7 @@
 
         <ol class="log-list" id="log-list" aria-live="polite"></ol>
         <p class="log-empty" id="log-empty">Loading the log&hellip;</p>
+        <p class="log-bday-link"><a href="/birthday/">Birthday Wall</a>: wishes from every April 12, kept forever.</p>
       </section>
     </main>
 
@@ -206,7 +208,8 @@
 
   }
   </script>
-  <script src="/log.js?v=5" defer></script>
-  <script src="/app.js?v=65" defer></script>
+  <script>document.addEventListener('dismeigh:birthday', () => { document.getElementById('log-bday').hidden = false; });</script>
+  <script src="/log.js?v=6" defer></script>
+  <script src="/app.js?v=66" defer></script>
 </body>
 </html>

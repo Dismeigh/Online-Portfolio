@@ -13,6 +13,7 @@ export async function ensureTable(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS log_reacted (entry_id INTEGER NOT NULL, visitor TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (entry_id, visitor))'),
   ]);
   try { await db.prepare("ALTER TABLE guestbook ADD COLUMN stamp TEXT NOT NULL DEFAULT ''").run(); } catch {}  // already there
+  try { await db.prepare('ALTER TABLE guestbook ADD COLUMN bday INTEGER NOT NULL DEFAULT 0').run(); } catch {}  // birthday wishes: the year, kept forever
   ready = true;
 }
 // Base stamps, plus holiday ones the log page only offers during that holiday look (they stay on the entry afterwards)
@@ -33,8 +34,21 @@ export const latest = async db => {
   return rows.map(r => ({ id: r.id, name: r.name, message: r.message, at: new Date(r.created_at).toISOString(), pinned: !!r.pinned, stamp: STAMPS.includes(r.stamp) ? r.stamp : '', reactions: counts[r.id] || {} }));
 };
 
-// GET /api/log -> { entries: [{ id, name, message, at, pinned }] } (pinned first, then newest, up to 50)
-export const onRequestGet = guard(async ({ env }) => { await ensureTable(env.ARCADE); return json({ entries: await latest(env.ARCADE) }); });
+// Birthday wall: entries signed on April 12 (Eastern time) are kept forever and shown on /birthday/, grouped by year
+const bdayYear = (now = Date.now()) => { const d = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(now); return d.slice(5) === '04-12' ? Number(d.slice(0, 4)) : 0; };
+export const birthdayWall = async db => {
+  const rows = (await db.prepare('SELECT name, message, created_at, stamp, bday FROM guestbook WHERE hidden = 0 AND bday > 0 ORDER BY bday DESC, created_at ASC LIMIT 2000').all()).results;
+  const years = {};
+  for (const r of rows) (years[r.bday] ||= []).push({ name: r.name, message: r.message, at: new Date(r.created_at).toISOString(), stamp: STAMPS.includes(r.stamp) ? r.stamp : '' });
+  return { years, today: bdayYear() > 0 };
+};
+
+// GET /api/log -> { entries: [{ id, name, message, at, pinned }] } (pinned first, then newest, up to 50). ?birthday=1 -> the birthday wall
+export const onRequestGet = guard(async ({ env, request }) => {
+  await ensureTable(env.ARCADE);
+  if (new URL(request.url).searchParams.get('birthday')) return json(await birthdayWall(env.ARCADE));
+  return json({ entries: await latest(env.ARCADE), birthday: bdayYear() > 0 });
+});
 
 // POST /api/log { name, message, stamp, elapsed, website } -> { ok, entries }
 export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
@@ -50,12 +64,12 @@ export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   const recent = await db.prepare('SELECT COUNT(*) AS day, MAX(created_at) AS last FROM guestbook WHERE ip = ? AND created_at > ?').bind(ip, now - 86400000).first();
   if (recent?.last && now - recent.last < 60000) return json({ error: 'One entry a minute, captain. Try again shortly.' }, 429);
   if ((recent?.day || 0) >= 5) return json({ error: 'That’s plenty of log entries for today. Come back tomorrow!' }, 429);
-  await db.prepare('INSERT INTO guestbook (name, message, ip, created_at, stamp) VALUES (?, ?, ?, ?, ?)').bind(n.name, m.message, ip, now, STAMPS.includes(body?.stamp) ? body.stamp : '').run();
+  await db.prepare('INSERT INTO guestbook (name, message, ip, created_at, stamp, bday) VALUES (?, ?, ?, ?, ?, ?)').bind(n.name, m.message, ip, now, STAMPS.includes(body?.stamp) ? body.stamp : '', bdayYear(now)).run();
   const job = alert(env, 'log', { title: 'New Ship\u2019s Log entry', body: `${n.name}: ${m.message.slice(0, 120)}`, tab: 'guestbook' });
   if (waitUntil) waitUntil(job); else await job;
   // Now and then, clear out expired entries for good (pinned ones stay)
   if (Math.random() < 0.1) {
-    await db.prepare('DELETE FROM guestbook WHERE pinned = 0 AND created_at < ?').bind(cutoff()).run();
+    await db.prepare('DELETE FROM guestbook WHERE pinned = 0 AND bday = 0 AND created_at < ?').bind(cutoff()).run();
     await db.prepare('DELETE FROM log_reactions WHERE entry_id NOT IN (SELECT id FROM guestbook)').run();
     await db.prepare('DELETE FROM log_reacted WHERE entry_id NOT IN (SELECT id FROM guestbook) OR at < ?').bind(Date.now() - 90 * 86400000).run();
   }

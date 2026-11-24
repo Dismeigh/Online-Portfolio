@@ -2,9 +2,8 @@
 import { adminOnly, noStore } from '../../../lib/admin.js';
 import { statsTables } from '../../../lib/stats.js';
 import { makeBackup, restoreBackup } from '../../../lib/backup.js';
-async function ensureGuestbook(db) {
-  await db.prepare('CREATE TABLE IF NOT EXISTS guestbook (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, message TEXT NOT NULL, ip TEXT NOT NULL, created_at INTEGER NOT NULL, hidden INTEGER NOT NULL DEFAULT 0, pinned INTEGER NOT NULL DEFAULT 0)').run();
-}
+import { ensureTable } from '../log/index.js';
+const ensureGuestbook = db => ensureTable(db);  // same table and columns as the Ship's Log itself
 export const onRequestGet = adminOnly(async ({ env, request }) => {
   await statsTables(env.ARCADE); await ensureGuestbook(env.ARCADE);
   const day = new Date().toISOString().slice(0, 10);

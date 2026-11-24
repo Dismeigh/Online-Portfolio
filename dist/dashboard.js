@@ -275,7 +275,7 @@
     actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
   }));
   loaders.overview = async () => {
-    loadToday();
+    loadToday(); loadClicks();
     loadActs(); loadHealth(); loadReport(); api('clients').then(r => { if (r.status === 200) drawBoard(r.data); }).catch(() => {});
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
@@ -331,6 +331,15 @@
     crew: { note: 'The Crew. Live status, game and profile picture come from Twitch automatically.', fields: [
       F('name', 'Name (as shown)', 'text', { max: 30, required: true }), F('twitch', 'Twitch username', 'text', { max: 25, required: true }), F('note', 'About them', 'textarea', { max: 200 }),
     ] },
+    dyno: { single: true, note: 'The dyno sheet on the Garage page. Leave a box empty if you don\u2019t know it yet. Stock numbers for the 2014 Focus ST are about 252 hp and 270 lb-ft.', fields: [
+      F('stockHp', 'Stock horsepower', 'text', { max: 6 }), F('nowHp', 'Horsepower now', 'text', { max: 6 }), F('stockTq', 'Stock torque (lb-ft)', 'text', { max: 6 }), F('nowTq', 'Torque now (lb-ft)', 'text', { max: 6 }),
+      F('boost', 'Peak boost (psi, optional)', 'text', { max: 5 }), F('zeroSixty', '0\u201360 in seconds (optional)', 'text', { max: 5 }),
+      F('source', 'Where the numbers come from', 'select', { options: [['estimate', 'Estimate'], ['dyno', 'Dyno run'], ['factory', 'Factory numbers']] }), F('note', 'Note (optional, like the tune)', 'text', { max: 160 }),
+    ] },
+    spotlight: { single: true, note: 'The \u201cOn the ship\u2019s speakers\u201d card on the home page. Paste a YouTube, Spotify or SoundCloud link to the track. The player only loads when a visitor taps play.', fields: [
+      F('title', 'Track title', 'text', { max: 80, required: true }), F('artist', 'Artist', 'text', { max: 40 }), F('url', 'Link to the track (https://...)', 'text', { max: 300, required: true }),
+      F('note', 'Why you picked it (optional)', 'text', { max: 160 }),
+    ] },
     meets: { note: 'Car meets on the Garage page. Past ones hide themselves the day after. Use the meet\u2019s public spot or city, never your home.', fields: [
       F('name', 'Meet', 'text', { max: 80, required: true }), F('date', 'Date', 'date', { required: true }), F('time', 'Time (like 18:30, optional)', 'text', { max: 5 }),
       F('place', 'Where (venue or city)', 'text', { max: 80 }), F('link', 'Event link (https://..., optional)', 'text', { max: 300 }), F('note', 'Note (optional)', 'text', { max: 160 }),
@@ -368,7 +377,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates' };
+  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates', dyno: 'dyno', spotlight: 'spotlight' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -1246,6 +1255,16 @@
   $('st-clear-past').addEventListener('click', async () => { if (confirm('Remove the imported past streams? Rewind will lose that history.')) { await stAct({ action: 'clearPast' }); flash($('st-import-msg'), 'Removed.'); } });
 
 
+  // Booth mode link: which clips play
+  const boothLink = () => { const on = [...document.querySelectorAll('#booth-clips input:checked')].map(x => x.value); $('booth-open').href = `/booth/?clips=${on.length ? on.join(',') : 'none'}`; try { localStorage.setItem('dm-booth-clips', on.join(',') || 'none'); } catch {} };
+  try { const saved = localStorage.getItem('dm-booth-clips'); if (saved) document.querySelectorAll('#booth-clips input').forEach(x => { x.checked = saved !== 'none' && saved.split(',').includes(x.value); }); } catch {}
+  $('booth-clips').addEventListener('change', boothLink); boothLink();
+  // Link taps
+  async function loadClicks() {
+    const d = (await api(`clicks?days=${$('lc-days').value}`)).data, list = d.links || [], top = Math.max(1, ...list.map(x => x.n));
+    $('lc-body').innerHTML = list.length ? `<ul class="dash-bars dash-bars-wide">${list.map(x => `<li><span>${esc(x.name)}</span><span class="dash-bar"><i style="width:${Math.round(x.n / top * 100)}%"></i></span><b>${x.n}</b></li>`).join('')}</ul>` : '<p class="dash-note">No taps counted yet in this range.</p>';
+  }
+  $('lc-days').addEventListener('change', loadClicks);
   // Today: the one card to check first
   async function loadToday() {
     $('td-date').textContent = new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });

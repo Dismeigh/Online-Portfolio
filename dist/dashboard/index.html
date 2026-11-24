@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=119">
+  <link rel="stylesheet" href="/styles.css?v=120">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -93,6 +93,12 @@
         <div class="dash-stat"><span class="dash-stat-k">Ko-fi</span><b id="st-kofi">Not connected</b></div>
       </section>
 
+        <section class="dash-card" aria-labelledby="lc-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">What people tap</p><h2 id="lc-h">Link taps</h2></div>
+            <label class="sr-only" for="lc-days">Time range</label><select id="lc-days" class="dash-small-select"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select></div>
+          <div id="lc-body"><p class="dash-note">Loading&hellip;</p></div>
+          <p class="dash-hint">Counts taps on links to other sites (Twitch, Discord, Ko-fi and so on). Only a number per link per day is kept, nothing about who tapped.</p>
+        </section>
         <section class="dash-card dash-card-stats" aria-labelledby="stats-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Private</p><h2 id="stats-h">Site stats</h2></div><button type="button" class="dash-btn dash-small" data-refresh="stats">Refresh</button></div>
           <div id="stats-body"><p class="dash-note">Loading&hellip;</p></div>
@@ -214,6 +220,8 @@
             <button type="button" data-content="garage">Garage build</button>
             <button type="button" data-content="collabs">Past collabs</button>
             <button type="button" data-content="meets">Car meets</button>
+            <button type="button" data-content="dyno">Dyno sheet</button>
+            <button type="button" data-content="spotlight">Track spotlight</button>
             <button type="button" data-content="updates">What&rsquo;s new</button>
             <button type="button" data-content="captions">Clip captions</button>
           </div>
@@ -608,6 +616,11 @@
             <input id="qr-line2" maxlength="40" value="Websites &amp; Discord servers">
           </form>
           <div class="dash-qr-wrap"><div class="dash-qr" id="qr-box"></div><code class="dash-code" id="qr-url"></code></div>
+          <fieldset class="dash-checks"><legend>Booth mode</legend>
+            <p class="dash-hint">At a convention or meet? Booth mode is a full-screen page for a tablet or laptop: a big QR code, your live status, next stream, socials and clips on a loop. It keeps the screen awake. Pick which clips play (leave out any that aren&rsquo;t right for an all-ages crowd).</p>
+            <div class="dash-days" id="booth-clips"><label><input type="checkbox" value="1" checked> Clip 1</label><label><input type="checkbox" value="2" checked> Clip 2</label><label><input type="checkbox" value="3" checked> Clip 3</label><label><input type="checkbox" value="4" checked> Clip 4</label><label><input type="checkbox" value="5" checked> Clip 5</label></div>
+            <div class="dash-actions"><a class="dash-btn dash-primary" id="booth-open" href="/booth/" target="_blank" rel="noopener">Open booth mode</a></div>
+          </fieldset>
           <div class="dash-actions">
             <button type="button" class="dash-btn dash-primary" id="qr-card">Download card</button>
             <button type="button" class="dash-btn" id="qr-png">QR as PNG</button>
@@ -677,6 +690,7 @@
           <details class="dash-help-item"><summary>Log a stream&rsquo;s stats</summary><p>Streams tab, Stream stats, &ldquo;Log a stream&rdquo;. Open Twitch&rsquo;s stream summary email, select all, copy, paste it in the box and tap &ldquo;Read the numbers&rdquo;. Check them and Save. You can also type them in yourself. If a stream sets a new best peak, average or follower count, you get a one-tap &ldquo;New record&rdquo; banner for the site. Under the chart, &ldquo;Best time to stream&rdquo; shows which days and start times get the most viewers.</p></details>
           <details class="dash-help-item"><summary>Post this week&rsquo;s schedule</summary><p>Streams tab, Schedule graphic. Pick the week and the size (square for X or Discord, story for Instagram), then Download or Share.</p></details>
           <details class="dash-help-item"><summary>Post a site update or a car meet</summary><p>Content tab. &ldquo;What&rsquo;s new&rdquo; adds a post to the What&rsquo;s new page, and visitors get a small dot in the menu until they see it (it goes away on its own after 2 weeks). &ldquo;Car meets&rdquo; shows upcoming meets on the Garage page; past ones disappear the day after.</p></details>
+          <details class="dash-help-item"><summary>Dyno sheet, track spotlight and booth mode</summary><p>Content tab: &ldquo;Dyno sheet&rdquo; fills the numbers card on the Garage page, and &ldquo;Track spotlight&rdquo; picks the Xssy track on the home page (paste a YouTube, Spotify or SoundCloud link). Booth mode lives in the Site tab, in the QR code card: pick the clips, then Open booth mode on the tablet or laptop at your table.</p></details>
           <details class="dash-help-item"><summary>Answer a viewer&rsquo;s question</summary><p>Ship&rsquo;s Log tab, Questions. Type your answer and tap &ldquo;Answer and post&rdquo;. It shows on the Ask the Captain page right away. Delete the ones you don&rsquo;t want to answer.</p></details>
           <details class="dash-help-item"><summary>Track voice auditions</summary><p>Clients tab, Auditions. Add each one with its deadline and change the status as you hear back. Deadlines show on the calendar.</p></details>
           <h3 class="dash-h3">Safety</h3>
@@ -720,6 +734,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=43" defer></script>
+  <script src="/dashboard.js?v=44" defer></script>
 </body>
 </html>

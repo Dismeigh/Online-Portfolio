@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Birthday Wall | Dismeigh</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta
+    name="description"
+    content="Birthday wishes for Dismeigh from the Ship’s Log, every April 12, kept forever."
+  >
+  <meta name="author" content="Dismeigh">
+  <link rel="canonical" href="https://www.denizen-dismeigh.com/birthday/">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dismeigh">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.denizen-dismeigh.com/birthday/">
+  <meta property="og:title" content="Birthday Wall | Dismeigh">
+  <meta
+    property="og:description"
+    content="Birthday wishes for Dismeigh from the Ship’s Log, every April 12, kept forever."
+  >
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Birthday Wall | Dismeigh">
+  <meta property="og:site_name" content="Dismeigh">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Birthday Wall | Dismeigh">
+  <meta
+    name="twitter:description"
+    content="Birthday wishes for Dismeigh from the Ship’s Log, every April 12, kept forever."
+  >
+  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta name="twitter:image:alt" content="Birthday Wall | Dismeigh">
+
+  <!-- Dark UI hints for iOS / Discord / Chrome -->
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+
+  <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -> v=4 -> v=5 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=120">
+  <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Birthday Wall", "item": "https://www.denizen-dismeigh.com/birthday/"}]}</script>
+</head>
+
+<body class="page-split page-shelf">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <script>
+    // Seasonal and holiday looks, by Eastern date. Preview any with ?season=<key> (or ?season=off).
+    // Keys: newyear, mlk, valentines, presidents, stpatricks, easter, mothers, memorial, fathers,
+    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December), birthday, anniversary
+    (() => {
+      const now = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' })
+        .formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, Number(p.value)]));
+      const Y = now.year, M = now.month, D = now.day;
+      const dow = (m, d) => new Date(Date.UTC(Y, m - 1, d)).getUTCDay();
+      const nth = (m, weekday, n) => { const first = (7 + weekday - dow(m, 1)) % 7 + 1; return first + (n - 1) * 7; };
+      const last = (m, weekday) => { const days = new Date(Date.UTC(Y, m, 0)).getUTCDate(); return days - (7 + dow(m, days) - weekday) % 7; };
+      // Easter (Anonymous Gregorian algorithm)
+      const a = Y % 19, b = Math.floor(Y / 100), c = Y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+        g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+        l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const easterM = Math.floor((h + l - 7 * m + 114) / 31), easterD = ((h + l - 7 * m + 114) % 31) + 1;
+      const dayNum = (mm, dd) => Date.UTC(Y, mm - 1, dd) / 86400000;
+      const today = dayNum(M, D);
+      const within = (mm, dd, before = 0, after = 0) => today >= dayNum(mm, dd) - before && today <= dayNum(mm, dd) + after;
+      const thanksgiving = nth(11, 4, 4);
+
+      // Personal days. Fill these in as 'MM-DD' (birthday) and 'YYYY-MM-DD' (first stream); they beat holidays.
+      const BIRTHDAY = '04-12';
+      const STREAM_START = '2021-06-10';
+      const mmdd = `${String(M).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
+      let season = '';
+      if (STREAM_START && STREAM_START.slice(5) === mmdd && Y > Number(STREAM_START.slice(0, 4))) {
+        season = 'anniversary';
+        document.documentElement.dataset.streamYears = String(Y - Number(STREAM_START.slice(0, 4)));
+      } else if (BIRTHDAY && BIRTHDAY === mmdd) season = 'birthday';
+      else if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
+      else if (M === 1 && D === nth(1, 1, 3)) season = 'mlk';
+      else if (M === 2 && (D === 13 || D === 14)) season = 'valentines';
+      else if (M === 2 && D === nth(2, 1, 3)) season = 'presidents';
+      else if (M === 3 && D === 17) season = 'stpatricks';
+      else if (within(easterM, easterD, 2, 0)) season = 'easter';
+      else if (M === 5 && D === nth(5, 0, 2)) season = 'mothers';
+      else if (M === 5 && D === last(5, 1)) season = 'memorial';
+      else if (M === 6 && D === nth(6, 0, 3)) season = 'fathers';
+      else if (M === 6 && D === 19) season = 'juneteenth';
+      else if (M === 7 && (D === 3 || D === 4)) season = 'july4';
+      else if (M === 9 && D === nth(9, 1, 1)) season = 'labor';
+      else if (M === 10) season = 'spooky';
+      else if (M === 11 && D === 11) season = 'veterans';
+      else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
+      else if (M === 12) season = 'holiday';
+      // Holiday look forced on/off from the dashboard (cached here by app.js from /api/site)
+      try { const lk = JSON.parse(localStorage.getItem('dm-look') || 'null'); if (lk && lk.mode && (!lk.until || Date.now() < lk.until)) season = lk.mode === 'off' ? '' : lk.mode; } catch {}
+      try {
+        const override = new URLSearchParams(location.search).get('season');
+        if (override) season = override === 'off' ? '' : override;
+      } catch {}
+      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = String(Math.max(1, Y - Number((STREAM_START || String(Y - 1)).slice(0, 4))));
+      if (season) document.documentElement.dataset.season = season;
+
+      // Late-night mode: midnight to 5 AM Eastern. Preview with ?latenight=1 (or 0 to turn off)
+      const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));
+      let late = hour >= 0 && hour < 5;
+      try {
+        const lp = new URLSearchParams(location.search).get('latenight');
+        if (lp !== null) late = lp === '1';
+      } catch {}
+      if (late) document.documentElement.dataset.latenight = '';
+    })();
+  </script>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <div class="site-wrapper">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/" class="nav-brand">Dismeigh</a>
+      <a href="/#live">Live</a>
+      <a href="/#schedule">Schedule</a>
+      <a href="/#bounties">Bounties</a>
+      <a href="/#highlights">Clips</a>
+      <a href="/garage/">Garage</a>
+      <a href="/work/">Work</a>
+      <a href="/voice/">Voice</a>
+      <a href="/lore/">Lore</a>
+      <button class="nav-more" type="button" aria-expanded="false" aria-controls="nav-menu">More</button>
+      <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
+    </nav>
+    <div class="nav-menu" id="nav-menu" hidden>
+      <a href="/new/" class="nav-new-link">What&rsquo;s new</a>
+      <a href="/#support-heading">Support &amp; Shop</a>
+      <a href="/guide/">New Viewer Guide</a>
+      <a href="/map/">Ship map</a>
+      <a href="/secrets/">Secret hints</a>
+      <a href="/crew/">The Crew</a>
+      <a href="/shelf/">Dismeigh&rsquo;s Shelf</a>
+      <a href="/wallpapers/">Wallpapers</a>
+      <a href="/log/">Ship&rsquo;s Log</a>
+      <a href="/ask/">Ask the Captain</a>
+      <a href="/rewind/">Dismeigh Rewind</a>
+      <a href="/install/" data-install>Get the app</a>
+    </div>
+
+    <main id="main-content" class="split-main" tabindex="-1">
+      <section id="birthday" class="content-section bday-section sweep">
+        <div class="section-kicker"><span>Side B</span> April 12</div>
+        <h1 class="split-title">Birthday Wall</h1>
+        <p class="wp-lede">Every Ship&rsquo;s Log entry signed on Dismeigh&rsquo;s birthday ends up here, kept forever. Thanks for the wishes, crew.</p>
+        <p class="log-bday" id="bday-now" hidden><span aria-hidden="true">&#127874;</span> It&rsquo;s today! <a href="/log/">Sign the log</a> to add your wish.</p>
+        <div id="bday-years"></div>
+        <p class="log-empty" id="bday-empty">Loading&hellip;</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="footer-signoff">See you next session.</p>
+      <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
+      <p class="footer-brand">Dismeigh</p>
+      <p class="footer-est">Est. June 10, 2021</p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/ask/">Ask the Captain</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/new/">What&rsquo;s new</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
+      <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
+      <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+  {
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Title-card wipe: plays once per section, the first time it scrolls into view
+    const io = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.sweep').forEach(el => io.observe(el));
+
+
+    fetch('/api/log?birthday=1', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => {
+      const years = d?.years || {}, box = document.getElementById('bday-years'), empty = document.getElementById('bday-empty');
+      const S = window.dismeighLogStamps || {};
+      const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+      const keys = Object.keys(years).sort((a, b) => b - a);
+      box.replaceChildren(...keys.map(y => {
+        const sec = el('section', 'bday-year'), h = el('h2', 'bday-h', `${y}`), n = years[y].length;
+        h.append(el('small', '', ` ${n} wish${n === 1 ? '' : 'es'}`));
+        const ul = el('ul', 'bday-list');
+        years[y].forEach(w => { const li = el('li', 'bday-card'), who = el('strong', '', w.name); if (S[w.stamp]) { const s = el('span', 'log-stamp', S[w.stamp][0]); s.setAttribute('aria-hidden', 'true'); who.prepend(s); } li.append(who, el('p', '', w.message)); ul.append(li); });
+        sec.append(h, ul); return sec;
+      }));
+      empty.textContent = keys.length ? '' : 'No wishes yet. The wall fills up on April 12.';
+      if (d?.today) document.getElementById('bday-now').hidden = false;
+    }).catch(() => { document.getElementById('bday-empty').textContent = 'Couldn\u2019t load the wall right now.'; });
+
+
+  }
+  </script>
+  <script src="/log.js?v=6" defer></script>
+  <script src="/app.js?v=66" defer></script>
+</body>
+</html>

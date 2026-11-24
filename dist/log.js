@@ -61,7 +61,7 @@
     });
     return bar;
   }
-  const load = () => fetch('/api/log', { cache: 'no-store' }).then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => d.entries || []);
+  const load = () => fetch('/api/log', { cache: 'no-store' }).then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => { if (d.birthday) document.dispatchEvent(new Event('dismeigh:birthday')); return d.entries || []; });
 
   // Home page: newest three
   const mini = document.getElementById('log-mini');

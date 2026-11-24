@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=119">
+  <link rel="stylesheet" href="/styles.css?v=120">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "The Garage", "item": "https://www.denizen-dismeigh.com/garage/"}]}</script>
 </head>
@@ -247,6 +247,13 @@
             </section>
           </div>
         </article>
+
+        <div class="dyno" id="dyno" hidden>
+          <div class="dyno-head"><h2 class="dyno-title">Dyno sheet</h2><span class="dyno-src" id="dyno-src"></span></div>
+          <div class="dyno-rows" id="dyno-rows"></div>
+          <ul class="dyno-extra" id="dyno-extra"></ul>
+          <p class="dyno-note" id="dyno-note" hidden></p>
+        </div>
       </section>
 
       <section id="meets" class="content-section meets-section sweep" aria-labelledby="meets-heading" hidden>
@@ -457,6 +464,29 @@
       io.observe(bar);
     };
     buildMeter();
+    // Dyno sheet (dashboard: Content, Dyno sheet)
+    fetch('/api/content/dyno').then(r => (r.ok ? r.json() : null)).then(d => {
+      const v = d?.dyno; if (!v) return;
+      const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+      const row = (label, stock, now, unit) => {
+        if (!now && !stock) return null;
+        const max = Math.max(stock || 0, now || 0) * 1.08, r = el('div', 'dyno-row');
+        r.append(el('p', 'dyno-label', label));
+        const bars = el('div', 'dyno-bars');
+        if (stock) { const b = el('div', 'dyno-bar is-stock'); b.style.setProperty('--w', `${stock / max * 100}%`); b.append(el('span', '', `Stock ${stock} ${unit}`)); bars.append(b); }
+        if (now) { const b = el('div', 'dyno-bar is-now'); b.style.setProperty('--w', `${now / max * 100}%`); b.append(el('span', '', `Now ${now} ${unit}`)); bars.append(b); }
+        r.append(bars);
+        if (stock && now && now > stock) r.append(el('p', 'dyno-gain', `+${Math.round((now - stock) * 10) / 10} ${unit} (+${Math.round((now - stock) / stock * 100)}%)`));
+        return r;
+      };
+      const rows = [row('Horsepower', v.stockHp, v.nowHp, 'hp'), row('Torque', v.stockTq, v.nowTq, 'lb-ft')].filter(Boolean);
+      document.getElementById('dyno-rows').replaceChildren(...rows);
+      const extra = [v.boost && ['Peak boost', `${v.boost} psi`], v.zeroSixty && ['0\u201360', `${v.zeroSixty} s`]].filter(Boolean);
+      document.getElementById('dyno-extra').replaceChildren(...extra.map(([k, x]) => { const li = el('li'); li.append(el('span', '', k), el('b', '', x)); return li; }));
+      document.getElementById('dyno-src').textContent = { dyno: 'Dyno run', estimate: 'Estimated', factory: 'Factory numbers' }[v.source] || '';
+      if (v.note) { const n = document.getElementById('dyno-note'); n.textContent = v.note; n.hidden = false; }
+      document.getElementById('dyno').hidden = false;
+    }).catch(() => {});
     // Car meets (dashboard: Content, Car meets). Past ones drop off the day after.
     fetch('/api/content/meets').then(r => (r.ok ? r.json() : null)).then(d => {
       const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
@@ -518,7 +548,7 @@
   }
   </script>
   <script src="/drag-race.js?v=40" defer></script>
-  <script src="/app.js?v=65" defer></script>
+  <script src="/app.js?v=66" defer></script>
   <script src="/goal.js?v=2" defer></script>
 </body>
 </html>

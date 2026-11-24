@@ -250,6 +250,19 @@
   // Secret: visit between 3 and 4 in the morning (your own time)
   if (new Date().getHours() === 3) setTimeout(() => window.dismeighUnlock('nightowl'), 2000);
 
+  // Link tap counts for the dashboard: only which kind of outside link (Twitch, Discord, Ko-fi...), nothing about who tapped
+  if (!/^\/(dashboard|overlay|booth)/.test(location.pathname)) {
+    document.addEventListener('click', e => {
+      const a = e.target.closest?.('a[href]'); if (!a) return;
+      let h = '';
+      if (/^mailto:/i.test(a.href)) h = 'email';
+      else if (/^webcal:/i.test(a.href)) h = 'calendar';
+      else { try { const u = new URL(a.href); if (u.origin === location.origin || !/^https?:$/.test(u.protocol)) return; h = u.hostname; } catch { return; } }
+      const body = JSON.stringify({ h });
+      try { if (!(navigator.sendBeacon && navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })))) fetch('/api/click', { method: 'POST', body, keepalive: true }).catch(() => {}); } catch {}
+    }, { capture: true, passive: true });
+  }
+
   // "What's new" dot: shows on the menu button and the What's new link when there's a post this visitor hasn't seen.
   // It goes away when they open /new/, or on its own 14 days after the newest post.
   (() => {
@@ -797,9 +810,9 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       let r = null;
       try {
         const qs = new URLSearchParams(location.search);
-        if (qs.get('src') === 'card') {
-          // Scanned from the business card QR: count it once, then drop ?src=card so shared links don't count as scans
-          r = 'qr-card'; sessionStorage.setItem('dm-src', '1');
+        if (qs.get('src') === 'card' || qs.get('src') === 'booth') {
+          // Scanned from the business card or booth QR: count it once, then drop ?src= so shared links don't count as scans
+          r = qs.get('src') === 'booth' ? 'qr-booth' : 'qr-card'; sessionStorage.setItem('dm-src', '1');
           qs.delete('src'); history.replaceState(history.state, '', location.pathname + (qs.toString() ? `?${qs}` : '') + location.hash);
         } else if (!sessionStorage.getItem('dm-src')) {
           const ref = document.referrer ? new URL(document.referrer).hostname : '';

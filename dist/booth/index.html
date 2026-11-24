@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Booth mode | Dismeigh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <style>
+    :root { --ink: #14110f; --ink-2: #1e1a17; --paper: #efe6d2; --dim: #b9ad97; --mustard: #e3a92b; --red: #b73b2c; --teal: #3f8f8c; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--ink); color: var(--paper); font-family: "Work Sans", system-ui, sans-serif; overflow: hidden; }
+    .booth { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 3vmin; height: 100%; padding: 4vmin 4vmin 6vmin; }
+    .booth.no-clips .clip { display: none; }
+    .booth.no-clips .who img { width: 22vmin; height: 22vmin; }
+    .slabs { position: fixed; left: 0; right: 0; bottom: 0; height: 2.4vmin; background: var(--mustard); border-bottom: 1.2vmin solid var(--red); z-index: 0; }
+    .col { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 0; }
+    .scan { align-items: center; justify-content: center; text-align: center; }
+    .qr { width: min(42vmin, 100%); aspect-ratio: 1; padding: 1.6vmin; background: #fff; box-shadow: 1.6vmin 1.6vmin 0 var(--red); }
+    .qr svg { display: block; width: 100%; height: 100%; }
+    .scan-label { margin: 3vmin 0 0; font-family: Anton, Impact, sans-serif; font-size: 5.2vmin; letter-spacing: 0.04em; text-transform: uppercase; }
+    .scan-url { margin: 0.6vmin 0 0; font-family: "Special Elite", monospace; font-size: 2.6vmin; color: var(--mustard); }
+    .who { display: flex; align-items: center; gap: 2.6vmin; }
+    .who img { width: 15vmin; height: 15vmin; border: 0.6vmin solid var(--paper); }
+    .name { margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 10vmin; line-height: 0.95; text-transform: uppercase; }
+    .role { margin: 0.8vmin 0 0; font-family: "Special Elite", monospace; font-size: 2.3vmin; color: var(--dim); }
+    .status { display: inline-flex; align-items: center; gap: 1.2vmin; margin: 2.4vmin 0 0; padding: 1vmin 2vmin; border: 0.4vmin solid var(--dim); font-family: Anton, Impact, sans-serif; font-size: 3vmin; letter-spacing: 0.05em; text-transform: uppercase; align-self: flex-start; }
+    .status i { width: 2vmin; height: 2vmin; border-radius: 50%; background: var(--dim); }
+    .status.is-live { border-color: var(--red); background: var(--red); }
+    .status.is-live i { background: var(--paper); animation: pulse 1.2s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: 0.3; } }
+    .next { margin: 1.2vmin 0 0; font-size: 2.4vmin; color: var(--paper); }
+    .next b { color: var(--mustard); }
+    .clip { position: relative; flex: 1; min-height: 0; margin-top: 2.4vmin; background: #000; border: 0.5vmin solid var(--paper); }
+    .clip video { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .socials { display: flex; flex-wrap: wrap; gap: 1vmin 2.4vmin; margin: 2vmin 0 0; padding: 0; list-style: none; font-family: "Special Elite", monospace; font-size: 2.3vmin; }
+    .socials b { color: var(--mustard); font-family: "Work Sans", sans-serif; font-weight: 800; }
+    .controls { position: fixed; top: 1.4vmin; right: 1.4vmin; z-index: 5; display: flex; gap: 1vmin; transition: opacity 0.4s; }
+    .controls.is-idle { opacity: 0; }
+    .controls button, .controls a { min-height: 44px; padding: 0 14px; background: rgba(20, 17, 15, 0.85); color: var(--paper); border: 2px solid var(--dim); font: 600 14px "Work Sans", sans-serif; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+    @media (orientation: portrait) {
+      .booth { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+      .scan { order: 2; flex-direction: row; gap: 3vmin; text-align: left; }
+      .qr { width: 30vmin; }
+      .scan-label { margin: 0; font-size: 4.4vmin; }
+      .booth.no-clips { grid-template-rows: auto minmax(0, 1fr); }
+      .booth.no-clips .scan { flex-direction: column; text-align: center; }
+      .booth.no-clips .qr { width: 58vmin; }
+      .booth.no-clips .scan-label { margin-top: 3vmin; font-size: 6vmin; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slabs" aria-hidden="true"></div>
+  <main class="booth" id="booth">
+    <section class="col scan" aria-label="Scan to visit the site">
+      <div class="qr" id="qr"></div>
+      <div>
+        <p class="scan-label">Scan to join the crew</p>
+        <p class="scan-url">denizen-dismeigh.com</p>
+      </div>
+    </section>
+    <section class="col">
+      <div class="who">
+        <img src="/avatar-420.jpg?v=2" width="420" height="420" alt="Dismeigh avatar">
+        <div>
+          <h1 class="name">Dismeigh</h1>
+          <p class="role">VTuber &bull; Car Enthusiast &bull; Voice Actor &bull; Creative Developer</p>
+        </div>
+      </div>
+      <p class="status" id="status" role="status"><i aria-hidden="true"></i><span id="status-text">Checking the signal</span></p>
+      <p class="next" id="next" hidden></p>
+      <div class="clip"><video id="clip" muted playsinline autoplay preload="auto" aria-label="Stream clips playing on a loop"></video></div>
+      <ul class="socials">
+        <li><b>Twitch</b> dismeigh</li>
+        <li><b>YouTube</b> @dismeigh</li>
+        <li><b>TikTok</b> @denizen.dismeigh</li>
+        <li><b>Instagram</b> @_dismeigh_</li>
+        <li><b>X</b> @dismeigh</li>
+      </ul>
+    </section>
+  </main>
+  <div class="controls" id="controls">
+    <button type="button" id="fs">Full screen</button>
+    <a href="/dashboard/#site">Exit</a>
+  </div>
+  <script src="/qr.js?v=2"></script>
+  <script>
+  (() => {
+    // QR to the home page; ?src=booth counts the scan as "Booth mode QR" in the dashboard
+    document.getElementById('qr').innerHTML = window.dismeighQrSvg('https://denizen-dismeigh.com/?src=booth', 'Q', 'QR code: scan to open denizen-dismeigh.com');
+
+    // Live status (same check the site uses), every 2 minutes
+    const status = document.getElementById('status'), text = document.getElementById('status-text');
+    async function live() {
+      try {
+        const t = (await (await fetch(`https://decapi.me/twitch/uptime/dismeigh?t=${Date.now()}`, { cache: 'no-store' })).text()).trim();
+        const on = !/offline|not live|error/i.test(t);
+        status.classList.toggle('is-live', on); text.textContent = on ? 'Live on Twitch now' : 'Offline right now';
+      } catch { text.textContent = 'Follow on Twitch'; }
+    }
+    live(); setInterval(live, 120000);
+
+    // Next stream from the schedule
+    const etWhen = iso => new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'long', hour: 'numeric', minute: '2-digit' }).replace(':00', '');
+    async function next() {
+      try {
+        const d = await (await fetch('/api/schedule', { cache: 'no-store' })).json(), n = d.next, el = document.getElementById('next');
+        if (!n || n.live) { el.hidden = true; return; }
+        el.replaceChildren('Next stream: ', Object.assign(document.createElement('b'), { textContent: n.title }), ` · ${etWhen(n.start)} ET`); el.hidden = false;
+      } catch {}
+    }
+    next(); setInterval(next, 600000);
+
+    // Clips on a loop: ?clips=1,3,5 picks which (set from the dashboard), ?clips=none hides them
+    const pick = new URLSearchParams(location.search).get('clips');
+    const nums = pick === 'none' ? [] : pick ? [...new Set(pick.split(',').map(Number).filter(n => n >= 1 && n <= 5))] : [1, 2, 3, 4, 5];
+    if (!nums.length) document.getElementById('booth').classList.add('no-clips');
+    const clips = nums.map(i => `/assets/clips/clip-0${i}.mp4`), v = document.getElementById('clip');
+    let i = 0;
+    const play = () => { if (!clips.length) return; v.src = clips[i]; v.poster = clips[i].replace('.mp4', '-poster.webp'); v.play().catch(() => {}); };
+    v.addEventListener('ended', () => { i = (i + 1) % clips.length; if (clips.length === 1) { v.currentTime = 0; v.play().catch(() => {}); } else play(); });
+    v.addEventListener('error', () => { i = (i + 1) % clips.length; setTimeout(play, 1000); });
+    if (clips.length) play();
+
+    // Keep the screen awake, full screen button, and hide the buttons when idle
+    let lock = null;
+    const awake = async () => { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') lock = await navigator.wakeLock.request('screen'); } catch {} };
+    awake(); document.addEventListener('visibilitychange', awake);
+    const fs = document.getElementById('fs');
+    fs.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); });
+    document.addEventListener('fullscreenchange', () => { fs.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen'; });
+    if (!document.documentElement.requestFullscreen) fs.hidden = true;
+    const ctl = document.getElementById('controls'); let t;
+    const wake = () => { ctl.classList.remove('is-idle'); clearTimeout(t); t = setTimeout(() => ctl.classList.add('is-idle'), 4000); };
+    ['pointermove', 'pointerdown', 'keydown'].forEach(e => addEventListener(e, wake)); wake();
+  })();
+  </script>
+</body>
+</html>
