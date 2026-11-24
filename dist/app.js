@@ -102,6 +102,11 @@
     list.push(id);
     save(list);
     const count = list.filter(x => SECRETS[x]).length;
+    // Count it for the private stats: which secret, nothing about who found it
+    try {
+      const send = sid => { const body = JSON.stringify({ id: sid }); if (!(navigator.sendBeacon && navigator.sendBeacon('/api/secret', new Blob([body], { type: 'application/json' })))) fetch('/api/secret', { method: 'POST', body, keepalive: true }).catch(() => {}); };
+      send(id); if (count >= total) send('license');
+    } catch {}
     toast(SECRETS[id], count >= total ? `Secret ${count} of ${total}: all found!` : `Secret found: ${count} of ${total}`);
     if (count >= total) setTimeout(showReward, 2400);
     buzz(count >= total ? [40, 60, 40, 60, 120] : [30, 50, 60]);

@@ -2831,3 +2831,7 @@ html:has(.dash-body) { background: var(--ink); }
 /* "Right now" status line (home page, set from the dashboard) */
 .right-now { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem; margin: 0.3rem 0 0.6rem; padding: 0.35rem 0.8rem; border-left: 4px solid var(--mustard); background: rgba(0, 0, 0, 0.35); color: var(--paper); }
 .right-now-k { font-family: var(--typed); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mustard); }
+
+.dash-secrets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dash-secrets li.is-license { grid-column: 1 / -1; border-color: var(--mustard); }
+@media (max-width: 760px) { .dash-secrets { grid-template-columns: 1fr; } }

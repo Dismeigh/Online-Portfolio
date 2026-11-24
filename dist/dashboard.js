@@ -198,6 +198,9 @@
           <li><span>Ko-fi payments, 30 days</span><b>${s.kofi.month}</b></li>
         </ul></div>
       </div>
+      <h3 class="dash-h3">Secrets found</h3>
+      ${(s.secrets || []).length ? `<ul class="dash-rank dash-secrets">${s.secrets.map(x => `<li class="${x.id === 'license' ? 'is-license' : ''}"><span>${esc(x.name)}</span><b>${x.n}</b></li>`).join('')}</ul>` : ''}
+      <p class="dash-hint">How many times each secret has been found (once per browser). Counting starts from this update.</p>
       ${s.since ? `<p class="dash-hint">Counting page views since ${esc(s.since)}.</p>` : '<p class="dash-hint">Page views start counting from now.</p>'}`;
   };
 
