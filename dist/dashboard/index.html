@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=104">
+  <link rel="stylesheet" href="/styles.css?v=107">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -97,6 +97,11 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">Ship systems</p><h2 id="hl-h">Site health</h2></div><button type="button" class="dash-btn dash-small" id="hl-refresh">Check now</button></div>
           <ul class="dash-health" id="hl-body"><li class="dash-note">Checking&hellip;</li></ul>
           <p class="dash-hint" id="hl-note"></p>
+        </section>
+        <section class="dash-card dash-report-card" aria-labelledby="rp-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">One page per month</p><h2 id="rp-h">Monthly report</h2></div>
+            <div class="dash-rp-pick"><label for="rp-month" class="sr-only">Month</label><select id="rp-month"></select><button type="button" class="dash-btn dash-small" id="rp-print">Save as PDF</button></div></div>
+          <div id="report" class="dash-report"><p class="dash-note">Loading&hellip;</p></div>
         </section>
         <section class="dash-card dash-card-activity" aria-labelledby="act-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Last 30 days</p><h2 id="act-h">Activity</h2></div><button type="button" class="dash-btn dash-small" id="act-refresh">Refresh</button></div>
@@ -381,7 +386,7 @@
             <label><input type="checkbox" value="login" checked> <span>Failed dashboard logins <small>(at most every 10 min)</small></span></label>
             <label><input type="checkbox" value="health" checked> <span>Something on the site breaks <small>(YouTube feed, stream calendar, Twitch check)</small></span></label>
             <label><input type="checkbox" value="quote" checked> <span>New quote requests <small>(from the Work page form)</small></span></label>
-            <label><input type="checkbox" value="recap" checked> <span>Weekly recap <small>(Monday mornings: views, visitors, log signs, tips, arcade plays)</small></span></label>
+            <label><input type="checkbox" value="recap" checked> <span>Weekly recap &amp; monthly report <small>(Monday mornings, and the 1st of each month)</small></span></label>
           </fieldset>
           <div class="dash-actions">
             <button type="button" class="dash-btn dash-primary" id="al-on">Turn on alerts here</button>
@@ -588,6 +593,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=33" defer></script>
+  <script src="/dashboard.js?v=34" defer></script>
 </body>
 </html>

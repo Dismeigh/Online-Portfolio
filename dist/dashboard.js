@@ -210,6 +210,45 @@
   }
   $('hl-refresh').addEventListener('click', loadHealth);
 
+  // Monthly report
+  async function loadReport(month) {
+    const { data } = await api(`report${month ? `?month=${encodeURIComponent(month)}` : ''}`);
+    const n = data.now, b = data.before, mname = k => new Date(`${k}-15T12:00:00`).toLocaleDateString([], { month: 'long', year: 'numeric' });
+    if (!$('rp-month').options.length || month === undefined) $('rp-month').innerHTML = data.months.map(k => `<option value="${k}"${k === data.month ? ' selected' : ''}>${mname(k)}</option>`).join('');
+    const cash = c => (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    const diff = (a, z, isMoney) => { if (!z && !a) return ''; if (!z) return '<span class="rp-up">new</span>'; const p = Math.round((a - z) / z * 100); return p === 0 ? '<span class="rp-flat">same as last month</span>' : `<span class="${p > 0 ? 'rp-up' : 'rp-down'}">${p > 0 ? '&#9650;' : '&#9660;'} ${Math.abs(p)}% vs ${isMoney ? cash(z) : z.toLocaleString()}</span>`; };
+    const tile = (label, val, cmp) => `<div class="rp-tile"><span>${label}</span><b>${val}</b>${cmp || ''}</div>`;
+    const list = (rows, fmt) => rows.length ? `<ol>${rows.map(r => `<li>${fmt(r)}</li>`).join('')}</ol>` : '<p class="dash-hint">Nothing this month.</p>';
+    $('report').innerHTML = `
+      <h3 class="rp-title">${esc(mname(data.month))}</h3>
+      <div class="rp-tiles">
+        ${tile('Page views', n.views.toLocaleString(), diff(n.views, b.views))}
+        ${tile('New visitors', n.visitors.toLocaleString(), diff(n.visitors, b.visitors))}
+        ${tile('Money in', cash(n.money.total), diff(n.money.total, b.money.total, true))}
+        ${tile('Profit', `<span class="${n.money.profit < 0 ? 'is-neg' : ''}">${cash(n.money.profit)}</span>`, diff(n.money.profit, b.money.profit, true))}
+      </div>
+      <div class="rp-cols">
+        <div><h4>Site</h4><ul class="rp-facts">
+          ${n.busiestDay ? `<li>Busiest day: <b>${esc(new Date(n.busiestDay.day + 'T12:00:00').toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }))}</b> (${n.busiestDay.n} views)</li>` : ''}
+          <li>Ship&rsquo;s Log entries: <b>${n.logEntries}</b></li><li>Arcade scores posted: <b>${n.scores}</b>${n.topScore ? ` (top Bounty Run: ${esc(n.topScore.name)}, ${Number(n.topScore.score).toLocaleString()})` : ''}</li><li>Secrets found: <b>${n.secrets}</b></li></ul>
+          <h4>Top pages</h4>${list(n.topPages, r => `${esc(r.path === '/' ? 'Home' : r.path)} <b>${r.n}</b>`)}
+          <h4>Where visitors came from</h4>${list(n.sources, r => `${esc(r.source)} <b>${r.n}</b>`)}
+          <h4>Top searches</h4>${list(n.searches, r => `${esc(r.term)} <b>${r.n}</b>`)}
+          ${n.missed.length ? `<h4>Searched but not found</h4>${list(n.missed, r => `${esc(r.term)} <b>${r.n}</b>`)}` : ''}</div>
+        <div><h4>Money</h4><ul class="rp-facts">
+          <li>Ko-fi tips: <b>${cash(n.money.tips)}</b></li><li>Memberships: <b>${cash(n.money.memberships)}</b></li><li>Ko-fi sales &amp; commissions: <b>${cash(n.money.kofiSales)}</b></li>
+          <li>Client payments: <b>${cash(n.money.clients)}</b></li><li>Expenses: <b>${cash(n.money.expenses)}</b></li><li>Ko-fi payments: <b>${n.kofiCount}</b></li></ul>
+          <h4>Business</h4><ul class="rp-facts"><li>Quote requests: <b>${n.quotes}</b></li><li>New jobs: <b>${n.jobsNew}</b></li><li>Jobs finished: <b>${n.jobsDone.length}</b></li></ul>
+          ${n.jobsDone.length ? list(n.jobsDone, r => `${esc(r.client)}${r.service ? ` &middot; ${esc(r.service)}` : ''}`) : ''}
+          <h4>Voice</h4><ul class="rp-facts"><li>Auditions sent: <b>${n.auditionsSent}</b></li><li>Booked: <b>${n.auditionsBooked.length}</b></li></ul>
+          ${n.auditionsBooked.length ? list(n.auditionsBooked, r => `${esc(r.project)}${r.role ? ` (${esc(r.role)})` : ''}`) : ''}</div>
+      </div>
+      <p class="dash-hint rp-note">Ship&rsquo;s Log entries and secrets are only kept about 60 days and quote requests 90, so older months may show fewer of those.</p>`;
+  }
+  $('rp-month').addEventListener('change', () => loadReport($('rp-month').value));
+  $('rp-print').addEventListener('click', () => { document.body.classList.add('print-report'); print(); });
+  addEventListener('afterprint', () => document.body.classList.remove('print-report'));
+
   // Activity feed
   let acts = [], actK = 'all';
   const ICON = { log: '\u270e', kofi: '$', arcade: '\u2605', secret: '?' };
@@ -223,7 +262,7 @@
     actK = b.dataset.actK; document.querySelectorAll('#act-filter [data-act-k]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawActs();
   }));
   loaders.overview = async () => {
-    loadActs(); loadHealth(); api('clients').then(r => { if (r.status === 200) drawBoard(r.data); }).catch(() => {});
+    loadActs(); loadHealth(); loadReport(); api('clients').then(r => { if (r.status === 200) drawBoard(r.data); }).catch(() => {});
     const { data: s } = await api('stats');
     const max = Math.max(1, ...s.daily.map(d => d.n));
     const pageName = p => ({ '/': 'Home', other: 'Other' }[p] || p.replace(/\//g, ' ').trim().replace(/^\w/, c => c.toUpperCase()));

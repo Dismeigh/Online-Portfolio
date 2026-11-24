@@ -3176,3 +3176,28 @@ html:has(.dash-body) { background: var(--ink); }
 
 /* Bigger tap area on video titles */
 .yt-card h4 a { display: block; padding: 0.25rem 0; min-height: 24px; }
+
+/* Dashboard monthly report */
+.dash-rp-pick { display: flex; gap: 0.4rem; align-items: center; } .dash-rp-pick select { width: auto; min-height: 2.2rem; }
+.rp-title { margin: 0.4rem 0 0.8rem; font-family: var(--display); font-weight: 400; font-size: 1.8rem; text-transform: uppercase; color: var(--paper); }
+.rp-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+@media (min-width: 760px) { .rp-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.rp-tile { padding: 0.7rem 0.8rem; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.25); display: grid; gap: 0.15rem; }
+.rp-tile span:first-child { font-family: var(--typed); font-size: 0.8rem; color: var(--paper-dim); }
+.rp-tile b { font-family: var(--display); font-weight: 400; font-size: 1.6rem; color: var(--paper); }
+.rp-up { color: #8fd393; font-size: 0.8rem; } .rp-down { color: #f08a75; font-size: 0.8rem; } .rp-flat { color: var(--paper-dim); font-size: 0.8rem; }
+.rp-cols { display: grid; gap: 1.2rem; margin-top: 0.6rem; }
+@media (min-width: 760px) { .rp-cols { grid-template-columns: 1fr 1fr; } }
+.rp-cols h4 { margin: 1rem 0 0.3rem; font-family: var(--display); font-weight: 400; font-size: 1.05rem; text-transform: uppercase; color: var(--mustard); letter-spacing: 0.04em; }
+.rp-cols ol, .rp-facts { margin: 0; padding-left: 1.2rem; color: var(--paper-dim); } .rp-cols li { margin: 0.2rem 0; } .rp-cols b { color: var(--paper); }
+.rp-note { margin-top: 1rem; }
+@media print {
+  body.print-report * { visibility: hidden; }
+  body.print-report .dash-report, body.print-report .dash-report * { visibility: visible; }
+  body.print-report .dash-report { position: absolute; inset: 0 auto auto 0; width: 100%; color: #000; }
+  body.print-report .dash-report * { color: #000 !important; background: none !important; box-shadow: none !important; }
+  body.print-report .rp-tile { border-color: #999; }
+  html:has(body.print-report), body.print-report { background: #fff !important; background-image: none !important; }
+  body.print-report::before, body.print-report::after, html:has(body.print-report)::before, body.print-report .fixed-bg { display: none !important; }
+}
+.rp-tile b span { font: inherit; }
