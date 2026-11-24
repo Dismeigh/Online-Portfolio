@@ -7,7 +7,27 @@
     const data = await r.json().catch(() => ({}));
     return { status: r.status, data };
   };
-  const show = which => { for (const id of ['login', 'setup', 'panel']) $(id).hidden = which !== id; };
+  const show = which => { for (const id of ['login', 'setup', 'panel']) $(id).hidden = which !== id; $('hero-bar').hidden = which !== 'panel'; };
+  const money = v => Math.max(0, Number(String(v ?? '').replace(/[$,\s]/g, '')) || 0);
+
+  // Preview follows what's typed, before saving
+  function preview() {
+    if (!state) return;
+    const g = state.goal, p = state.progress;
+    const title = $('g-title').value.trim(), blurb = $('g-blurb').value.trim();
+    const target = money($('g-target').value), start = money($('g-start').value);
+    const raised = Math.max(0, p.raised - (g.start || 0)) + start;
+    const pct = target ? Math.min(100, Math.floor((raised / target) * 100)) : 0;
+    $('pv-title').textContent = title || 'No goal yet';
+    $('pv-blurb').textContent = blurb; $('pv-blurb').hidden = !blurb;
+    $('pv-fill').style.width = `${pct}%`;
+    $('pv-raised').textContent = usd(raised);
+    $('pv-target').textContent = usd(target);
+    $('pv-pct').textContent = pct;
+    const dirty = title !== (g.title || '') || blurb !== (g.blurb || '') || target !== (g.target || 0) || start !== (g.start || 0)
+      || $('g-memberships').checked !== (g.memberships !== false) || $('g-garage').checked !== !!g.garage;
+    $('pv-dirty').hidden = !dirty;
+  }
   let state = null;
 
   function render(s) {
@@ -17,6 +37,15 @@
     $('toggle').setAttribute('aria-checked', String(on));
     $('toggle').classList.toggle('is-on', on);
     $('toggle-label').textContent = on ? 'On' : 'Off';
+    $('st-goal').textContent = on ? 'On' : 'Off';
+    $('st-goal').closest('.dash-stat').classList.toggle('is-good', on);
+    $('st-raised').textContent = g.target ? `${usd(p.raised)} of ${usd(g.target)}` : 'No goal yet';
+    $('st-kofi').textContent = s.connected ? 'Connected' : 'Not connected';
+    $('st-kofi').closest('.dash-stat').classList.toggle('is-good', s.connected);
+    $('st-kofi').closest('.dash-stat').classList.toggle('is-warn', !s.connected);
+    $('kofi-chip').className = `dash-chip ${s.connected ? 'dash-chip-ok' : 'dash-chip-warn'}`;
+    $('kofi-chip-text').textContent = s.connected ? 'Connected' : 'Not connected';
+    $('kofi-steps').open = !s.connected;
     $('state-note').textContent = on
       ? `Showing now in Support & Shop on the home page${g.garage ? ' and in the Garage' : ''}.`
       : 'Hidden. Turn it on to show the bar in Support & Shop on the home page.';
@@ -34,6 +63,7 @@
       $('g-memberships').checked = g.memberships !== false;
       $('g-garage').checked = !!g.garage;
     }
+    preview();
     $('hook-url').textContent = s.webhookUrl;
     $('kofi-status').textContent = s.connected
       ? `Connected. Last payment received: ${s.lastPayment ? new Date(s.lastPayment).toLocaleString() : 'none yet'}.`
@@ -87,13 +117,18 @@
     if (!data.error) load();
   };
   $('goal-form').addEventListener('submit', e => { e.preventDefault(); save(false); });
+  $('goal-form').addEventListener('input', preview);
+  $('goal-form').addEventListener('change', preview);
   $('restart').addEventListener('click', () => {
     if (state?.goal?.since && !confirm('Start a new goal? Ko-fi payments will be counted from now, and the old count is set aside.')) return;
     save(true);
   });
   $('toggle').addEventListener('click', async () => {
     const want = !state?.goal?.on;
+    $('toggle').classList.toggle('is-on', want); $('toggle').setAttribute('aria-checked', String(want)); $('toggle-label').textContent = want ? 'On' : 'Off';
+    $('toggle').disabled = true;
     const { status, data } = await api('goal', { action: 'toggle', on: want });
+    $('toggle').disabled = false;
     if (status === 401) return show('login');
     $('goal-msg').textContent = data.error || (want ? 'Goal bar is on.' : 'Goal bar is off.');
     load();
