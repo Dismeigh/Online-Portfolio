@@ -27,7 +27,7 @@
   }
 
   // Secret achievements: hidden easter eggs, tracked in this browser
-  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer', spotted: 'Spotted in the wild', konami: 'Cheat code', nightowl: 'Night owl', arcade: 'Arcade master', lorebuff: 'Lore buff', tourgrad: 'Tour graduate' };
+  const SECRETS = { bang: 'BANG!', redline: 'Redline', bounty: 'Bounty claimed', realone: 'For the real ones', swordfish: 'Swordfish', explorer: 'Explorer', spotted: 'Spotted in the wild', konami: 'Cheat code', nightowl: 'Night owl', arcade: 'Arcade master', lorebuff: 'Lore buff', tourgrad: 'Tour graduate', stowaway: 'Stowaway' };
   const KEY = 'dismeigh-secrets';
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
@@ -55,7 +55,7 @@
   }
 
   // Reward for finding every secret: a downloadable "Certified Bounty Hunter" license wallpaper
-  const LICENSE = '/assets/wallpapers/certified-bounty-hunter-7q4k.jpg';
+  const LICENSE = '/assets/wallpapers/certified-bounty-hunter-x9m2.jpg';
   function showReward() {
     let dlg = document.getElementById('reward-dialog');
     if (!dlg) {
@@ -67,7 +67,7 @@
         <p class="reward-kicker">All secrets found</p>
         <h2 id="reward-title">Certified Bounty Hunter</h2>
         <p class="reward-text">You found every hidden thing on the ship. Here&rsquo;s your license, sized as a phone wallpaper.</p>
-        <img src="/assets/wallpapers/certified-bounty-hunter-7q4k-thumb.webp" width="360" height="780" alt="Bounty Hunter License wallpaper: Certified Bounty Hunter, 12 of 12 secrets, with Dismeigh's art and a Verified stamp">
+        <img src="/assets/wallpapers/certified-bounty-hunter-x9m2-thumb.webp" width="360" height="780" alt="Bounty Hunter License wallpaper: Certified Bounty Hunter, 13 of 13 secrets, with Dismeigh's art and a Verified stamp">
         <div class="reward-actions"><a class="reward-dl" href="${LICENSE}" download="dismeigh-bounty-hunter-license.jpg">Download license</a><button type="button" class="reward-close">Close</button></div>`;
       document.body.append(dlg);
       dlg.querySelector('.reward-close').addEventListener('click', () => dlg.close());

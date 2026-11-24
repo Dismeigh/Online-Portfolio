@@ -986,9 +986,104 @@
   const stAct = async body => {
     const { status, data } = await api('streams', body);
     if (status !== 200) { flash($('st-msg'), data.error || 'Couldn’t save.'); return null; }
-    stBoard = data; streams = null; drawStreams(); return data;
+    stBoard = data; streams = null; drawStreams(); drawGraphic(); return data;
   };
-  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); };
+
+  // Pre-stream checklist
+  let ck = { items: [], done: [] };
+  function drawCk() {
+    const n = ck.done.length, t = ck.items.length;
+    $('ck-list').innerHTML = ck.items.map(x => `<li><label class="dash-check-line"><input type="checkbox" data-ck="${x.id}"${ck.done.includes(x.id) ? ' checked' : ''}> <span>${esc(x.text)}</span></label></li>`).join('') || '<li class="dash-note">No items. Tap Edit list to add some.</li>';
+    $('ck-chip').className = `dash-chip ${t && n === t ? 'dash-chip-ok' : ''}`; $('ck-chip-text').textContent = t && n === t ? 'Ready to go live' : `${n} of ${t}`;
+  }
+  const ckAct = async body => { const { status, data } = await api('checklist', body); if (status !== 200) return flash($('ck-msg'), data.error || 'Couldn’t save.'); ck = data; drawCk(); return data; };
+  $('ck-list').addEventListener('change', async e => {
+    const b = e.target.closest('[data-ck]'); if (!b) return;
+    const d = await ckAct({ action: 'tick', id: Number(b.dataset.ck), on: b.checked });
+    if (d && d.items.length && d.done.length === d.items.length) flash($('ck-msg'), 'All set. Have a good stream!');
+  });
+  $('ck-reset').addEventListener('click', () => ckAct({ action: 'reset' }));
+  $('ck-edit').addEventListener('click', () => { $('ck-items').value = ck.items.map(x => x.text).join('\n'); $('ck-editor').hidden = false; $('ck-items').focus(); });
+  $('ck-cancel').addEventListener('click', () => { $('ck-editor').hidden = true; });
+  $('ck-save').addEventListener('click', async () => {
+    const lines = $('ck-items').value.split('\n').map(x => x.trim()).filter(Boolean), used = new Set();
+    const items = lines.map(t => { const old = ck.items.find(x => x.text === t && !used.has(x.id)); if (old) used.add(old.id); return { id: old ? old.id : 0, text: t }; });
+    if (await ckAct({ action: 'items', items })) { $('ck-editor').hidden = true; flash($('ck-msg'), 'List saved.'); }
+  });
+
+  // Schedule graphic
+  const SG = { square: [1080, 1080], story: [1080, 1920], wide: [1600, 900] };
+  let sgAvatar = null;
+  const etDay = iso => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date(iso));
+  const etTime = iso => new Date(iso).toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).replace(':00', '');
+  const plusDays = (d, n) => new Date(Date.parse(`${d}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
+  const short = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric' });
+  function drawGraphic() {
+    const wk = stBoard?.weeks?.[$('sg-week').value]; if (!wk) return;
+    const [W, H] = SG[$('sg-size').value], c = $('sg-canvas'), x = c.getContext('2d'); c.width = W; c.height = H;
+    const C = { ink: '#14110f', ink2: '#1e1a17', paper: '#efe6d2', dim: '#8f8471', mustard: '#e3a92b', red: '#b73b2c' };
+    const fit = (t, font, size, max, min = 12) => { let z = size; do { x.font = font.replace('#', z); if (x.measureText(t).width <= max) break; z -= 2; } while (z > min); return z; };
+    const wide = W > H, P = Math.round(Math.min(W, H) * 0.065);
+    x.fillStyle = C.ink; x.fillRect(0, 0, W, H);
+    // Header
+    const days = Array.from({ length: 7 }, (_, i) => { const d = plusDays(wk.start, i); return { d, ev: (wk.events || []).filter(e => etDay(e.start) === d) }; });
+    const hx = P, hy = P, hw = wide ? W * 0.34 : W - 2 * P;
+    const av = wide ? hw * 0.55 : Math.min(W, H) * (H > W ? 0.2 : 0.16);
+    x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+    x.fillStyle = C.mustard; x.font = `${Math.round(av * 0.16)}px "Special Elite", monospace`;
+    const kick = 'STREAM SCHEDULE', range = `${short(days[0].d)} – ${short(days[6].d)}`;
+    if (wide) {
+      if (sgAvatar) { x.drawImage(sgAvatar, hx, hy, av, av); x.strokeStyle = C.paper; x.lineWidth = 6; x.strokeRect(hx, hy, av, av); }
+      let y = hy + av + av * 0.3; x.fillText(kick, hx, y);
+      x.fillStyle = C.paper; const z = fit('DISMEIGH', '#px Anton, Impact, sans-serif', av * 0.5, hw); y += z * 1.05; x.fillText('DISMEIGH', hx, y);
+      x.fillStyle = C.dim; x.font = `${Math.round(av * 0.15)}px "Special Elite", monospace`; x.fillText(range, hx, y + av * 0.24);
+    } else {
+      if (sgAvatar) { x.drawImage(sgAvatar, W - P - av, hy, av, av); x.strokeStyle = C.paper; x.lineWidth = 6; x.strokeRect(W - P - av, hy, av, av); }
+      let y = hy + av * 0.22; x.fillText(kick, hx, y);
+      x.fillStyle = C.paper; const z = fit('DISMEIGH', '#px Anton, Impact, sans-serif', av * 0.62, W - 3 * P - av); y += z * 1.0; x.fillText('DISMEIGH', hx, y);
+      x.fillStyle = C.dim; x.font = `${Math.round(av * 0.15)}px "Special Elite", monospace`; x.fillText(range, hx, y + av * 0.24);
+    }
+    // Rows
+    const foot = Math.min(W, H) * 0.07;
+    const rx = wide ? W * 0.42 : P, rw = W - P - rx, ry = wide ? P : hy + av + (H > W ? P * 2.2 : P * 1.6), rh = (H - P - foot - ry) / 7;
+    // Slabs: under the header, never across the text
+    const M = Math.min(W, H);
+    x.save();
+    if (wide) { x.beginPath(); x.rect(0, 0, rx - P * 0.6, H); x.clip(); x.translate(0, H - P - foot - M * 0.02); x.rotate(-0.05); }
+    else { x.translate(0, ry - P * 0.55); x.rotate(-0.025); }
+    x.fillStyle = C.mustard; x.fillRect(-W * 0.2, 0, W * 1.5, M * 0.026); x.fillStyle = C.red; x.fillRect(-W * 0.2, M * 0.026, W * 1.5, M * 0.012); x.restore();
+    days.forEach((day, i) => {
+      const y = ry + i * rh, on = day.ev.length > 0;
+      x.fillStyle = i % 2 ? C.ink : C.ink2; x.fillRect(rx, y, rw, rh - 4);
+      if (on) { x.fillStyle = C.mustard; x.fillRect(rx, y, 8, rh - 4); }
+      const dn = new Date(`${day.d}T12:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short' }).toUpperCase();
+      x.fillStyle = on ? C.mustard : C.dim; x.font = `${Math.round(rh * 0.38)}px Anton, Impact, sans-serif`; x.fillText(dn, rx + rh * 0.35, y + rh * 0.5);
+      x.font = `${Math.round(rh * 0.2)}px "Special Elite", monospace`; x.fillStyle = C.dim; x.fillText(short(day.d), rx + rh * 0.35, y + rh * 0.78);
+      const tx = rx + rh * 1.75, tw = rw - (tx - rx) - rh * 0.3;
+      if (!on) { x.fillStyle = C.dim; x.font = `${Math.round(rh * 0.28)}px "Special Elite", monospace`; x.fillText('Off', tx, y + rh * 0.6); return; }
+      const e = day.ev[0], more = day.ev.length > 1 ? `  +${day.ev.length - 1} more` : '';
+      x.fillStyle = C.mustard; x.font = `${Math.round(rh * 0.24)}px "Special Elite", monospace`; x.fillText(etTime(e.start) + ' ET' + more, tx, y + rh * 0.38);
+      x.fillStyle = C.paper; let t = e.title;
+      x.font = `800 ${Math.round(rh * (wide ? 0.22 : 0.24))}px "Work Sans", sans-serif`; while (x.measureText(t).width > tw && t.length > 4) t = t.slice(0, -2).trimEnd() + '…';
+      x.fillText(t, tx, y + rh * 0.74);
+    });
+    x.fillStyle = C.paper; x.font = `${Math.round(foot * 0.42)}px "Special Elite", monospace`; x.textAlign = wide ? 'left' : 'center';
+    x.fillText('twitch.tv/dismeigh', wide ? hx : W / 2, H - P * 0.6 - foot * 0.2);
+  }
+  const sgReady = Promise.all([document.fonts.load('40px Anton'), document.fonts.load('20px "Special Elite"'), document.fonts.load('800 20px "Work Sans"'),
+    new Promise(res => { const i = new Image(); i.onload = () => { sgAvatar = i; res(); }; i.onerror = res; i.src = '/avatar-420.jpg?v=2'; })]).catch(() => {});
+  ['sg-week', 'sg-size'].forEach(id => $(id).addEventListener('change', drawGraphic));
+  const sgBlob = () => new Promise(r => $('sg-canvas').toBlob(r, 'image/png'));
+  const sgName = () => `dismeigh-schedule-${stBoard?.weeks?.[$('sg-week').value]?.start || 'week'}-${$('sg-size').value}.png`;
+  $('sg-dl').addEventListener('click', async () => {
+    const b = await sgBlob(); if (!b) return;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = sgName(); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  });
+  if (navigator.canShare) {
+    $('sg-share').hidden = false;
+    $('sg-share').addEventListener('click', async () => { const b = await sgBlob(); if (!b) return; const f = new File([b], sgName(), { type: 'image/png' }); if (navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f] }); } catch {} } else $('sg-dl').click(); });
+  }
+  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); };
   $('st-new').addEventListener('click', () => { stEdit = 'new'; drawStreams(); $('sf-title').focus(); });
   $('st-body').addEventListener('change', e => {
     if (e.target.id !== 'sf-repeat') return;
@@ -1090,7 +1185,25 @@
   });
 
   const drawBoard = d => { if (d && d.requests) board = d; drawRequests(); drawJobs(); drawExpenses(); drawAuditions(); if ($('cal-grid')) drawCal(); };
-  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); };
+  // Collab requests
+  let collabs = [];
+  function drawCollabs() {
+    $('cr-body').innerHTML = collabs.length ? `<ul class="dash-list">${collabs.map(c => `
+      <li class="dash-row${c.replied ? ' is-hidden' : ''}"><div class="dash-row-main"><b>${esc(c.name)}</b> <span class="dash-meta">${esc(c.kind)} · ${esc(when(c.at))}${c.replied ? ' · replied' : ''}</span>
+        <p class="dash-req-meta">Reply to: <b>${esc(c.contact)}</b></p>${c.link ? `<p class="dash-req-links"><a href="${esc(c.link)}" target="_blank" rel="noopener noreferrer nofollow">Their link</a></p>` : ''}
+        <p class="dash-note-text">${esc(c.message)}</p></div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-cr="${c.replied ? 'unreplied' : 'replied'}" data-id="${c.id}">${c.replied ? 'Mark not replied' : 'Mark replied'}</button>
+          <button type="button" class="dash-btn dash-small dash-danger" data-cr="delete" data-id="${c.id}">Delete</button></div></li>`).join('')}</ul>` : '<p class="dash-note">No collab requests yet.</p>';
+  }
+  const loadCollabs = async () => { collabs = (await api('collab')).data.collabs || []; drawCollabs(); };
+  $('cr-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-cr]'); if (!b) return;
+    if (b.dataset.cr === 'delete' && !confirm('Delete this collab request?')) return;
+    const { status, data } = await api('collab', { action: b.dataset.cr, id: Number(b.dataset.id) });
+    if (status !== 200) return flash($('cr-msg'), data.error || 'Couldn’t save.');
+    collabs = data.collabs || []; drawCollabs();
+  });
+  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); loadCollabs(); };
   const clientAct = async body => { const { status, data } = await api('clients', body); if (status !== 200) return flash($('jb-msg'), data.error || 'Couldn\u2019t save.'); drawBoard(data); return data; };
   $('rq-refresh').addEventListener('click', loaders.clients);
   document.querySelectorAll('#rq-filter [data-rq]').forEach(b => b.addEventListener('click', () => { rqView = b.dataset.rq; document.querySelectorAll('#rq-filter [data-rq]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRequests(); }));

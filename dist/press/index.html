@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=113">
+  <link rel="stylesheet" href="/styles.css?v=114">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Press Kit", "item": "https://www.denizen-dismeigh.com/press/"}]}</script>
 </head>
@@ -163,7 +163,21 @@
           <p class="press-collab-tag">Open to collabs</p>
           <ul class="press-collab-kinds" id="press-collab-kinds"></ul>
           <p class="press-collab-note" id="press-collab-note" hidden></p>
-          <p class="press-collab-how">Reach out at <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a> or on <a href="https://discord.gg/ttKfZbHnsj" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
+          <p class="press-collab-how">Send a request below, or reach out at <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a> or on <a href="https://discord.gg/ttKfZbHnsj" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
+          <details class="press-collab-form-wrap" id="cr-wrap">
+            <summary>Send a collab request</summary>
+            <form id="cr-form" class="press-collab-form" novalidate>
+              <label for="cr-name">Your name or channel</label><input id="cr-name" maxlength="60" autocomplete="nickname" required>
+              <label for="cr-contact">Email or Discord username</label><input id="cr-contact" maxlength="120" required>
+              <label for="cr-kind">What kind of collab?</label><select id="cr-kind" required></select>
+              <label for="cr-link">Your channel or page <span>(optional)</span></label><input id="cr-link" type="url" maxlength="300" placeholder="https://twitch.tv/...">
+              <label for="cr-message">The idea</label><textarea id="cr-message" rows="4" maxlength="1000" required placeholder="What you have in mind, and when"></textarea>
+              <label class="log-trap" aria-hidden="true">Website <input id="cr-website" tabindex="-1" autocomplete="off"></label>
+              <button type="submit" class="wp-dl press-collab-send" id="cr-send">Send request</button>
+              <p class="press-collab-msg" id="cr-msg" role="alert"></p>
+              <p class="press-collab-fine">Only Dismeigh sees this. Requests are deleted after 120 days.</p>
+            </form>
+          </details>
         </div>
 
         <h2 class="press-h">Name</h2>
@@ -234,8 +248,24 @@
       const ul = document.getElementById('press-collab-kinds');
       (c.kinds || []).forEach(k => { const li = document.createElement('li'); li.textContent = k; ul.append(li); });
       if (c.note) { const n = document.getElementById('press-collab-note'); n.textContent = c.note; n.hidden = false; }
+      const sel = document.getElementById('cr-kind');
+      [...(c.kinds || []), 'Something else'].forEach(k => { const o = document.createElement('option'); o.textContent = k; sel.append(o); });
       document.getElementById('press-collab').hidden = false;
     }).catch(() => {});
+    const opened = Date.now();
+    document.getElementById('cr-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const v = id => document.getElementById(id).value, msg = document.getElementById('cr-msg'), btn = document.getElementById('cr-send');
+      msg.textContent = ''; btn.disabled = true;
+      try {
+        const r = await fetch('/api/collab', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: v('cr-name'), contact: v('cr-contact'), kind: v('cr-kind'), link: v('cr-link'), message: v('cr-message'), website: v('cr-website'), elapsed: Date.now() - opened }) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) { msg.textContent = d.error || 'Couldn\u2019t send that. Try again.'; if (d.field) document.getElementById(d.field)?.focus(); }
+        else { msg.textContent = 'Sent! I\u2019ll get back to you soon.'; e.target.reset(); }
+      } catch { msg.textContent = 'Couldn\u2019t send that. Check your connection.'; }
+      btn.disabled = false;
+    });
 
     document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
       const text = document.getElementById(btn.dataset.copy)?.textContent || '';
@@ -247,6 +277,6 @@
 
   }
   </script>
-  <script src="/app.js?v=62" defer></script>
+  <script src="/app.js?v=63" defer></script>
 </body>
 </html>
