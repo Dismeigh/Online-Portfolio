@@ -1,0 +1,47 @@
+{
+  "note": "Rates on the Work page. Edit from the dashboard (Content tab, Rates); once saved there, this file is only the fallback.",
+  "pricing": [
+    {
+      "group": "discord",
+      "name": "Discord server setup",
+      "price": "from $50",
+      "summary": "A clean, organized server built around your community.",
+      "points": "Categories, channels and roles with the right permissions\nWelcome, rules and verification\nUp to 3 bots set up (moderation, roles, leveling or music)\nBasic AutoMod and anti-spam"
+    },
+    {
+      "group": "discord",
+      "name": "Mod team setup & training",
+      "price": "from $35",
+      "summary": "Give your mods the tools and the playbook.",
+      "points": "AutoMod rules, word filters and raid protection\nMod roles, private mod channels and a log channel\nA short mod handbook: when to warn, mute, ban or escalate\nOptional 1-hour walkthrough with your mods"
+    },
+    {
+      "group": "discord",
+      "name": "Monthly server care",
+      "price": "$25/month",
+      "summary": "Keep things running while you focus on your community.",
+      "points": "Bot updates and replacements when they break\nChannel and role changes as you grow\nA monthly permissions check\nEvent and seasonal setups"
+    },
+    {
+      "group": "web",
+      "name": "One-page website",
+      "price": "from $300",
+      "summary": "A single, polished page that sends people where you want them.",
+      "points": "Custom design that fits your brand\nWorks on phones, fast to load\nLinks, socials, a contact or signup form\nHosting setup and connecting your domain\n2 rounds of changes"
+    },
+    {
+      "group": "web",
+      "name": "Multi-page website",
+      "price": "from $750",
+      "summary": "A full site with room to grow, like 757animeclub.com.",
+      "points": "Up to 5 pages, custom design\nExtras like events, galleries, a shop link or a members area\nAn easy way to update your own content (quoted per feature)\nHosting, domain and search basics\n3 rounds of changes"
+    },
+    {
+      "group": "web",
+      "name": "Monthly site care",
+      "price": "$30/month",
+      "summary": "Updates and fixes without the headache.",
+      "points": "Small text and photo updates\nFixes if anything breaks\nHosting and domain checks\nHelp with questions as they come up"
+    }
+  ]
+}

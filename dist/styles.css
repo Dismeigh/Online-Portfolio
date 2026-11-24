@@ -2967,3 +2967,22 @@ html:has(.dash-body) { background: var(--ink); }
 .game-tip { display: inline-block; margin-top: 0.8rem; color: var(--mustard); font-weight: 700; font-size: 0.95rem; text-decoration: underline; text-underline-offset: 3px; }
 .game-tip[hidden] { display: none; }
 .ev-tip[hidden] { display: none; }
+
+/* Work page rates */
+.rates { margin-top: 2.6rem; }
+.rates > h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 2rem; text-transform: uppercase; color: var(--mustard); }
+.rates-intro { margin: 0.4rem 0 1.2rem; color: var(--paper-dim); }
+.rate-groups { display: grid; gap: 1.6rem; }
+@media (min-width: 900px) { .rate-groups { grid-template-columns: 1fr 1fr; align-items: start; } }
+.rate-group { display: grid; gap: 0.9rem; }
+.rate-group-title { margin: 0; font-family: var(--typed); font-size: 1rem; color: var(--paper-dim); text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 2px dashed var(--line); padding-bottom: 0.4rem; }
+.rate-card { padding: 1rem 1.1rem 1.1rem; background: var(--ink-2, #1d1916); border: 2px solid var(--line, #3a322b); border-left: 6px solid var(--teal); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.45); text-align: left; }
+.rate-group[data-rate-group="web"] .rate-card { border-left-color: var(--mustard); }
+.rate-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.2rem 1rem; }
+.rate-card h4 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.4rem; line-height: 1.1; text-transform: uppercase; color: var(--paper); }
+.rate-price { margin: 0; font-family: var(--display); font-size: 1.35rem; color: var(--mustard); white-space: nowrap; }
+.rate-sum { margin: 0.35rem 0 0.5rem; color: var(--paper); }
+.rate-card ul { margin: 0; padding-left: 1.1rem; color: var(--paper-dim); font-size: 0.95rem; }
+.rate-card li { margin: 0.2rem 0; }
+.rates-cta { margin: 1.4rem 0 0; text-align: center; }
+.rate-card .rate-price { color: var(--mustard) !important; }
