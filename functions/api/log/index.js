@@ -1,5 +1,6 @@
 import { guard, json, sameOrigin, visitorKey } from '../../../lib/arcade.js';
 import { cleanName, cleanMessage, LOG_NAME_MAX } from '../../../lib/guestbook.js';
+import { alert } from '../../../lib/push.js';
 
 let ready = false;
 async function ensureTable(db) {
@@ -22,7 +23,7 @@ const latest = async db => (await db.prepare(
 export const onRequestGet = guard(async ({ env }) => { await ensureTable(env.ARCADE); return json({ entries: await latest(env.ARCADE) }); });
 
 // POST /api/log { name, message, elapsed, website } -> { ok, entries }
-export const onRequestPost = guard(async ({ request, env }) => {
+export const onRequestPost = guard(async ({ request, env, waitUntil }) => {
   if (!sameOrigin(request)) return json({ error: 'Not allowed.' }, 403);
   const db = env.ARCADE; await ensureTable(db);
   let body; try { body = await request.json(); } catch { return json({ error: 'Bad request.' }, 400); }
@@ -36,6 +37,8 @@ export const onRequestPost = guard(async ({ request, env }) => {
   if (recent?.last && now - recent.last < 60000) return json({ error: 'One entry a minute, captain. Try again shortly.' }, 429);
   if ((recent?.day || 0) >= 5) return json({ error: 'That’s plenty of log entries for today. Come back tomorrow!' }, 429);
   await db.prepare('INSERT INTO guestbook (name, message, ip, created_at) VALUES (?, ?, ?, ?)').bind(n.name, m.message, ip, now).run();
+  const job = alert(env, 'log', { title: 'New Ship\u2019s Log entry', body: `${n.name}: ${m.message.slice(0, 120)}`, tab: 'guestbook' });
+  if (waitUntil) waitUntil(job); else await job;
   // Now and then, clear out expired entries for good (pinned ones stay)
   if (Math.random() < 0.1) await db.prepare('DELETE FROM guestbook WHERE pinned = 0 AND created_at < ?').bind(cutoff()).run();
   return json({ ok: true, entries: await latest(db) });

@@ -488,6 +488,57 @@
       <li class="dash-row${bad(h.event) ? ' is-bad' : ''}"><div class="dash-row-main"><b>${esc(h.event)}</b> <span class="dash-meta">${esc(when(h.at))}</span><p>${esc(h.device)} · ${esc(h.place)}</p></div></li>`).join('')}</ul>` : '<p class="dash-note">Nothing yet.</p>';
   };
 
+  // ---------- Phone alerts (Web Push) ----------
+  const alertKinds = () => [...document.querySelectorAll('#al-kinds input:checked')].map(i => i.value);
+  const deviceName = () => { const u = navigator.userAgent; return /iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? 'Android phone' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows PC' : 'Device'; };
+  const KIND_NAMES = { log: 'Ship\u2019s Log', kofi: 'Ko-fi', goal: 'Goal', login: 'Logins' };
+  const toKey = s => { const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4)); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+  let pushKey = '', mySub = null;
+  const pushOk = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  loaders.alerts = async () => {
+    const { data } = await api('push'); pushKey = data.key;
+    const iosBrowser = /iPhone|iPad/.test(navigator.userAgent) && !(matchMedia('(display-mode: standalone)').matches || navigator.standalone);
+    mySub = pushOk() ? await navigator.serviceWorker.ready.then(r => r.pushManager.getSubscription()).catch(() => null) : null;
+    const mine = mySub && (data.devices || []).find(d => d.endpoint === mySub.endpoint);
+    if (mine) document.querySelectorAll('#al-kinds input').forEach(i => { i.checked = mine.kinds.includes(i.value); });
+    $('al-chip').className = `dash-chip ${mine ? 'dash-chip-ok' : ''}`; $('al-chip-text').textContent = mine ? 'On here' : 'Off here';
+    $('al-on').textContent = mine ? 'Save choices' : 'Turn on alerts here';
+    $('al-test').hidden = $('al-off').hidden = !mine;
+    $('al-on').disabled = !pushOk() || iosBrowser;
+    $('al-note').textContent = iosBrowser ? 'On iPhone, alerts only work in the installed dashboard app. Add it to your home screen (Share \u2192 Add to Home Screen), open it from there, then come back to this tab.'
+      : !pushOk() ? 'This browser can\u2019t do alerts. Try the installed dashboard app on your phone.'
+      : 'Get a notification when something happens on the site. Each phone or computer picks its own alerts.';
+    $('al-devices').innerHTML = (data.devices || []).length ? `<ul class="dash-list">${data.devices.map(d => `
+      <li class="dash-row"><div class="dash-row-main"><b>${esc(d.label)}${mySub && d.endpoint === mySub.endpoint ? ' (this one)' : ''}</b> <span class="dash-meta">since ${esc(when(d.at))}</span>
+        <p>${d.kinds.length ? esc(d.kinds.map(k => KIND_NAMES[k] || k).join(', ')) : 'No alerts picked'}</p></div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small dash-danger" data-unsub="${esc(d.endpoint)}">Remove</button></div></li>`).join('')}</ul>` : '<p class="dash-note">None yet.</p>';
+  };
+  $('al-on').addEventListener('click', async () => {
+    try {
+      if (mySub && !$('al-off').hidden) { await api('push', { action: 'kinds', endpoint: mySub.endpoint, kinds: alertKinds() }); flash($('al-msg'), 'Saved.'); return loaders.alerts(); }
+      if ((await Notification.requestPermission()) !== 'granted') return flash($('al-msg'), 'Notifications are blocked. Allow them in your phone\u2019s settings for this app, then try again.');
+      const reg = await navigator.serviceWorker.ready;
+      const old = await reg.pushManager.getSubscription();
+      if (old && old.options?.applicationServerKey && btoa(String.fromCharCode(...new Uint8Array(old.options.applicationServerKey))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') !== pushKey) await old.unsubscribe();
+      const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: toKey(pushKey) });
+      const { data } = await api('push', { action: 'subscribe', sub: sub.toJSON(), kinds: alertKinds(), label: deviceName() });
+      flash($('al-msg'), data.error || 'Alerts are on for this device. Try "Send a test".');
+    } catch { flash($('al-msg'), 'Couldn\u2019t turn alerts on here. Try again in the installed app.'); }
+    loaders.alerts();
+  });
+  $('al-test').addEventListener('click', async () => { if (!mySub) return; const { data } = await api('push', { action: 'test', endpoint: mySub.endpoint }); flash($('al-msg'), data.error || 'Sent. It should pop up in a few seconds.'); });
+  $('al-off').addEventListener('click', async () => {
+    if (!mySub) return;
+    await api('push', { action: 'remove', endpoint: mySub.endpoint }); await mySub.unsubscribe().catch(() => {});
+    flash($('al-msg'), 'Alerts are off for this device.'); loaders.alerts();
+  });
+  $('al-devices').addEventListener('click', async e => {
+    const b = e.target.closest('[data-unsub]'); if (!b || !confirm('Stop alerts on that device?')) return;
+    await api('push', { action: 'remove', endpoint: b.dataset.unsub });
+    if (mySub && b.dataset.unsub === mySub.endpoint) await mySub.unsubscribe().catch(() => {});
+    loaders.alerts();
+  });
+
   // ---------- Install as an app ----------
   let deferred = null;
   addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('install-btn').hidden = false; });

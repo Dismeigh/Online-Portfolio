@@ -1,7 +1,7 @@
 // Dismeigh site service worker: makes the site installable and gives it an offline page.
 // Pages are always fetched fresh when online; only static files are cached.
-const CACHE = 'dismeigh-v57';
-const PRECACHE = ['/offline.html', '/styles.css?v=74', '/app.js?v=51', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
+const CACHE = 'dismeigh-v58';
+const PRECACHE = ['/offline.html', '/styles.css?v=75', '/app.js?v=51', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -11,6 +11,22 @@ self.addEventListener('activate', event => {
   event.waitUntil(caches.keys()
     .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
+});
+
+// Dashboard phone alerts (sent by lib/push.js). Tapping one opens the dashboard on the right tab.
+self.addEventListener('push', event => {
+  let d = {}; try { d = event.data ? event.data.json() : {}; } catch {}
+  event.waitUntil(self.registration.showNotification(d.title || 'Dismeigh dashboard', {
+    body: d.body || '', icon: '/dashboard/icon-192.png', badge: '/favicon-48.png', tag: d.tab || 'dash', data: { url: `/dashboard/#${String(d.tab || 'overview').replace(/[^a-z]/g, '')}` },
+  }));
+});
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/dashboard/';
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    const open = list.find(c => new URL(c.url).pathname.startsWith('/dashboard/'));
+    return open ? open.navigate(url).then(c => (c || open).focus()).catch(() => open.focus()) : self.clients.openWindow(url);
+  }));
 });
 
 self.addEventListener('fetch', event => {

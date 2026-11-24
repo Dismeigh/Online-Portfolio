@@ -2883,3 +2883,10 @@ html:has(.dash-body) { background: var(--ink); }
 .dash-tune-box .dash-note { margin: 0.5rem 0 0.7rem; }
 .dash-label-like { margin: 0; font-weight: 800; color: var(--paper); }
 #tu-target { max-width: 10rem; }
+
+/* Dashboard alerts */
+.dash-checks { margin: 0.6rem 0 0.2rem; padding: 0.8rem 0.9rem; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.25); display: grid; gap: 0.55rem; }
+.dash-checks legend { padding: 0 0.3rem; font-weight: 800; color: var(--paper); }
+.dash-checks label { display: flex; gap: 0.6rem; align-items: center; margin: 0; font-weight: 600; color: var(--paper); min-height: 2rem; }
+.dash-checks label small { color: var(--paper-dim); font-weight: 400; font-size: 0.9em; }
+.dash-checks input { width: 1.2rem; height: 1.2rem; accent-color: var(--mustard); flex: 0 0 auto; }

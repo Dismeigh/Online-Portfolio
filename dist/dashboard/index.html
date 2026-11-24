@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=74">
+  <link rel="stylesheet" href="/styles.css?v=75">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -73,6 +73,7 @@
         <button type="button" data-tab="guestbook">Ship&rsquo;s Log</button>
         <button type="button" data-tab="arcade">Arcade</button>
         <button type="button" data-tab="notes">Notes</button>
+        <button type="button" data-tab="alerts">Alerts</button>
         <button type="button" data-tab="site">Site</button>
         <button type="button" data-tab="security">Logins</button>
       </nav>
@@ -250,6 +251,28 @@
         </section>
       </div>
 
+      <div data-panel="alerts" hidden>
+        <section class="dash-card dash-card-alerts" aria-labelledby="al-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">On your phone</p><h2 id="al-h">Phone alerts</h2></div><span class="dash-chip" id="al-chip"><span class="dash-dot" aria-hidden="true"></span><span id="al-chip-text">Off here</span></span></div>
+          <p class="dash-note" id="al-note">Get a notification when something happens on the site. Each phone or computer picks its own alerts.</p>
+          <fieldset class="dash-checks" id="al-kinds">
+            <legend>Alert me about</legend>
+            <label><input type="checkbox" value="log" checked> <span>New Ship&rsquo;s Log entries</span></label>
+            <label><input type="checkbox" value="kofi" checked> <span>Ko-fi tips and payments <small>(amount only)</small></span></label>
+            <label><input type="checkbox" value="goal" checked> <span>Goal milestones <small>(25, 50, 75, 100%)</small></span></label>
+            <label><input type="checkbox" value="login" checked> <span>Failed dashboard logins <small>(at most every 10 min)</small></span></label>
+          </fieldset>
+          <div class="dash-actions">
+            <button type="button" class="dash-btn dash-primary" id="al-on">Turn on alerts here</button>
+            <button type="button" class="dash-btn" id="al-test" hidden>Send a test</button>
+            <button type="button" class="dash-btn dash-danger" id="al-off" hidden>Turn off here</button>
+          </div>
+          <p class="dash-msg" id="al-msg" role="status"></p>
+          <h3 class="dash-h3">Devices getting alerts</h3>
+          <div id="al-devices"></div>
+        </section>
+      </div>
+
       <div data-panel="site" hidden>
         <section class="dash-card dash-card-banner" aria-labelledby="banner-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Every page</p><h2 id="banner-h">Site banner</h2></div><span class="dash-chip" id="banner-chip"><span class="dash-dot" aria-hidden="true"></span><span id="banner-chip-text">Off</span></span></div>
@@ -329,6 +352,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=11" defer></script>
+  <script src="/dashboard.js?v=12" defer></script>
 </body>
 </html>

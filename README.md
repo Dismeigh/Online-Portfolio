@@ -52,6 +52,8 @@ Secrets (Pages project → Settings → Variables and Secrets), then redeploy:
 Login is two steps: the password, then a 6-digit code from an authenticator app (set up on the first login).
 Maintenance mode (Site tab) swaps every public page for the "Ship's in the shop" page (`dist/maintenance.html`, served with a 503) via `functions/_middleware.js` and `lib/maintenance.js`. The dashboard, all `/api/` routes (Ko-fi webhook included) and static files keep working. Private notes live in `lib/notes.js` (Notes tab, owner-only).
 
+Phone alerts (Alerts tab) use Web Push from `lib/push.js`: the site's push key is made on first use and stored encrypted with the dashboard password (changing the password means turning alerts on again). Alerts go out for Ship's Log entries, Ko-fi payments (amount only), goal milestones and failed logins (at most every 10 minutes). Alert text is end-to-end encrypted; only Apple/Google/Mozilla/Microsoft push addresses are accepted.
+
 Lost the phone? Change `DASHBOARD_PASSWORD`: that signs out every session and resets two-step login.
 
 How it works: `lib/admin.js` (password + authenticator code, signed HttpOnly cookie for 12 hours, 5 wrong tries per 15 minutes), `lib/kofi.js`
