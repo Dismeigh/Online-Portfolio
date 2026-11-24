@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ship Map | Dismeigh</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta
+    name="description"
+    content="A deck plan of Dismeigh’s ship: every room is a page on the site, from the Bridge to the Hangar."
+  >
+  <meta name="author" content="Dismeigh">
+  <link rel="canonical" href="https://www.denizen-dismeigh.com/map/">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dismeigh">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.denizen-dismeigh.com/map/">
+  <meta property="og:title" content="Ship Map | Dismeigh">
+  <meta
+    property="og:description"
+    content="A deck plan of Dismeigh’s ship: every room is a page on the site, from the Bridge to the Hangar."
+  >
+  <meta property="og:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ship Map | Dismeigh">
+  <meta property="og:site_name" content="Dismeigh">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ship Map | Dismeigh">
+  <meta
+    name="twitter:description"
+    content="A deck plan of Dismeigh’s ship: every room is a page on the site, from the Bridge to the Hangar."
+  >
+  <meta name="twitter:image" content="https://www.denizen-dismeigh.com/share-card-bebop.jpg">
+  <meta name="twitter:image:alt" content="Ship Map | Dismeigh">
+
+  <!-- Dark UI hints for iOS / Discord / Chrome -->
+  <meta name="theme-color" content="#14110f">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+
+  <!-- Cache-bust when you update CSS: v=1 -> v=2 -> v=3 -> v=4 -> v=5 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="/styles.css?v=113">
+  <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Ship Map", "item": "https://www.denizen-dismeigh.com/map/"}]}</script>
+</head>
+
+<body class="page-split page-shelf">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <script>
+    // Seasonal and holiday looks, by Eastern date. Preview any with ?season=<key> (or ?season=off).
+    // Keys: newyear, mlk, valentines, presidents, stpatricks, easter, mothers, memorial, fathers,
+    // juneteenth, july4, labor, spooky (October), veterans, thanksgiving, holiday (December), birthday, anniversary
+    (() => {
+      const now = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' })
+        .formatToParts(new Date()).filter(p => p.type !== 'literal').map(p => [p.type, Number(p.value)]));
+      const Y = now.year, M = now.month, D = now.day;
+      const dow = (m, d) => new Date(Date.UTC(Y, m - 1, d)).getUTCDay();
+      const nth = (m, weekday, n) => { const first = (7 + weekday - dow(m, 1)) % 7 + 1; return first + (n - 1) * 7; };
+      const last = (m, weekday) => { const days = new Date(Date.UTC(Y, m, 0)).getUTCDate(); return days - (7 + dow(m, days) - weekday) % 7; };
+      // Easter (Anonymous Gregorian algorithm)
+      const a = Y % 19, b = Math.floor(Y / 100), c = Y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+        g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+        l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const easterM = Math.floor((h + l - 7 * m + 114) / 31), easterD = ((h + l - 7 * m + 114) % 31) + 1;
+      const dayNum = (mm, dd) => Date.UTC(Y, mm - 1, dd) / 86400000;
+      const today = dayNum(M, D);
+      const within = (mm, dd, before = 0, after = 0) => today >= dayNum(mm, dd) - before && today <= dayNum(mm, dd) + after;
+      const thanksgiving = nth(11, 4, 4);
+
+      // Personal days. Fill these in as 'MM-DD' (birthday) and 'YYYY-MM-DD' (first stream); they beat holidays.
+      const BIRTHDAY = '04-12';
+      const STREAM_START = '2021-06-10';
+      const mmdd = `${String(M).padStart(2, '0')}-${String(D).padStart(2, '0')}`;
+      let season = '';
+      if (STREAM_START && STREAM_START.slice(5) === mmdd && Y > Number(STREAM_START.slice(0, 4))) {
+        season = 'anniversary';
+        document.documentElement.dataset.streamYears = String(Y - Number(STREAM_START.slice(0, 4)));
+      } else if (BIRTHDAY && BIRTHDAY === mmdd) season = 'birthday';
+      else if ((M === 12 && D === 31) || (M === 1 && D <= 2)) season = 'newyear';
+      else if (M === 1 && D === nth(1, 1, 3)) season = 'mlk';
+      else if (M === 2 && (D === 13 || D === 14)) season = 'valentines';
+      else if (M === 2 && D === nth(2, 1, 3)) season = 'presidents';
+      else if (M === 3 && D === 17) season = 'stpatricks';
+      else if (within(easterM, easterD, 2, 0)) season = 'easter';
+      else if (M === 5 && D === nth(5, 0, 2)) season = 'mothers';
+      else if (M === 5 && D === last(5, 1)) season = 'memorial';
+      else if (M === 6 && D === nth(6, 0, 3)) season = 'fathers';
+      else if (M === 6 && D === 19) season = 'juneteenth';
+      else if (M === 7 && (D === 3 || D === 4)) season = 'july4';
+      else if (M === 9 && D === nth(9, 1, 1)) season = 'labor';
+      else if (M === 10) season = 'spooky';
+      else if (M === 11 && D === 11) season = 'veterans';
+      else if (M === 11 && D >= thanksgiving - 1 && D <= thanksgiving + 3) season = 'thanksgiving';
+      else if (M === 12) season = 'holiday';
+      // Holiday look forced on/off from the dashboard (cached here by app.js from /api/site)
+      try { const lk = JSON.parse(localStorage.getItem('dm-look') || 'null'); if (lk && lk.mode && (!lk.until || Date.now() < lk.until)) season = lk.mode === 'off' ? '' : lk.mode; } catch {}
+      try {
+        const override = new URLSearchParams(location.search).get('season');
+        if (override) season = override === 'off' ? '' : override;
+      } catch {}
+      if (season === 'anniversary' && !document.documentElement.dataset.streamYears) document.documentElement.dataset.streamYears = String(Math.max(1, Y - Number((STREAM_START || String(Y - 1)).slice(0, 4))));
+      if (season) document.documentElement.dataset.season = season;
+
+      // Late-night mode: midnight to 5 AM Eastern. Preview with ?latenight=1 (or 0 to turn off)
+      const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(new Date()));
+      let late = hour >= 0 && hour < 5;
+      try {
+        const lp = new URLSearchParams(location.search).get('latenight');
+        if (lp !== null) late = lp === '1';
+      } catch {}
+      if (late) document.documentElement.dataset.latenight = '';
+    })();
+  </script>
+  <div class="fixed-bg" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <div class="site-wrapper">
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="/" class="nav-brand">Dismeigh</a>
+      <a href="/#live">Live</a>
+      <a href="/#schedule">Schedule</a>
+      <a href="/#bounties">Bounties</a>
+      <a href="/#highlights">Clips</a>
+      <a href="/garage/">Garage</a>
+      <a href="/work/">Work</a>
+      <a href="/voice/">Voice</a>
+      <a href="/lore/">Lore</a>
+      <button class="nav-more" type="button" aria-expanded="false" aria-controls="nav-menu">More</button>
+      <span class="fuel-gauge" aria-hidden="true"><span id="fuel-gauge-fill"></span></span>
+    </nav>
+    <div class="nav-menu" id="nav-menu" hidden>
+      <a href="/#support-heading">Support &amp; Shop</a>
+      <a href="/guide/">New Viewer Guide</a>
+      <a href="/map/">Ship map</a>
+      <a href="/crew/">The Crew</a>
+      <a href="/shelf/">Dismeigh&rsquo;s Shelf</a>
+      <a href="/wallpapers/">Wallpapers</a>
+      <a href="/log/">Ship&rsquo;s Log</a>
+      <a href="/ask/">Ask the Captain</a>
+      <a href="/rewind/">Dismeigh Rewind</a>
+      <a href="/install/" data-install>Get the app</a>
+    </div>
+
+    <main id="main-content" class="split-main" tabindex="-1">
+      <section id="map" class="content-section map-section sweep">
+        <div class="section-kicker"><span>Side B</span> Find your way around</div>
+        <h1 class="split-title">Ship map</h1>
+        <p class="wp-lede">Every room on the ship is a page on the site. Tap a room to go there.</p>
+        <div class="map-layout">
+          <div class="map-plan"><svg class="map-svg" viewBox="0 0 460 900" xmlns="http://www.w3.org/2000/svg" aria-labelledby="map-svg-t"><title id="map-svg-t">Deck plan of the ship. Each room links to a page.</title><path class="map-hull" d="M230 20 C300 40 360 110 362 200 L362 380 L452 430 L452 560 L362 590 L362 760 L330 830 L130 830 L98 760 L98 590 L8 560 L8 430 L98 380 L98 200 C100 110 160 40 230 20 Z"/><path class="map-window" d="M200 52 L260 52 L250 66 L210 66 Z"/><rect class="map-engine" x="150" y="832" width="60" height="26"/><rect class="map-engine" x="250" y="832" width="60" height="26"/><path class="map-flame" d="M156 860 L204 860 L180 896 Z"/><path class="map-flame" d="M256 860 L304 860 L280 896 Z"/><a class="map-room" href="/#live" aria-label="Bridge: Live + schedule"><rect x="160" y="80" width="140" height="80"/><text class="map-name" x="230.0" y="116.0">BRIDGE</text><text class="map-page" x="230.0" y="136.0">Live + schedule</text></a><a class="map-room" href="/ask/" aria-label="Comms: Ask the Captain"><rect x="108" y="175" width="118" height="80"/><text class="map-name" x="167.0" y="211.0">COMMS</text><text class="map-page" x="167.0" y="231.0">Ask the Captain</text></a><a class="map-room" href="/guide/" aria-label="Briefing: Viewer guide"><rect x="234" y="175" width="118" height="80"/><text class="map-name" x="293.0" y="211.0">BRIEFING</text><text class="map-page" x="293.0" y="231.0">Viewer guide</text></a><a class="map-room" href="/log/" aria-label="Log room: Ship’s Log"><rect x="108" y="265" width="118" height="80"/><text class="map-name" x="167.0" y="301.0">LOG ROOM</text><text class="map-page" x="167.0" y="321.0">Ship’s Log</text></a><a class="map-room" href="/lore/" aria-label="Archives: Channel lore"><rect x="234" y="265" width="118" height="80"/><text class="map-name" x="293.0" y="301.0">ARCHIVES</text><text class="map-page" x="293.0" y="321.0">Channel lore</text></a><a class="map-room" href="/shelf/" aria-label="Lounge: Dismeigh’s Shelf"><rect x="108" y="355" width="244" height="70"/><text class="map-name" x="230.0" y="386.0">LOUNGE</text><text class="map-page" x="230.0" y="406.0">Dismeigh’s Shelf</text></a><a class="map-room" href="/voice/" aria-label="Voice booth: Voice"><rect x="14" y="440" width="82" height="100"/><text class="map-name" x="55.0" y="486.0">VOICE BOOTH</text><text class="map-page" x="55.0" y="506.0">Voice</text></a><a class="map-room" href="/work/" aria-label="Workshop: Work"><rect x="364" y="440" width="82" height="100"/><text class="map-name" x="405.0" y="486.0">WORKSHOP</text><text class="map-page" x="405.0" y="506.0">Work</text></a><a class="map-room" href="/crew/" aria-label="Quarters: The Crew"><rect x="108" y="435" width="118" height="80"/><text class="map-name" x="167.0" y="471.0">QUARTERS</text><text class="map-page" x="167.0" y="491.0">The Crew</text></a><a class="map-room" href="/#bounties" aria-label="Arcade: Bounties"><rect x="234" y="435" width="118" height="80"/><text class="map-name" x="293.0" y="471.0">ARCADE</text><text class="map-page" x="293.0" y="491.0">Bounties</text></a><a class="map-room" href="/wallpapers/" aria-label="Cargo hold: Wallpapers"><rect x="108" y="525" width="118" height="80"/><text class="map-name" x="167.0" y="561.0">CARGO HOLD</text><text class="map-page" x="167.0" y="581.0">Wallpapers</text></a><a class="map-room" href="/press/" aria-label="Airlock: Press kit"><rect x="234" y="525" width="118" height="80"/><text class="map-name" x="293.0" y="561.0">AIRLOCK</text><text class="map-page" x="293.0" y="581.0">Press kit</text></a><a class="map-room" href="/garage/" aria-label="Hangar: The Garage"><rect x="108" y="615" width="244" height="120"/><text class="map-name" x="230.0" y="671.0">HANGAR</text><text class="map-page" x="230.0" y="691.0">The Garage</text></a><a class="map-room" href="/rewind/" aria-label="Engine room: Rewind"><rect x="140" y="745" width="180" height="70"/><text class="map-name" x="230.0" y="776.0">ENGINE ROOM</text><text class="map-page" x="230.0" y="796.0">Rewind</text></a></svg></div>
+          <ol class="map-dir" aria-label="Deck directory">
+            <li><a href="/#live"><b>Bridge</b> <span>Live + schedule</span></a><p>Where the stream happens. See if I’m live and when the next stream is.</p></li>
+            <li><a href="/ask/"><b>Comms</b> <span>Ask the Captain</span></a><p>Send in a question and read the answers.</p></li>
+            <li><a href="/guide/"><b>Briefing</b> <span>Viewer guide</span></a><p>New here? House rules, chat commands and what to expect.</p></li>
+            <li><a href="/log/"><b>Log room</b> <span>Ship’s Log</span></a><p>Sign the guestbook and see who’s been aboard.</p></li>
+            <li><a href="/lore/"><b>Archives</b> <span>Channel lore</span></a><p>Running jokes, legendary moments and the Quote Board.</p></li>
+            <li><a href="/shelf/"><b>Lounge</b> <span>Dismeigh’s Shelf</span></a><p>Favorite anime, games, cars and music.</p></li>
+            <li><a href="/voice/"><b>Voice booth</b> <span>Voice</span></a><p>Voice acting work and open roles.</p></li>
+            <li><a href="/work/"><b>Workshop</b> <span>Work</span></a><p>Websites and Discord servers, with pricing.</p></li>
+            <li><a href="/crew/"><b>Quarters</b> <span>The Crew</span></a><p>Streamer friends, with live status.</p></li>
+            <li><a href="/#bounties"><b>Arcade</b> <span>Bounties</span></a><p>This week’s bounties and the arcade games.</p></li>
+            <li><a href="/wallpapers/"><b>Cargo hold</b> <span>Wallpapers</span></a><p>Free wallpapers and the wanted poster maker.</p></li>
+            <li><a href="/press/"><b>Airlock</b> <span>Press kit</span></a><p>Bios, images and links for events and collabs.</p></li>
+            <li><a href="/garage/"><b>Hangar</b> <span>The Garage</span></a><p>The Sojourn ST: the build, the mods and the plans.</p></li>
+            <li><a href="/rewind/"><b>Engine room</b> <span>Rewind</span></a><p>The year in streams: hours, games and busiest nights.</p></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="footer-signoff">See you next session.</p>
+      <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
+      <p class="footer-brand">Dismeigh</p>
+      <p class="footer-est">Est. June 10, 2021</p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/ask/">Ask the Captain</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
+      <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
+      <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+  {
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Title-card wipe: plays once per section, the first time it scrolls into view
+    const io = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.sweep').forEach(el => io.observe(el));
+
+    fetch('/api/site').then(r => r.ok ? r.json() : null).then(d => {
+      const c = d && d.collab; if (!c || !c.on) return;
+      const ul = document.getElementById('press-collab-kinds');
+      (c.kinds || []).forEach(k => { const li = document.createElement('li'); li.textContent = k; ul.append(li); });
+      if (c.note) { const n = document.getElementById('press-collab-note'); n.textContent = c.note; n.hidden = false; }
+      document.getElementById('press-collab').hidden = false;
+    }).catch(() => {});
+
+
+
+  }
+  </script>
+  <script src="/app.js?v=62" defer></script>
+</body>
+</html>

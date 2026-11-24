@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=112">
+  <link rel="stylesheet" href="/styles.css?v=113">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -74,6 +74,7 @@
         <button type="button" data-tab="guestbook">Ship&rsquo;s Log</button>
         <button type="button" data-tab="arcade">Arcade</button>
         <button type="button" data-tab="clients">Clients <span class="dash-count" id="cl-new" hidden></span></button>
+        <button type="button" data-tab="streams">Streams</button>
         <button type="button" data-tab="notes">Notes</button>
         <button type="button" data-tab="alerts">Alerts</button>
         <button type="button" data-tab="site">Site</button>
@@ -216,6 +217,11 @@
             <span class="dash-msg" id="content-msg" role="status"></span>
           </div>
         </section>
+        <section class="dash-card" aria-labelledby="cv-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Home page clips</p><h2 id="cv-h">Clip of the Month</h2></div><button type="button" class="dash-btn dash-small" id="cv-reload">Refresh</button></div>
+          <p class="dash-note">Visitors vote for their favorite of the five home page clips (one vote each per month). Only you see the counts. When the month ends, the winner gets a &ldquo;Clip of the Month&rdquo; badge on the home page.</p>
+          <div id="cv-body"></div>
+        </section>
         <section class="dash-card dash-card-clips" aria-labelledby="cl-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Home page, &ldquo;Fresh off YouTube&rdquo;</p><h2 id="cl-h">YouTube row</h2></div><button type="button" class="dash-btn dash-small" id="cl-reload">Refresh</button></div>
           <p class="dash-note">Feature videos to keep them at the front (in your order), hide ones you don&rsquo;t want, and the newest uploads fill the rest.</p>
@@ -270,6 +276,13 @@
       </div>
 
       <div data-panel="guestbook" hidden>
+        <section class="dash-card" aria-labelledby="ask-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Ask the captain</p><h2 id="ask-h">Questions</h2></div><button type="button" class="dash-btn dash-small" id="ask-refresh">Refresh</button></div>
+          <p class="dash-note">Questions stay private until you answer them. Then they show on the Ask page with your answer. Unanswered ones are deleted after 90 days.</p>
+          <div class="dash-sub" id="ask-filter" role="group" aria-label="Show"><button type="button" data-ask="new" aria-pressed="true">Waiting</button><button type="button" data-ask="done" aria-pressed="false">Answered</button></div>
+          <p class="dash-msg" id="ask-msg" role="status"></p>
+          <div id="ask-body"></div>
+        </section>
         <section class="dash-card dash-card-log" aria-labelledby="log-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Moderation</p><h2 id="log-h">Ship&rsquo;s Log</h2></div><button type="button" class="dash-btn dash-small" data-refresh="guestbook">Refresh</button></div>
           <p class="dash-note">Pinned entries stay forever. Hidden ones disappear from the site but stay here so you can bring them back. Entries expire after 60 days unless pinned.</p>
@@ -332,7 +345,7 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">Due dates and streams</p><h2 id="cal-h">Calendar</h2></div>
             <div class="dash-cal-nav"><button type="button" class="dash-btn dash-small" id="cal-prev" aria-label="Previous month">&larr;</button><b id="cal-month"></b><button type="button" class="dash-btn dash-small" id="cal-next" aria-label="Next month">&rarr;</button></div></div>
           <div class="dash-cal" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
-          <p class="dash-hint"><span class="cal-key cal-job"></span> job due <span class="cal-key cal-aud"></span> audition deadline <span class="cal-key cal-stream"></span> stream (from your stream calendar, a few weeks ahead) &middot; Tap a day to see what&rsquo;s on it.</p>
+          <p class="dash-hint"><span class="cal-key cal-job"></span> job due <span class="cal-key cal-aud"></span> audition deadline <span class="cal-key cal-stream"></span> stream (from the Streams tab) &middot; Tap a day to see what&rsquo;s on it.</p>
           <div id="cal-day" class="dash-cal-day" aria-live="polite"></div>
         </section>
         <section class="dash-card" aria-labelledby="inc-h">
@@ -349,6 +362,26 @@
           <p class="dash-msg" id="ex-msg" role="status"></p>
           <div id="ex-list"></div>
           <p class="dash-hint">Ko-fi counts automatically (tips, memberships, shop and commissions). Client payments come from what you record on each job. Not tax advice: give the spreadsheet to whoever does your taxes.</p>
+        </section>
+      </div>
+
+      <div data-panel="streams" hidden>
+        <section class="dash-card" aria-labelledby="st-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Home page schedule, calendar subscriptions and Rewind</p><h2 id="st-h">Stream schedule</h2></div><button type="button" class="dash-btn dash-small dash-primary" id="st-new">Add a stream</button></div>
+          <p class="dash-hint">Set up your regular streams once (like every Tuesday and Thursday at 8 PM) and add one-time streams as they come up. To cancel one night, use &ldquo;Skip a date&rdquo; on that stream. Times are Eastern. Changes show on the site within a minute.</p>
+          <p class="dash-msg" id="st-msg" role="status"></p>
+          <div id="st-body"><p class="dash-note">Loading&hellip;</p></div>
+        </section>
+        <section class="dash-card" aria-labelledby="stu-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">What viewers see</p><h2 id="stu-h">Coming up</h2></div></div>
+          <div id="st-up"></div>
+          <p class="dash-hint">Viewers can add your schedule to their own calendar from the home page. It updates on its own when you change things here.</p>
+        </section>
+        <section class="dash-card" aria-labelledby="sti-h" id="st-import-card">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">One-time move</p><h2 id="sti-h">Bring over your old streams</h2></div></div>
+          <p class="dash-hint" id="st-import-text"></p>
+          <div class="dash-actions"><button type="button" class="dash-btn" id="st-import">Bring over past streams from Calendar.online</button><button type="button" class="dash-btn dash-danger" id="st-clear-past" hidden>Remove imported history</button></div>
+          <p class="dash-msg" id="st-import-msg" role="status"></p>
         </section>
       </div>
 
@@ -389,6 +422,7 @@
             <label><input type="checkbox" value="login" checked> <span>Dashboard logins <small>(failed tries at most every 10 min, plus any new device)</small></span></label>
             <label><input type="checkbox" value="health" checked> <span>Something on the site breaks <small>(YouTube feed, stream calendar, Twitch check)</small></span></label>
             <label><input type="checkbox" value="quote" checked> <span>New quote requests <small>(from the Work page form)</small></span></label>
+            <label><input type="checkbox" value="ask" checked> <span>New questions for the captain <small>(from the Ask page)</small></span></label>
             <label><input type="checkbox" value="recap" checked> <span>Weekly recap &amp; monthly report <small>(Monday mornings, and the 1st of each month)</small></span></label>
           </fieldset>
           <div class="dash-actions">
@@ -471,6 +505,16 @@
             <p class="dash-msg" id="comm-msg" role="status"></p>
           </form>
         </section>
+        <section class="dash-card" aria-labelledby="co-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Press kit page</p><h2 id="co-h">Collabs</h2></div><span class="dash-chip" id="co-chip"><span class="dash-dot" aria-hidden="true"></span><span id="co-chip-text">Off</span></span></div>
+          <form id="co-form">
+            <label class="dash-check-line"><input type="checkbox" id="co-on"> <span>Show &ldquo;Open to collabs&rdquo; on the press kit page</span></label>
+            <fieldset class="dash-checks"><legend>What you&rsquo;re open to</legend><div id="co-kinds"></div></fieldset>
+            <label for="co-note">Note <span>(optional)</span></label><input id="co-note" maxlength="200" placeholder="Booking collabs for January. DM on Discord or email.">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
+            <p class="dash-msg" id="co-msg" role="status"></p>
+          </form>
+        </section>
         <section class="dash-card dash-card-links" aria-labelledby="lk-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Housekeeping</p><h2 id="lk-h">Link check</h2></div></div>
           <p class="dash-note">Tests every outside link on the site and in your content (lore, pinned clip, event, banners). Some sites, like Instagram or TikTok, block checkers, so those show as &ldquo;couldn&rsquo;t check&rdquo;.</p>
@@ -528,6 +572,8 @@
               <label><input type="checkbox" value="notes" checked> <span>Notes</span></label>
               <label><input type="checkbox" value="guestbook" checked> <span>Ship&rsquo;s Log <small>(only adds missing entries)</small></span></label>
               <label><input type="checkbox" value="jobs" checked> <span>Client jobs, payments, expenses &amp; auditions <small>(only adds missing ones)</small></span></label>
+              <label><input type="checkbox" value="streams" checked> <span>Stream schedule <small>(only adds missing streams)</small></span></label>
+              <label><input type="checkbox" value="ask" checked> <span>Answered questions <small>(only adds missing ones)</small></span></label>
             </fieldset>
             <div class="dash-actions"><button type="submit" class="dash-btn dash-danger">Restore</button><button type="button" class="dash-btn" id="bk-before">Download pre-restore copy</button></div>
             <p class="dash-msg" id="bk-msg" role="status"></p>
@@ -553,7 +599,7 @@
           <label for="help-find" class="sr-only">Search help</label>
           <input id="help-find" type="search" placeholder="Search help, like &ldquo;invoice&rdquo; or &ldquo;banner&rdquo;" autocomplete="off">
           <h3 class="dash-h3">Getting around</h3>
-          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, YouTube row and special event. <b>Ship's Log</b>: moderate entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, jobs, auditions, calendar and income. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
+          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, jobs, auditions, calendar and income. <b>Streams</b>: your stream schedule (repeats, skipped nights, one-time streams). <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, collabs, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
           <details class="dash-help-item"><summary>Can I use this on my phone?</summary><p>Yes. Open the dashboard in Safari, tap Share, then Add to Home Screen. It works like an app, and phone alerts only work from the home-screen app on iPhone.</p></details>
           <h3 class="dash-h3">Stream & site</h3>
           <details class="dash-help-item"><summary>Put a message across every page</summary><p>Site tab, Site banner. Type a message, add a link if you want, and tap Show banner. Use the one-tap buttons for common ones like Live now or No stream tonight. Set Start at to schedule one for later.</p></details>
@@ -567,6 +613,8 @@
           <details class="dash-help-item"><summary>Someone sent a quote request. Now what?</summary><p>Clients tab. Email them (button on the request), then Mark replied. If it turns into work, tap Make it a job. Requests delete themselves after 90 days unless you keep them.</p></details>
           <details class="dash-help-item"><summary>Send a client an agreement, invoice or status page</summary><p>Clients tab, open the job, then Agreement, client link, invoice & payments. Fill in each part, save, and use the Copy link buttons. Turn any link off at any time.</p></details>
           <details class="dash-help-item"><summary>Record money and see profit</summary><p>On the job, Record payment for anything paid outside Ko-fi (Ko-fi counts on its own). Add costs under Income, Expenses. Download spreadsheet gives you everything for tax time.</p></details>
+          <details class="dash-help-item"><summary>Change the stream schedule</summary><p>Streams tab. Add your regular streams once with &ldquo;Every week&rdquo; and the days. To cancel one night, pick the date under &ldquo;Skip a date&rdquo; on that stream. For a one-off, add a one-time stream. The home page, calendar subscriptions and Rewind all update on their own.</p></details>
+          <details class="dash-help-item"><summary>Answer a viewer&rsquo;s question</summary><p>Ship&rsquo;s Log tab, Questions. Type your answer and tap &ldquo;Answer and post&rdquo;. It shows on the Ask the Captain page right away. Delete the ones you don&rsquo;t want to answer.</p></details>
           <details class="dash-help-item"><summary>Track voice auditions</summary><p>Clients tab, Auditions. Add each one with its deadline and change the status as you hear back. Deadlines show on the calendar.</p></details>
           <h3 class="dash-h3">Safety</h3>
           <details class="dash-help-item"><summary>I lost my phone</summary><p>On the login screen, tap Lost your phone? Use a backup code. Each code works once. Make a set in the Logins tab ahead of time. Out of codes? Change DASHBOARD_PASSWORD in Cloudflare, which signs everyone out and resets two-step login.</p></details>
@@ -609,6 +657,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=38" defer></script>
+  <script src="/dashboard.js?v=39" defer></script>
 </body>
 </html>

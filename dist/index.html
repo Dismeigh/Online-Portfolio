@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=112">
+  <link rel="stylesheet" href="styles.css?v=113">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -219,10 +219,12 @@
     <div class="nav-menu" id="nav-menu" hidden>
       <a href="#support-heading">Support &amp; Shop</a>
       <a href="/guide/">New Viewer Guide</a>
+      <a href="/map/">Ship map</a>
       <a href="/crew/">The Crew</a>
       <a href="/shelf/">Dismeigh&rsquo;s Shelf</a>
       <a href="/wallpapers/">Wallpapers</a>
       <a href="/log/">Ship&rsquo;s Log</a>
+      <a href="/ask/">Ask the Captain</a>
       <a href="/rewind/">Dismeigh Rewind</a>
       <a href="/install/" data-install>Get the app</a>
     </div>
@@ -502,7 +504,7 @@
         </div>
         <div class="featured-clip-label">
           <svg class="icon icon-star" viewBox="0 0 576 512" aria-hidden="true" focusable="false"><path d="M309.5-18.9c-4.1-8-12.4-13.1-21.4-13.1s-17.3 5.1-21.4 13.1l-73.6 144.2-159.9 25.4c-8.9 1.4-16.3 7.7-19.1 16.3s-.5 18 5.8 24.4l114.4 114.5-25.2 159.9c-1.4 8.9 2.3 17.9 9.6 23.2s16.9 6.1 25 2l144.4-73.4L432.4 491c8 4.1 17.7 3.3 25-2s11-14.2 9.6-23.2l-25.3-159.9 114.4-114.5c6.4-6.4 8.6-15.8 5.8-24.4s-10.1-14.9-19.1-16.3L383 125.3z"/></svg>
-          <span>Now playing</span> <span class="clip-count" id="clip-count">Clip 1 of 5</span>
+          <span>Now playing</span> <span class="clip-count" id="clip-count">Clip 1 of 5</span><span class="clip-winner" id="clip-winner" hidden></span>
         </div>
         <div class="clip-carousel" aria-label="Featured gaming clips">
           <div class="clip-frame">
@@ -553,6 +555,7 @@
             <button class="clip-dot" type="button" aria-label="Show clip 5"></button>
           </div>
           <p class="clip-swipe-hint">Swipe clips</p>
+          <div class="clip-vote" id="clip-vote" hidden><button type="button" class="clip-vote-btn" id="clip-vote-btn" aria-pressed="false">Vote for Clip of the Month</button><span class="clip-vote-msg" id="clip-vote-msg" role="status"></span></div>
         </div>
 
         <div class="yt-latest" id="yt-latest" hidden>
@@ -645,7 +648,7 @@
       <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
       <p class="footer-est">Est. June 10, 2021</p>
-      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/ask/">Ask the Captain</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -1502,7 +1505,7 @@
   <script src="/log.js?v=3" defer></script>
   <script src="/crew.js?v=6" defer></script>
   <script src="/bounty-run.js?v=38" defer></script>
-  <script src="/app.js?v=61" defer></script>
+  <script src="/app.js?v=62" defer></script>
   <script src="/goal.js?v=2" defer></script>
   <script>
   // Clip captions (typed in the dashboard: Content, Clip captions) become a CC track on each clip
@@ -1522,6 +1525,38 @@
         v.append(track);
       });
     }).catch(() => {});
+  })();
+  </script>
+  <script>
+  // Clip of the Month: vote for the clip that's showing; last month's winner gets a badge
+  (() => {
+    const box = document.getElementById('clip-vote'), btn = document.getElementById('clip-vote-btn'), msg = document.getElementById('clip-vote-msg'), badge = document.getElementById('clip-winner');
+    const panels = [...document.querySelectorAll('.clip-panel')];
+    if (!box || !panels.length) return;
+    let state = null;
+    const active = () => Math.max(0, panels.findIndex(p => p.classList.contains('is-active'))) + 1;
+    const monthName = k => new Date(k + '-15T12:00:00').toLocaleDateString('en-US', { month: 'long' });
+    function draw() {
+      if (!state) return;
+      const n = active(), mine = state.mine === n;
+      btn.setAttribute('aria-pressed', String(mine));
+      btn.textContent = mine ? 'Your Clip of the Month pick' : state.mine ? 'Switch my vote to this clip' : 'Vote for Clip of the Month';
+      msg.textContent = state.mine && !mine ? `You voted for clip ${state.mine}.` : '';
+      const w = state.winner && state.winner.clip === n;
+      badge.hidden = !w; if (w) badge.textContent = `★ ${monthName(state.winner.month)}’s Clip of the Month`;
+    }
+    new MutationObserver(draw).observe(document.getElementById('clip-count'), { childList: true, characterData: true, subtree: true });
+    btn.addEventListener('click', async () => {
+      const n = active(); if (state.mine === n) return;
+      btn.disabled = true;
+      try {
+        const r = await fetch('/api/clipvote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clip: n }) });
+        const d = await r.json();
+        if (r.ok) { state.mine = d.mine; draw(); msg.textContent = 'Vote counted. The winner is crowned when the month ends.'; } else msg.textContent = d.error || 'Couldn’t count that vote.';
+      } catch { msg.textContent = 'Couldn’t count that vote.'; }
+      btn.disabled = false;
+    });
+    fetch('/api/clipvote', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => { if (!d || !d.month) return; state = d; box.hidden = false; draw(); }).catch(() => {});
   })();
   </script>
 </body>

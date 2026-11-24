@@ -422,7 +422,7 @@
     items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
     flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (something was missing or not valid${kind === 'captions' ? ', like an end time before the start time' : ''}).` : 'Saved. It’s live on the site now.');
   });
-  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); };
+  loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); loadVotes(); };
 
   // ---------- YouTube row ----------
   let clips = { count: 3, pinned: [], hidden: [] }, feed = [];
@@ -445,6 +445,16 @@
           ${pinnedIds.has(v.id) ? '' : `<button type="button" class="dash-btn dash-small${hidden.has(v.id) ? '' : ' dash-danger'}" data-cl="${hidden.has(v.id) ? 'unhide' : 'hide'}" data-i="${i}">${hidden.has(v.id) ? 'Show' : 'Hide'}</button>`}
         </div></li>`).join('')}</ul>` : '<p class="dash-note">Couldn\u2019t reach YouTube right now. Try Refresh in a bit.</p>';
   }
+  // Clip of the Month counts
+  const monthName = k => new Date(k + '-15T12:00:00').toLocaleDateString([], { month: 'long', year: 'numeric' });
+  async function loadVotes() {
+    const d = (await api('clipvote')).data; if (!d.tally) return;
+    const top = Math.max(1, ...d.tally.map(t => t.n));
+    $('cv-body').innerHTML = `<h3 class="dash-h3">${esc(monthName(d.month))} so far <span class="dash-meta">(${d.total} vote${d.total === 1 ? '' : 's'})</span></h3>
+      <ul class="dash-bars">${d.tally.map(t => `<li><span>Clip ${t.clip}</span><span class="dash-bar"><i style="width:${Math.round(t.n / top * 100)}%"></i></span><b>${t.n}</b></li>`).join('')}</ul>
+      ${d.winners.length ? `<h3 class="dash-h3">Past winners</h3><ul class="dash-pays">${d.winners.map(w => `<li>${esc(monthName(w.month))}: <b>Clip ${w.clip}</b> (${w.votes} of ${w.total} votes)</li>`).join('')}</ul>` : ''}`;
+  }
+  $('cv-reload').addEventListener('click', loadVotes);
   async function loadClips() {
     const { data } = await api('clips'); clips = data.settings; feed = data.feed || []; drawClips();
   }
@@ -507,8 +517,37 @@
   });
   addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
+  // ---------- Ask the captain ----------
+  let askRows = [], askView = 'new';
+  function drawAsk() {
+    const list = askRows.filter(q => (askView === 'new') === !q.answered_at);
+    const waiting = askRows.filter(q => !q.answered_at).length;
+    document.querySelector('#ask-filter [data-ask="new"]').textContent = `Waiting${waiting ? ` (${waiting})` : ''}`;
+    $('ask-body').innerHTML = list.length ? `<ul class="dash-list">${list.map(q => `
+      <li class="dash-row${q.hidden ? ' is-hidden' : ''}"><div class="dash-row-main"><b>${esc(q.name)}</b> <span class="dash-meta">${esc(when(q.at))}${q.hidden ? ' · hidden' : ''}</span><p>${esc(q.q)}</p>
+        <form class="dash-ask-form" data-ask-form="${q.id}"><label for="aa-${q.id}">${q.answered_at ? 'Your answer' : 'Answer'}</label><textarea id="aa-${q.id}" rows="3" maxlength="1200" placeholder="Your answer shows under the question on the Ask page">${esc(q.answer)}</textarea>
+        <div class="dash-actions"><button type="submit" class="dash-btn dash-small dash-primary">${q.answered_at ? 'Update answer' : 'Answer and post'}</button></div></form></div>
+        <div class="dash-row-actions">${q.answered_at ? `<button type="button" class="dash-btn dash-small" data-ask-act="${q.hidden ? 'unhide' : 'hide'}" data-id="${q.id}">${q.hidden ? 'Show' : 'Hide'}</button>` : ''}
+          <button type="button" class="dash-btn dash-small dash-danger" data-ask-act="delete" data-id="${q.id}">Delete</button></div></li>`).join('')}</ul>`
+      : `<p class="dash-note">${askView === 'new' ? 'No questions waiting.' : 'Nothing answered yet.'}</p>`;
+  }
+  const loadAsk = async () => { askRows = (await api('ask')).data.questions || []; drawAsk(); };
+  const askAct = async body => { const { status, data } = await api('ask', body); if (status !== 200) { flash($('ask-msg'), data.error || 'Couldn’t save.'); return null; } askRows = data.questions || []; drawAsk(); return data; };
+  $('ask-refresh').addEventListener('click', loadAsk);
+  document.querySelectorAll('#ask-filter [data-ask]').forEach(b => b.addEventListener('click', () => { askView = b.dataset.ask; document.querySelectorAll('#ask-filter [data-ask]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawAsk(); }));
+  $('ask-body').addEventListener('submit', async e => {
+    const f = e.target.closest('[data-ask-form]'); if (!f) return; e.preventDefault();
+    if (await askAct({ action: 'answer', id: Number(f.dataset.askForm), answer: $(`aa-${f.dataset.askForm}`).value })) flash($('ask-msg'), 'Posted on the Ask page.');
+  });
+  $('ask-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-ask-act]'); if (!b) return;
+    if (b.dataset.askAct === 'delete' && !confirm('Delete this question for good?')) return;
+    await askAct({ action: b.dataset.askAct, id: Number(b.dataset.id) });
+  });
+
   // ---------- Ship's Log ----------
   loaders.guestbook = async () => {
+    loadAsk();
     const { data } = await api('log');
     const rows = data.entries || [];
     $('log-body').innerHTML = rows.length ? `<ul class="dash-list">${rows.map(r => `
@@ -582,6 +621,10 @@
     for (const k of ['voice', 'web', 'discord']) { $(`cm-${k}`).value = cmSet?.[k] || 'off'; $(`cm-${k}-note`).value = cmSet?.notes?.[k] || ''; }
     $('cap-web').value = data.capacitySet?.web || ''; $('cap-discord').value = data.capacitySet?.discord || '';
     $('cap-status').textContent = ['web', 'discord'].filter(k => data.capacity?.[k]).map(k => `${k === 'web' ? 'Websites' : 'Discord'}: ${data.capacity[k].used} of ${data.capacity[k].max} spots taken${data.capacity[k].full ? ' (showing as full)' : ''}`).join(' · ');
+    const co = data.collabSet || { on: false, kinds: [], note: '' };
+    $('co-on').checked = !!co.on; $('co-note').value = co.note || '';
+    $('co-kinds').innerHTML = (data.collabKinds || []).map((k, i) => `<label><input type="checkbox" value="${esc(k)}" id="co-k${i}"${co.kinds.includes(k) ? ' checked' : ''}> ${esc(k)}</label>`).join('');
+    $('co-chip').className = `dash-chip ${co.on ? 'dash-chip-ok' : ''}`; $('co-chip-text').textContent = co.on ? 'Showing' : 'Off';
     $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
     updatePreview();
     const m = (await api('maintenance')).data.maintenance || {};
@@ -656,6 +699,11 @@
     const { data } = await api('site', { what: 'commissions', voice: $('cm-voice').value, web: $('cm-web').value, discord: $('cm-discord').value,
       notes: { voice: $('cm-voice-note').value, web: $('cm-web-note').value, discord: $('cm-discord-note').value } });
     flash($('comm-msg'), data.error || 'Saved. It shows on the Voice and Work pages now.'); loaders.site();
+  });
+  $('co-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { data } = await api('site', { what: 'collab', on: $('co-on').checked, note: $('co-note').value, kinds: [...document.querySelectorAll('#co-kinds input:checked')].map(x => x.value) });
+    flash($('co-msg'), data.error || (data.collab?.on ? 'Saved. It shows on the press kit page now.' : 'Saved. The collab card is hidden.')); loaders.site();
   });
   $('look-form').addEventListener('submit', async e => {
     e.preventDefault();
@@ -864,7 +912,7 @@
   let calMonth = new Date(); calMonth.setDate(1); let streams = null, calPick = null;
   const dkey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   async function drawCal() {
-    if (streams === null) { streams = []; try { const r = await fetch('/api/schedule'); const d = await r.json(); streams = (d.upcoming || []).map(s => ({ day: dkey(new Date(s.start)), title: s.title || 'Stream', time: new Date(s.start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) })); } catch {} }
+    if (streams === null) { streams = []; try { const d = (await api('streams')).data; streams = (d.upcoming || []).map(s => ({ day: dkey(new Date(s.start)), title: s.title || 'Stream', time: new Date(s.start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) })); } catch {} }
     const y = calMonth.getFullYear(), m = calMonth.getMonth(), first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate(), today = dkey(new Date());
     $('cal-month').textContent = first.toLocaleDateString([], { month: 'long', year: 'numeric' });
     const due = {}; board.jobs.filter(j => j.due && j.stage !== 'done').forEach(j => (due[j.due] ||= []).push(j));
@@ -882,6 +930,93 @@
   $('cal-prev').addEventListener('click', () => { calMonth.setMonth(calMonth.getMonth() - 1); drawCal(); });
   $('cal-next').addEventListener('click', () => { calMonth.setMonth(calMonth.getMonth() + 1); drawCal(); });
   $('cal-grid').addEventListener('click', e => { const b = e.target.closest('[data-day]'); if (b) { calPick = b.dataset.day; drawCal(); } });
+
+
+  // ---------- Streams (the stream calendar) ----------
+  let stBoard = null, stEdit = null;
+  const DN = { SU: 'Sun', MO: 'Mon', TU: 'Tue', WE: 'Wed', TH: 'Thu', FR: 'Fri', SA: 'Sat' }, DORDER = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+  const LENS = [30, 60, 90, 120, 150, 180, 210, 240, 300, 360, 480, 600, 720];
+  const t12 = hm => { const [h, m] = hm.split(':').map(Number); return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
+  const len = m => (m % 60 ? `${Math.floor(m / 60) ? `${Math.floor(m / 60)}h ` : ''}${m % 60}m` : `${m / 60}h`);
+  const fmtDay = d => new Date(d + 'T12:00:00').toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  const todayET = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+  const etWhen = iso => new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const stForm = (s = {}) => {
+    const weekly = s.repeat === 'weekly', [d, t] = (s.start || `${todayET()}T20:00`).split('T'), mins = s.minutes || 180;
+    return `<form class="dash-job-form" data-st-form="${s.id || ''}">
+    <label for="sf-title">Title</label><input id="sf-title" maxlength="80" required placeholder="Chill games and car talk" value="${esc(s.title || '')}">
+    <div class="dash-two"><div><label for="sf-repeat">Repeats</label><select id="sf-repeat"><option value="none">One time</option><option value="weekly"${weekly ? ' selected' : ''}>Every week</option></select></div>
+      <div><label for="sf-date" id="sf-date-l">${weekly ? 'Starting' : 'Date'}</label><input id="sf-date" type="date" required value="${esc(d)}"></div></div>
+    <fieldset class="dash-checks sf-weekly"${weekly ? '' : ' hidden'}><legend>On these days</legend><div class="dash-days">${DORDER.map(k => `<label><input type="checkbox" value="${k}"${(s.days || []).includes(k) ? ' checked' : ''}> ${DN[k]}</label>`).join('')}</div></fieldset>
+    <div class="dash-two"><div><label for="sf-time">Starts (Eastern)</label><input id="sf-time" type="time" required value="${esc(t)}"></div>
+      <div><label for="sf-len">Length</label><select id="sf-len">${[...new Set([...LENS, mins])].sort((a, b) => a - b).map(m => `<option value="${m}"${m === mins ? ' selected' : ''}>${len(m)}</option>`).join('')}</select></div></div>
+    <div class="sf-weekly"${weekly ? '' : ' hidden'}><label for="sf-until">Ends on <span>(optional)</span></label><input id="sf-until" type="date" value="${esc(s.until || '')}"></div>
+    <label for="sf-link">Link <span>(optional, like a special stream&rsquo;s page)</span></label><input id="sf-link" type="url" placeholder="https://..." value="${esc(s.link || '')}">
+    <label for="sf-note">Description <span>(optional, shows in calendar apps)</span></label><textarea id="sf-note" rows="2" maxlength="400">${esc(s.note || '')}</textarea>
+    <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button><button type="button" class="dash-btn" data-st-cancel>Cancel</button></div></form>`;
+  };
+  function drawStreams() {
+    const b = stBoard, today = todayET();
+    if (!b) return;
+    const weekly = b.streams.filter(s => s.repeat === 'weekly'), once = b.streams.filter(s => s.repeat !== 'weekly');
+    const soon = once.filter(s => s.start.slice(0, 10) >= today), old = once.filter(s => s.start.slice(0, 10) < today).reverse();
+    const item = s => {
+      if (stEdit === s.id) return `<li class="dash-row">${stForm(s)}</li>`;
+      const [d, t] = s.start.split('T'), w = s.repeat === 'weekly';
+      const ended = w && s.until && s.until < today, skips = (s.skips || []).filter(x => x >= today);
+      return `<li class="dash-row${ended || (!w && d < today) ? ' is-hidden' : ''}"><div class="dash-row-main"><b>${esc(s.title)}</b>
+        <p class="dash-req-meta">${w ? `Every ${DORDER.filter(k => s.days.includes(k)).map(k => DN[k]).join(', ')}` : esc(fmtDay(d))} · ${esc(t12(t))} · ${esc(len(s.minutes))}${w ? ` · from ${esc(fmtDay(d))}${s.until ? ` until ${esc(fmtDay(s.until))}` : ''}${ended ? ' · <span class="dash-late">ended</span>' : ''}` : ''}</p>
+        ${s.link ? `<p class="dash-req-links"><a href="${esc(s.link)}" target="_blank" rel="noopener noreferrer nofollow">Link</a></p>` : ''}${s.note ? `<p class="dash-note-text">${esc(s.note)}</p>` : ''}
+        ${w ? `<div class="dash-skip"><label for="sk-${s.id}">Skip a date</label><input id="sk-${s.id}" type="date" min="${today}"><button type="button" class="dash-btn dash-small" data-st-skip="${s.id}">Skip</button></div>
+        ${skips.length ? `<p class="dash-skips">Skipping: ${skips.map(x => `<button type="button" class="dash-chip-btn" data-st-unskip="${s.id}" data-date="${x}" aria-label="Stop skipping ${esc(fmtDay(x))}">${esc(fmtDay(x))} <span aria-hidden="true">&times;</span></button>`).join(' ')}</p>` : ''}` : ''}</div>
+        <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-st-edit="${s.id}">Edit</button><button type="button" class="dash-btn dash-small dash-danger" data-st-del="${s.id}">Delete</button></div></li>`;
+    };
+    $('st-body').innerHTML = (stEdit === 'new' ? stForm() : '')
+      + (weekly.length ? `<h3 class="dash-h3">Every week</h3><ul class="dash-list">${weekly.map(item).join('')}</ul>` : '')
+      + (soon.length ? `<h3 class="dash-h3">One-time</h3><ul class="dash-list">${soon.map(item).join('')}</ul>` : '')
+      + (old.length ? `<details class="dash-job-more"><summary>Past one-time streams (${old.length})</summary><ul class="dash-list">${old.map(item).join('')}</ul></details>` : '')
+      + (!b.streams.length && stEdit !== 'new' ? '<p class="dash-note">No streams yet. Tap &ldquo;Add a stream&rdquo; to set up your schedule.</p>' : '');
+    $('st-up').innerHTML = b.upcoming.length ? `<ul class="dash-pays">${b.upcoming.slice(0, 20).map(e => `<li><b>${esc(etWhen(e.start))}</b> · ${esc(e.title)}</li>`).join('')}</ul>` : '<p class="dash-note">Nothing in the next few weeks. The home page shows &ldquo;no streams scheduled&rdquo; until you add some.</p>';
+    $('st-import-card').hidden = !b.canImport && !b.pastCount;
+    $('st-import').hidden = !b.canImport;
+    $('st-clear-past').hidden = !b.pastCount;
+    $('st-import-text').textContent = (b.pastCount ? `${b.pastCount} past stream${b.pastCount === 1 ? ' is' : 's are'} saved for Dismeigh Rewind. ` : '')
+      + (b.canImport ? 'This copies the streams that already happened on Calendar.online (just titles and times) so Rewind keeps your history. Running it again replaces the copy. Upcoming streams aren’t copied: add your regular ones above. Once you’re happy, you can delete CALENDAR_FEED_URL in Cloudflare.' : '');
+  }
+  const stAct = async body => {
+    const { status, data } = await api('streams', body);
+    if (status !== 200) { flash($('st-msg'), data.error || 'Couldn’t save.'); return null; }
+    stBoard = data; streams = null; drawStreams(); return data;
+  };
+  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); };
+  $('st-new').addEventListener('click', () => { stEdit = 'new'; drawStreams(); $('sf-title').focus(); });
+  $('st-body').addEventListener('change', e => {
+    if (e.target.id !== 'sf-repeat') return;
+    const w = e.target.value === 'weekly';
+    document.querySelectorAll('#st-body .sf-weekly').forEach(x => { x.hidden = !w; });
+    $('sf-date-l').textContent = w ? 'Starting' : 'Date';
+  });
+  $('st-body').addEventListener('click', async e => {
+    if (e.target.closest('[data-st-cancel]')) { stEdit = null; return drawStreams(); }
+    const ed = e.target.closest('[data-st-edit]'); if (ed) { stEdit = Number(ed.dataset.stEdit); drawStreams(); return $('sf-title').focus(); }
+    const del = e.target.closest('[data-st-del]'); if (del && confirm('Delete this stream? (To cancel just one night, use "Skip a date" instead.)')) { await stAct({ action: 'delete', id: Number(del.dataset.stDel) }); return flash($('st-msg'), 'Deleted.'); }
+    const sk = e.target.closest('[data-st-skip]');
+    if (sk) { const v = $(`sk-${sk.dataset.stSkip}`).value; if (!v) return flash($('st-msg'), 'Pick the date to skip first.'); if (await stAct({ action: 'skip', id: Number(sk.dataset.stSkip), date: v })) flash($('st-msg'), `Skipping ${fmtDay(v)}. It’s off the schedule.`); return; }
+    const un = e.target.closest('[data-st-unskip]'); if (un && await stAct({ action: 'unskip', id: Number(un.dataset.stUnskip), date: un.dataset.date })) flash($('st-msg'), `${fmtDay(un.dataset.date)} is back on.`);
+  });
+  $('st-body').addEventListener('submit', async e => {
+    const f = e.target.closest('[data-st-form]'); if (!f) return; e.preventDefault();
+    const d = await stAct({ action: 'save', id: Number(f.dataset.stForm) || 0, title: $('sf-title').value, repeat: $('sf-repeat').value, date: $('sf-date').value, time: $('sf-time').value,
+      minutes: Number($('sf-len').value), days: [...f.querySelectorAll('.dash-days input:checked')].map(x => x.value), until: $('sf-until').value, link: $('sf-link').value, note: $('sf-note').value });
+    if (d) { stEdit = null; drawStreams(); flash($('st-msg'), 'Saved. It’s on the site now.'); }
+  });
+  $('st-import').addEventListener('click', async e => {
+    e.target.disabled = true; flash($('st-import-msg'), 'Copying…');
+    const { status, data } = await api('streams', { action: 'import' }); e.target.disabled = false;
+    if (status !== 200) return flash($('st-import-msg'), data.error || 'Couldn’t copy them.');
+    stBoard = data; drawStreams(); flash($('st-import-msg'), `Copied ${data.imported} past stream${data.imported === 1 ? '' : 's'}.`);
+  });
+  $('st-clear-past').addEventListener('click', async () => { if (confirm('Remove the imported past streams? Rewind will lose that history.')) { await stAct({ action: 'clearPast' }); flash($('st-import-msg'), 'Removed.'); } });
 
   // Income
   let incomeMonths = [];

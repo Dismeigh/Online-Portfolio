@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=112">
+  <link rel="stylesheet" href="/styles.css?v=113">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Press Kit", "item": "https://www.denizen-dismeigh.com/press/"}]}</script>
 </head>
@@ -142,10 +142,12 @@
     <div class="nav-menu" id="nav-menu" hidden>
       <a href="/#support-heading">Support &amp; Shop</a>
       <a href="/guide/">New Viewer Guide</a>
+      <a href="/map/">Ship map</a>
       <a href="/crew/">The Crew</a>
       <a href="/shelf/">Dismeigh&rsquo;s Shelf</a>
       <a href="/wallpapers/">Wallpapers</a>
       <a href="/log/">Ship&rsquo;s Log</a>
+      <a href="/ask/">Ask the Captain</a>
       <a href="/rewind/">Dismeigh Rewind</a>
       <a href="/install/" data-install>Get the app</a>
     </div>
@@ -156,6 +158,13 @@
         <h1 class="split-title">Press kit</h1>
         <p class="wp-lede">Everything you need to feature, introduce or collab with Dismeigh. Use the bios as written or trim them to fit. For anything else, email <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a>.</p>
         <p><a class="wp-dl" href="/press/dismeigh-press-kit.zip" download>Download everything (.zip)</a></p>
+
+        <div class="press-collab" id="press-collab" hidden>
+          <p class="press-collab-tag">Open to collabs</p>
+          <ul class="press-collab-kinds" id="press-collab-kinds"></ul>
+          <p class="press-collab-note" id="press-collab-note" hidden></p>
+          <p class="press-collab-how">Reach out at <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a> or on <a href="https://discord.gg/ttKfZbHnsj" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
+        </div>
 
         <h2 class="press-h">Name</h2>
         <p class="press-copy"><strong>Dismeigh</strong>. Pronounced like &ldquo;dismay.&rdquo; Always one word, capital D.</p>
@@ -204,7 +213,7 @@
       <p class="footer-latenight">The crew’s asleep. Keep it down.</p>
       <p class="footer-brand">Dismeigh</p>
       <p class="footer-est">Est. June 10, 2021</p>
-      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
+      <p class="footer-links"><a href="/garage/">Garage</a> <span aria-hidden="true">&middot;</span> <a href="/work/">Work</a> <span aria-hidden="true">&middot;</span> <a href="/voice/">Voice</a> <span aria-hidden="true">&middot;</span> <a href="/crew/">The Crew</a> <span aria-hidden="true">&middot;</span> <a href="/shelf/">Shelf</a> <span aria-hidden="true">&middot;</span> <a href="/wallpapers/">Wallpapers</a> <span aria-hidden="true">&middot;</span> <a href="/guide/">Viewer guide</a> <span aria-hidden="true">&middot;</span> <a href="/log/">Ship&rsquo;s Log</a> <span aria-hidden="true">&middot;</span> <a href="/ask/">Ask the Captain</a> <span aria-hidden="true">&middot;</span> <a href="/lore/">Channel lore</a> <span aria-hidden="true">&middot;</span> <a href="/rewind/">Dismeigh Rewind</a> <span aria-hidden="true" data-install-sep>&middot;</span> <a class="footer-install" href="/install/" data-install>Get the app</a> <span aria-hidden="true">&middot;</span> <a href="/press/">Press kit</a> <span aria-hidden="true">&middot;</span> <a href="/map/">Ship map</a> <span aria-hidden="true">&middot;</span> <a href="/privacy/">Privacy</a></p>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
       <p class="footer-legal">&copy; <span id="year"></span> Denizen Technologies. All rights reserved.</p>
     </footer>
@@ -220,6 +229,14 @@
     }, { threshold: 0.15 });
     document.querySelectorAll('.sweep').forEach(el => io.observe(el));
 
+    fetch('/api/site').then(r => r.ok ? r.json() : null).then(d => {
+      const c = d && d.collab; if (!c || !c.on) return;
+      const ul = document.getElementById('press-collab-kinds');
+      (c.kinds || []).forEach(k => { const li = document.createElement('li'); li.textContent = k; ul.append(li); });
+      if (c.note) { const n = document.getElementById('press-collab-note'); n.textContent = c.note; n.hidden = false; }
+      document.getElementById('press-collab').hidden = false;
+    }).catch(() => {});
+
     document.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
       const text = document.getElementById(btn.dataset.copy)?.textContent || '';
       try { await navigator.clipboard.writeText(text); btn.textContent = 'Copied'; }
@@ -230,6 +247,6 @@
 
   }
   </script>
-  <script src="/app.js?v=61" defer></script>
+  <script src="/app.js?v=62" defer></script>
 </body>
 </html>

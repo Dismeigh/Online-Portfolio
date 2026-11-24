@@ -191,7 +191,7 @@
 
   // Secret 6: visit every main page on the site (tracked in this browser)
   {
-    const PAGES = ['/', '/garage/', '/work/', '/voice/', '/crew/', '/shelf/', '/guide/', '/log/', '/lore/', '/rewind/', '/wallpapers/', '/press/'];
+    const PAGES = ['/', '/garage/', '/work/', '/voice/', '/crew/', '/shelf/', '/guide/', '/log/', '/lore/', '/rewind/', '/wallpapers/', '/press/', '/ask/', '/map/'];
     const VKEY = 'dismeigh-explored';
     let path = location.pathname.replace(/index\.html$/, '');
     if (!path.endsWith('/')) path += '/';
@@ -467,6 +467,9 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     ['Events', '/event/', 'Page', 'Special streams and their run of show.', 'event special stream charity marathon'],
     ['Wallpapers', '/wallpapers/', 'Page', 'Free phone wallpapers with Dismeigh\u2019s art.', 'wallpaper wallpapers lock screen background download free phone'],
     ['Wanted poster maker', '/wallpapers/#poster', 'Page', 'Make your own Bebop-style wanted poster.', 'wanted poster maker bounty profile picture pfp woolongs make generator'],
+    ['Ask the Captain', '/ask/', 'Page', 'Send Dismeigh a question and read the answers.', 'ask question questions q&a qa answer captain faq'],
+    ['Ship map', '/map/', 'Page', 'A deck plan of the ship: every room is a page.', 'map ship deck plan rooms directory sitemap navigate'],
+    ['Clip of the Month', '/#highlights', 'Page', 'Vote for your favorite home page clip.', 'clip of the month vote voting favorite clips'],
     ['Press kit', '/press/', 'Page', 'Bios, images, colors and links for events and collabs.', 'press kit media kit bio logo avatar colors fonts collab event feature contact'],
     ['Get the app', '/install/', 'Page', 'Add the site to your phone or computer as an app.', 'install app home screen download'],
   ].map(([title, url, kind, text, words]) => ({ title, url, kind, text, words }));

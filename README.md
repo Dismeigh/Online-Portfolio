@@ -27,7 +27,7 @@ Then under **Settings → Variables and Secrets**, add:
 
 | Variable | Value |
 | --- | --- |
-| `CALENDAR_FEED_URL` | The Calendar.online ICS subscription link, e.g. `https://export.calendar.online/ics/<number>/7e461a2bf4ac3d7a10bc/<name>.ics` |
+| `CALENDAR_FEED_URL` | Optional, only for the one-time "bring over past streams" button in the dashboard's Streams tab (the old Calendar.online ICS link). The stream schedule itself now lives in the dashboard. Safe to delete after importing. |
 
 Redeploy once after adding the variable. Every push to `main` deploys automatically.
 
