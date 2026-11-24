@@ -820,3 +820,36 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     if (nav) { nav.classList.add('has-banner'); nav.prepend(bar); } else { bar.classList.add('is-loose'); document.body.prepend(bar); }
   }).catch(() => {});
 })();
+
+// "Refuel the ship": any [data-kofi-tip] link opens Ko-fi's own tip panel in a window over the page.
+// The payment happens entirely on Ko-fi (inside their frame); if anything fails, the link just opens Ko-fi normally.
+(() => {
+  const URL_ = 'https://ko-fi.com/dismeigh/?hidefeed=true&widget=true&embed=true&preview=true';
+  let dlg = null;
+  const build = () => {
+    dlg = document.createElement('dialog');
+    dlg.className = 'tip-dialog';
+    dlg.setAttribute('aria-labelledby', 'tip-title');
+    dlg.innerHTML = `<div class="tip-head"><div><p class="tip-kicker">Tip on Ko-fi</p><h2 id="tip-title">Refuel the ship</h2></div>
+      <button type="button" class="tip-close" aria-label="Close">&times;</button></div>
+      <p class="tip-copy">Every tip keeps the streams, the site and the Sojourn ST running. Thank you, space cowboy.</p>
+      <div class="tip-frame"><p class="tip-loading">Loading Ko-fi&hellip;</p><iframe title="Tip Dismeigh on Ko-fi" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"></iframe></div>
+      <p class="tip-alt"><a href="https://ko-fi.com/dismeigh" target="_blank" rel="noopener noreferrer">Open Ko-fi in a new tab instead</a></p>`;
+    document.body.append(dlg);
+    const close = () => dlg.close();
+    dlg.querySelector('.tip-close').addEventListener('click', close);
+    dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+    dlg.querySelector('.tip-alt a').addEventListener('click', close);
+  };
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-kofi-tip]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || typeof HTMLDialogElement !== 'function') return;
+    e.preventDefault();
+    try {
+      if (!dlg) build();
+      const f = dlg.querySelector('iframe');
+      if (!f.src) { f.addEventListener('load', () => dlg.querySelector('.tip-loading')?.remove(), { once: true }); f.src = URL_; }
+      dlg.showModal();
+    } catch { window.open(a.href, '_blank', 'noopener'); }
+  });
+})();

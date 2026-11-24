@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=87">
+  <link rel="stylesheet" href="/styles.css?v=89">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Event", "item": "https://www.denizen-dismeigh.com/event/"}]}</script>
 </head>
@@ -183,6 +183,7 @@
           <p class="ev-actions">
             <a class="social-btn ev-watch" id="ev-watch" href="https://twitch.tv/dismeigh" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
             <a class="social-btn" href="/#schedule">Regular schedule</a>
+            <a class="social-btn ev-tip" id="ev-tip" href="https://ko-fi.com/dismeigh" target="_blank" rel="noopener noreferrer" data-kofi-tip hidden>Refuel the ship</a>
           </p>
           <div class="ev-schedule-wrap" id="ev-schedule-wrap" hidden>
             <h2>Run of show</h2>
@@ -243,6 +244,7 @@
       $('ev-d').textContent = Math.floor(s / 86400); s %= 86400;
       $('ev-h').textContent = pad(Math.floor(s / 3600)); $('ev-m').textContent = pad(Math.floor(s % 3600 / 60)); $('ev-s').textContent = pad(s % 60);
       $('ev-watch').textContent = phase === 'live' ? 'Watch live on Twitch' : phase === 'upcoming' ? 'Follow on Twitch' : 'Catch the VODs on Twitch';
+      $('ev-tip').hidden = phase !== 'live' || !$('ev-goal-link').hidden;
       $('ev-schedule').querySelectorAll('li').forEach(li => {
         const t = Number(li.dataset.t), next = Number(li.dataset.next);
         li.classList.toggle('is-now', phase === 'live' && now >= t && now < next);
@@ -298,6 +300,6 @@
     else fetch('/api/content/events', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => show(d?.event || null)).catch(() => show(null));
   }
   </script>
-  <script src="/app.js?v=53" defer></script>
+  <script src="/app.js?v=54" defer></script>
 </body>
 </html>

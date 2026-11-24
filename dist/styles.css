@@ -2946,3 +2946,24 @@ html:has(.dash-body) { background: var(--ink); }
 .hl-state { font-family: var(--typed); font-size: 0.85rem; color: #8fd393; }
 .hl-warn .hl-state { color: var(--mustard); } .hl-down .hl-state { color: #f08a75; }
 .hl-down { border-color: #e0604a !important; }
+
+/* Refuel the ship: button sub-label, commissions line, Ko-fi tip window */
+.support-shop-label small { display: block; font-size: 0.72em; font-weight: 600; opacity: 0.75; letter-spacing: 0.02em; }
+.support-commissions { margin: 1rem 0 0; color: var(--paper-dim); font-size: 0.95rem; text-align: center; }
+.support-commissions a { color: var(--mustard); font-weight: 700; }
+.tip-dialog { width: min(30rem, calc(100vw - 1rem)); max-height: calc(100dvh - 1rem); margin: auto; padding: 0; border: 3px solid var(--mustard); border-left-width: 8px; background: var(--ink); color: var(--paper); box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.6); overflow: auto; }
+.tip-dialog::backdrop { background: rgba(10, 8, 7, 0.8); }
+.tip-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 1rem 1rem 0; }
+.tip-kicker { margin: 0; font-family: var(--typed); color: var(--mustard); font-size: 0.85rem; }
+.tip-head h2 { margin: 0.1rem 0 0; font-family: var(--display); font-weight: 400; font-size: 1.9rem; text-transform: uppercase; line-height: 1; }
+.tip-close { width: 2.75rem; height: 2.75rem; flex: 0 0 auto; border: 2px solid var(--paper-dim); background: none; color: var(--paper); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+.tip-close:hover, .tip-close:focus-visible { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.tip-copy { margin: 0.6rem 1rem 0.8rem; color: var(--paper-dim); font-size: 0.95rem; }
+.tip-frame { position: relative; margin: 0 0.6rem; background: #f9f9f9; border-radius: 4px; overflow: hidden; }
+.tip-frame iframe { display: block; width: 100%; height: min(712px, calc(100dvh - 16rem)); border: 0; background: #f9f9f9; }
+.tip-loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #333; font-weight: 600; }
+.tip-alt { margin: 0.6rem 1rem 1rem; font-size: 0.9rem; text-align: center; }
+.tip-alt a { color: var(--paper-dim); }
+.game-tip { display: inline-block; margin-top: 0.8rem; color: var(--mustard); font-weight: 700; font-size: 0.95rem; text-decoration: underline; text-underline-offset: 3px; }
+.game-tip[hidden] { display: none; }
+.ev-tip[hidden] { display: none; }

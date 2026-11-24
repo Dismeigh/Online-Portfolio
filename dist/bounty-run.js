@@ -47,6 +47,7 @@
   }
 
   const stars = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() * T.starSize + 0.3, v: Math.random() * 0.6 + 0.2, c: T.leaves ? T.sparks[Math.floor(Math.random() * T.sparks.length)] : null }));
+  const tip = document.getElementById('g-tip'); let gamesOver = 0; // a small tip link after the 2nd game, never during play
   let state = 'ready', ship, rocks, chips, sparks, t, speed, score, chipCount, target, keys = {}, last = 0, shake = 0;
   let run = null, finalScore = 0, finalSeconds = 0;
 
@@ -60,7 +61,7 @@
 
   function start() {
     reset(); state = 'play'; setPlaying(true);
-    ui.overlay.hidden = true; ui.form.hidden = true; ui.btn.hidden = false;
+    ui.overlay.hidden = true; ui.form.hidden = true; ui.btn.hidden = false; if (tip) tip.hidden = true;
     last = performance.now(); wake();
     // Ticket for this run, so the server can time it
     run = null;
@@ -109,6 +110,7 @@
       const ranked = qualifies(finalScore);
       ui.form.hidden = !ranked; ui.btn.hidden = ranked; ui.msg.textContent = '';
       ui.post.disabled = false;
+      gamesOver++; if (tip) tip.hidden = gamesOver < 2;
       ui.overlay.hidden = false;
       if (ranked) {
         ui.sub.textContent += ranked === 'week' ? ' · Made this week’s board!' : ' · You made the board!';

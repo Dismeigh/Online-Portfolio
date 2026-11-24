@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=87">
+  <link rel="stylesheet" href="styles.css?v=89">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -312,10 +312,10 @@
           <div class="kofi-past" data-kofi-past="home" hidden></div>
 
           <div class="support-shop-buttons">
-            <a href="https://ko-fi.com/dismeigh" class="sponsor-btn support-shop-button" target="_blank" rel="noopener noreferrer">
+            <a href="https://ko-fi.com/dismeigh" class="sponsor-btn support-shop-button" target="_blank" rel="noopener noreferrer" data-kofi-tip>
               <span class="support-shop-button-inner">
                 <span class="support-shop-icon"><svg class="icon icon-mug-hot" viewBox="0 0 576 512" aria-hidden="true" focusable="false"><path d="M152-16c-13.3 0-24 10.7-24 24 0 38.9 23.4 59.4 39.1 73.1l1.1 1C184.5 96.4 192 103.9 192 120c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C183.5 31.7 176 24.1 176 8c0-13.3-10.7-24-24-24M96 192c-17.7 0-32 14.3-32 32v192c0 53 43 96 96 96h192c41.8 0 77.4-26.7 90.5-64h5.5c70.7 0 128-57.3 128-128s-57.3-128-128-128zm352 192V256c35.3 0 64 28.7 64 64s-28.7 64-64 64M288 8c0-13.3-10.7-24-24-24S240-5.3 240 8c0 38.9 23.4 59.4 39.1 73.1l1.1 1C296.5 96.4 304 103.9 304 120c0 13.3 10.7 24 24 24s24-10.7 24-24c0-38.9-23.4-59.4-39.1-73.1l-1.1-1C295.5 31.7 288 24.1 288 8"/></svg></span>
-                <span class="support-shop-label">Donations &amp; Commissions</span>
+                <span class="support-shop-label">Refuel the ship<small>Tip on Ko-fi</small></span>
               </span>
             </a>
 
@@ -326,6 +326,7 @@
               </span>
             </a>
           </div>
+          <p class="support-commissions">Want something made? Commissions are on the <a href="/voice/">Voice</a> and <a href="/work/">Work</a> pages.</p>
         </div>
       </section>
     </header>
@@ -602,6 +603,7 @@
                   <div class="game-form-btns"><button type="submit" id="g-post">Post score</button><button type="button" id="g-skip" class="game-skip">Skip</button></div>
                 </form>
                 <button type="button" class="game-start" id="g-start">Launch</button>
+                <a class="game-tip" id="g-tip" href="https://ko-fi.com/dismeigh" target="_blank" rel="noopener noreferrer" data-kofi-tip hidden>Enjoying the arcade? Refuel the ship &#9749;</a>
               </div>
             </div>
             <section class="scoreboard" aria-labelledby="scoreboard-heading">
@@ -1498,8 +1500,8 @@
   </script>
   <script src="/log.js?v=2" defer></script>
   <script src="/crew.js?v=6" defer></script>
-  <script src="/bounty-run.js?v=37" defer></script>
-  <script src="/app.js?v=53" defer></script>
+  <script src="/bounty-run.js?v=38" defer></script>
+  <script src="/app.js?v=54" defer></script>
   <script src="/goal.js?v=2" defer></script>
 </body>
 </html>
