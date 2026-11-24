@@ -581,6 +581,28 @@
     flash($('look-msg'), data.error || ($('l-mode').value === 'auto' ? 'Back to automatic.' : 'Saved. Visitors see it on their next page load.')); loaders.site();
   });
 
+  // ---------- Link check ----------
+  $('lk-go').addEventListener('click', async () => {
+    const btn = $('lk-go'); btn.disabled = true; $('lk-body').innerHTML = '';
+    try {
+      $('lk-msg').textContent = 'Finding links\u2026';
+      const { data } = await api('links'); const links = data.links || [], results = [];
+      for (let i = 0; i < links.length; i += 10) {
+        $('lk-msg').textContent = `Checking ${Math.min(i + 10, links.length)} of ${links.length}\u2026`;
+        const { data: r } = await api('links', { urls: links.slice(i, i + 10).map(l => l.url) });
+        results.push(...(r.results || []));
+      }
+      const by = Object.fromEntries(results.map(r => [r.url, r]));
+      const rows = links.map(l => ({ ...l, ...(by[l.url] || { result: 'unknown', status: 0 }) }));
+      const broken = rows.filter(r => r.result === 'broken'), unknown = rows.filter(r => r.result === 'unknown'), ok = rows.length - broken.length - unknown.length;
+      $('lk-msg').textContent = broken.length ? `${broken.length} broken, ${ok} fine, ${unknown.length} couldn\u2019t check.` : `All good: ${ok} fine${unknown.length ? `, ${unknown.length} couldn\u2019t check` : ''}.`;
+      const item = r => `<li class="dash-row${r.result === 'broken' ? ' is-bad' : ' is-hidden'}"><div class="dash-row-main"><b>${r.result === 'broken' ? 'Broken' : 'Couldn\u2019t check'}${r.status ? ` (${r.status})` : ''}</b> <span class="dash-meta">${esc(r.where.join(', '))}</span><code class="dash-code">${esc(r.url)}</code></div>
+        <div class="dash-row-actions"><a class="dash-btn dash-small" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">Open</a></div></li>`;
+      $('lk-body').innerHTML = (broken.length || unknown.length) ? `<ul class="dash-list">${[...broken, ...unknown].map(item).join('')}</ul>` : '';
+    } catch { $('lk-msg').textContent = 'The check stopped partway. Try again.'; }
+    btn.disabled = false;
+  });
+
   // ---------- Stream overlays ----------
   const OVERLAYS = [['goal', 'Ko-fi goal bar', '700 \u00d7 220', 'Hidden while no goal is on. Pops when a tip lands.'], ['log', 'Ship\u2019s Log messages', '700 \u00d7 150', 'Cycles through the newest five entries.'], ['arcade', 'Arcade top 5 this week', '420 \u00d7 330', 'Switches between Bounty Run and Launch Control.']];
   $('ovl-list').innerHTML = OVERLAYS.map(([k, name, size, note]) => `<li class="dash-row"><div class="dash-row-main"><b>${name}</b> <span class="dash-meta">${size}</span><p>${note}</p><code class="dash-code">${location.origin}/overlay/?w=${k}</code></div>

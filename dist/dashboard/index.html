@@ -388,6 +388,13 @@
             <p class="dash-msg" id="comm-msg" role="status"></p>
           </form>
         </section>
+        <section class="dash-card dash-card-links" aria-labelledby="lk-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Housekeeping</p><h2 id="lk-h">Link check</h2></div></div>
+          <p class="dash-note">Tests every outside link on the site and in your content (lore, pinned clip, event, banners). Some sites, like Instagram or TikTok, block checkers, so those show as &ldquo;couldn&rsquo;t check&rdquo;.</p>
+          <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="lk-go">Check all links</button></div>
+          <p class="dash-msg" id="lk-msg" role="status"></p>
+          <div id="lk-body"></div>
+        </section>
         <section class="dash-card dash-card-ovl" aria-labelledby="ovl-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">For OBS</p><h2 id="ovl-h">Stream overlays</h2></div></div>
           <p class="dash-note">In OBS: Sources &rarr; + &rarr; Browser, paste a link, and set the size. They&rsquo;re see-through and update on their own.</p>
@@ -443,6 +450,6 @@
     </div>
   </main>
   <script src="/qr.js?v=1" defer></script>
-  <script src="/dashboard.js?v=22" defer></script>
+  <script src="/dashboard.js?v=23" defer></script>
 </body>
 </html>
