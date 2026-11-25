@@ -13,6 +13,7 @@
        /overlay/?w=log     Ship's Log messages     (suggested 700 x 150)
        /overlay/?w=arcade  Weekly arcade top 5     (suggested 420 x 330)
        /overlay/?w=tips    Ko-fi tip alerts        (suggested 800 x 260, see-through until a tip lands)
+       /overlay/?w=deaths  Death counter           (suggested 420 x 200, hidden when no run is going)
        Add &bg=1 for a solid background instead of see-through. Public info only; nothing here is counted or tracked. -->
   <style>
     :root { --ink: #14110f; --ink-2: #1d1916; --paper: #efe6d2; --dim: #cfc4ad; --mustard: #e3a92f; --red: #b73b2c; --teal: #3f8f8c; }
@@ -44,6 +45,13 @@
     @keyframes tipIn { from { transform: translateY(30px) scale(0.9); opacity: 0; } to { transform: none; opacity: 1; } }
     @keyframes tipOut { to { transform: translateY(-20px); opacity: 0; } }
     @media (prefers-reduced-motion: reduce) { .ov-tip, .ov-out { animation: none; } }
+    .ov-deaths { display: inline-flex; align-items: center; gap: 16px; max-width: calc(100% - 24px); }
+    .ov-deaths .sk { font-size: 64px; line-height: 1; }
+    .ov-deaths .n { margin: 0; font: 400 72px/0.95 Anton, Impact, sans-serif; color: var(--paper); font-variant-numeric: tabular-nums; }
+    .ov-deaths .g { margin: 6px 0 0; font: 400 18px/1.2 "Special Elite", monospace; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+    .ov-deaths.hit { animation: hit 0.5s ease; }
+    @keyframes hit { 0% { transform: translateX(0); } 20% { transform: translateX(-8px) rotate(-2deg); } 40% { transform: translateX(8px) rotate(2deg); } 60% { transform: translateX(-4px); } 100% { transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .ov-deaths.hit { animation: none; } }
     @keyframes pop { 0% { transform: scale(0.96); } 50% { transform: scale(1.02); } 100% { transform: none; } }
   </style>
 </head>
@@ -121,7 +129,20 @@
       setTimeout(() => { box.classList.add('ov-out'); setTimeout(() => { box.hidden = true; box.classList.remove('ov-out'); showing = false; next(); }, 600); }, 8000);
     }
 
-    if (w === 'tips') { if (q.get('test') === '1') { queue.push({ kind: 'tip', cents: 500, currency: 'USD' }); next(); } tips(); setInterval(tips, 10000); }
+    // Death counter: the count for the current run, from the dashboard (Streams tab). Shakes when it goes up.
+    let lastDeaths = null;
+    async function deaths() {
+      const d = await get('/api/deaths');
+      if (!d?.on) { box.hidden = true; lastDeaths = null; return; }
+      if (!box.classList.contains('ov-deaths')) { box.className = 'ov ov-deaths'; box.innerHTML = '<span class="sk" aria-hidden="true">💀</span><div><span class="k">Deaths</span><p class="n"></p><p class="g"></p></div>'; }
+      box.querySelector('.n').textContent = Number(d.count).toLocaleString('en-US'); box.querySelector('.g').textContent = d.game;
+      box.hidden = false;
+      if (lastDeaths !== null && d.count > lastDeaths) { box.classList.remove('hit'); void box.offsetWidth; box.classList.add('hit'); }
+      lastDeaths = d.count;
+    }
+
+    if (w === 'deaths') { deaths(); setInterval(deaths, 3000); }
+    else if (w === 'tips') { if (q.get('test') === '1') { queue.push({ kind: 'tip', cents: 500, currency: 'USD' }); next(); } tips(); setInterval(tips, 10000); }
     else if (w === 'log') { log(); setInterval(log, 30000); setInterval(() => { at++; showLog(); }, 9000); }
     else if (w === 'arcade') { arcade(); setInterval(() => { gi++; arcade(); }, 15000); }
     else { goal(); setInterval(goal, 30000); }

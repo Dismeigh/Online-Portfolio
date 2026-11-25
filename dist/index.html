@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=130">
+  <link rel="stylesheet" href="styles.css?v=131">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -395,6 +395,11 @@
               <span class="status-dot"></span>
               <span>Co-op</span>
               <strong><span>In progress with</span> <span id="coop-names"></span></strong>
+            </div>
+            <div class="status-row death-row" id="death-row" hidden>
+              <span class="status-dot"></span>
+              <span>Deaths this run</span>
+              <strong><span aria-hidden="true">💀</span> <b id="death-count">0</b> <span class="death-game">in <span id="death-game"></span></span></strong>
             </div>
             <div class="status-row next-stream" id="next-stream" hidden>
               <svg class="icon icon-calendar-days" viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path d="M128 0c17.7 0 32 14.3 32 32v32h128V32c0-17.7 14.3-32 32-32s32 14.3 32 32v32h32c35.3 0 64 28.7 64 64v288c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128c0-35.3 28.7-64 64-64h32V32c0-17.7 14.3-32 32-32M64 240v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16m128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16m144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM64 368v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16m144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16"/></svg>
@@ -1588,6 +1593,21 @@
         v.append(track);
       });
     }).catch(() => {});
+  })();
+  </script>
+  <script>
+  // Death counter (Streams tab in the dashboard): shows while a run is going and "show on home page" is on
+  (() => {
+    const row = document.getElementById('death-row'); if (!row) return;
+    let last = null;
+    const check = () => fetch('/api/deaths').then(r => r.ok ? r.json() : null).then(d => {
+      row.hidden = !(d && d.home); if (row.hidden) return;
+      document.getElementById('death-count').textContent = Number(d.count).toLocaleString('en-US');
+      document.getElementById('death-game').textContent = d.game;
+      if (last !== null && d.count > last) { row.classList.remove('is-hit'); void row.offsetWidth; row.classList.add('is-hit'); }
+      last = d.count;
+    }).catch(() => {});
+    check(); setInterval(() => { if (!document.hidden) check(); }, 30000);
   })();
   </script>
   <script>

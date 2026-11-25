@@ -790,7 +790,7 @@
   });
 
   // ---------- Stream overlays ----------
-  const OVERLAYS = [['goal', 'Ko-fi goal bar', '700 \u00d7 220', 'Hidden while no goal is on. Pops when a tip lands.'], ['log', 'Ship\u2019s Log messages', '700 \u00d7 150', 'Cycles through the newest five entries.'], ['arcade', 'Arcade top 5 this week', '420 \u00d7 330', 'Switches between Bounty Run and Launch Control.'], ['tips', 'Ko-fi tip alerts', '800 \u00d7 260', 'See-through until a tip or membership lands, then pops for 8 seconds. Amount only, never names. Preview shows a test $5 tip.']];
+  const OVERLAYS = [['deaths', 'Death counter', '420 \u00d7 200', 'Shows the game and count from the Streams tab. Hidden when no run is going.'], ['goal', 'Ko-fi goal bar', '700 \u00d7 220', 'Hidden while no goal is on. Pops when a tip lands.'], ['log', 'Ship\u2019s Log messages', '700 \u00d7 150', 'Cycles through the newest five entries.'], ['arcade', 'Arcade top 5 this week', '420 \u00d7 330', 'Switches between Bounty Run and Launch Control.'], ['tips', 'Ko-fi tip alerts', '800 \u00d7 260', 'See-through until a tip or membership lands, then pops for 8 seconds. Amount only, never names. Preview shows a test $5 tip.']];
   $('ovl-list').innerHTML = OVERLAYS.map(([k, name, size, note]) => `<li class="dash-row"><div class="dash-row-main"><b>${name}</b> <span class="dash-meta">${size}</span><p>${note}</p><code class="dash-code">${location.origin}/overlay/?w=${k}</code></div>
     <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-ovl="${k}">Copy link</button><a class="dash-btn dash-small" href="/overlay/?w=${k}&bg=1${k === 'tips' ? '&test=1' : ''}" target="_blank" rel="noopener">Preview</a></div></li>`).join('');
   $('ovl-list').addEventListener('click', async e => {
@@ -1293,7 +1293,55 @@
       drawGl(data); flash($('gl-msg'), `Sent to ${data.job?.sent ?? 0} viewer${data.job?.sent === 1 ? '' : 's'}.`);
     } finally { btn.disabled = false; }
   });
-  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); loadStats(); loadGl(); };
+  // Death counter
+  let dc = null, dcBusy = false;
+  function drawDc() {
+    if (!dc) return;
+    const on = !!dc.game;
+    $('dc-run').hidden = !on; $('dc-form').hidden = on && !$('dc-form').dataset.open;
+    $('dc-game').textContent = dc.game; $('dc-count').textContent = dc.count.toLocaleString('en-US');
+    $('dc-home').checked = !!dc.home;
+    $('dc-runs').innerHTML = dc.runs.length ? dc.runs.map(r => `<li class="dash-row"><div class="dash-row-main"><b>${esc(r.game)}</b> <span class="dash-meta">${r.count.toLocaleString('en-US')} death${r.count === 1 ? '' : 's'} · ${esc(new Date(r.since || r.ended).toLocaleDateString())} – ${esc(new Date(r.ended).toLocaleDateString())}</span></div></li>`).join('')
+      + '<li><button type="button" class="dash-btn dash-small" id="dc-clear">Clear past runs</button></li>' : '<li class="dash-note">None yet. When you start a new game, the old count lands here.</li>';
+  }
+  const dcAct = async body => {
+    if (dcBusy) return; dcBusy = true;
+    try { const { status, data } = await api('deaths', body); if (status !== 200) flash($('dc-msg'), data.error || 'Couldn\u2019t save.'); else dc = data.deaths; } catch { flash($('dc-msg'), 'Couldn\u2019t save. Check your connection.'); }
+    dcBusy = false; drawDc();
+  };
+  const loadDc = async () => { dc = (await api('deaths')).data.deaths; drawDc(); };
+  // Taps show right away; quick taps are bundled into one save so none get lost
+  let dcPending = 0, dcTimer = 0;
+  const dcFlush = async () => {
+    if (dcBusy) { dcTimer = setTimeout(dcFlush, 150); return; }
+    const n = dcPending; dcPending = 0; if (!n) return;
+    await dcAct({ action: 'add', n });
+    if (dcPending && dc) { dc.count = Math.max(0, dc.count + dcPending); drawDc(); }
+  };
+  const dcBump = n => {
+    if (!dc?.game || (n < 0 && dc.count === 0)) return;
+    dc.count = Math.max(0, dc.count + n); dcPending += n; $('dc-count').textContent = dc.count.toLocaleString('en-US');
+    $('dc-count').classList.remove('is-bump'); void $('dc-count').offsetWidth; $('dc-count').classList.add('is-bump');
+    clearTimeout(dcTimer); dcTimer = setTimeout(dcFlush, Math.abs(dcPending) >= 40 ? 0 : 250);
+  };
+  $('dc-add').addEventListener('click', () => dcBump(1));
+  $('dc-sub').addEventListener('click', () => dcBump(-1));
+  const dcOpen = rename => { const f = $('dc-form'); f.dataset.open = rename ? 'rename' : 'new'; f.hidden = false; $('dc-go').textContent = rename ? 'Save name' : 'Start counting'; $('dc-game-in').value = rename ? dc.game : ''; $('dc-game-in').focus(); };
+  $('dc-new').addEventListener('click', () => dcOpen(false));
+  $('dc-rename').addEventListener('click', () => dcOpen(true));
+  $('dc-cancel').addEventListener('click', () => { delete $('dc-form').dataset.open; drawDc(); });
+  $('dc-form').addEventListener('submit', async e => { e.preventDefault(); const rename = $('dc-form').dataset.open === 'rename'; delete $('dc-form').dataset.open; await dcAct({ action: rename ? 'rename' : 'start', game: $('dc-game-in').value }); });
+  $('dc-set').addEventListener('click', () => { const v = prompt('Set the death count to:', dc?.count ?? 0); if (v !== null && v.trim() !== '') dcAct({ action: 'set', count: Number(v.replace(/,/g, '')) }); });
+  $('dc-end').addEventListener('click', () => { if (confirm('End this run? The count is saved in Past runs and the overlay hides.')) dcAct({ action: 'end' }); });
+  $('dc-home').addEventListener('change', e => dcAct({ action: 'home', on: e.target.checked }));
+  $('dc-runs').addEventListener('click', e => { if (e.target.id === 'dc-clear' && confirm('Clear all past runs?')) dcAct({ action: 'clearRuns' }); });
+  // + and - keys count while the card is on screen (not while typing)
+  document.addEventListener('keydown', e => {
+    if (!dc?.game || e.ctrlKey || e.metaKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+    const r = $('dc-run').getBoundingClientRect(); if (!r.height || r.bottom < 0 || r.top > innerHeight) return;
+    if (e.key === '+' || e.key === '=') { e.preventDefault(); dcBump(1); } else if (e.key === '-' || e.key === '_') { e.preventDefault(); dcBump(-1); }
+  });
+  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); loadStats(); loadGl(); loadDc(); };
   $('st-new').addEventListener('click', () => { stEdit = 'new'; drawStreams(); $('sf-title').focus(); });
   $('st-body').addEventListener('change', e => {
     if (e.target.id !== 'sf-repeat') return;

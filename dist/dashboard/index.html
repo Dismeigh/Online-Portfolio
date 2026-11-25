@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=130">
+  <link rel="stylesheet" href="/styles.css?v=131">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -417,6 +417,27 @@
           <p class="dash-msg" id="ck-msg" role="status"></p>
           <p class="dash-hint">Ticks sync between your phone and computer, and clear on their own the next day.</p>
         </section>
+        <section class="dash-card" aria-labelledby="dc-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">On stream</p><h2 id="dc-h">Death counter</h2></div></div>
+          <div id="dc-run">
+            <p class="dc-game"><span id="dc-game"></span> <button type="button" class="dash-btn dash-small" id="dc-rename">Rename</button></p>
+            <div class="dc-pad">
+              <button type="button" class="dc-btn" id="dc-sub" aria-label="Take one death away">&minus;</button>
+              <output class="dc-count" id="dc-count" aria-live="polite">0</output>
+              <button type="button" class="dc-btn dc-plus" id="dc-add" aria-label="Add a death">+1</button>
+            </div>
+            <div class="dash-actions"><button type="button" class="dash-btn dash-small" id="dc-set">Fix the number</button><button type="button" class="dash-btn dash-small" id="dc-new">New game</button><button type="button" class="dash-btn dash-small dash-danger" id="dc-end">End run</button></div>
+          </div>
+          <form id="dc-form" hidden>
+            <label for="dc-game-in">Game</label>
+            <input id="dc-game-in" maxlength="60" placeholder="Fallout: New Vegas" autocomplete="off">
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary" id="dc-go">Start counting</button><button type="button" class="dash-btn" id="dc-cancel">Cancel</button></div>
+          </form>
+          <label class="dash-check-line"><input type="checkbox" id="dc-home"> <span>Show &ldquo;Deaths this run&rdquo; on the home page</span></label>
+          <p class="dash-msg" id="dc-msg" role="status"></p>
+          <details class="dc-past"><summary>Past runs</summary><ul class="dash-list" id="dc-runs"></ul></details>
+          <p class="dash-hint">Overlay: Site tab &rarr; Stream overlays &rarr; Death counter. With this card on screen, the + and &minus; keys also count.</p>
+        </section>
         <section class="dash-card" aria-labelledby="gl-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Viewers who tapped &ldquo;Notify me&rdquo;</p><h2 id="gl-h">Go-live alerts</h2></div><span class="dash-chip" id="gl-chip"><span class="dash-dot" aria-hidden="true"></span><span id="gl-count">0 signed up</span></span></div>
           <label for="gl-message">Alert message</label><input id="gl-message" maxlength="120" placeholder="Dismeigh is live! Come hang out on Twitch.">
@@ -701,13 +722,14 @@
           <label for="help-find" class="sr-only">Search help</label>
           <input id="help-find" type="search" placeholder="Search help, like &ldquo;invoice&rdquo; or &ldquo;banner&rdquo;" autocomplete="off">
           <h3 class="dash-h3">Getting around</h3>
-          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: the Today card (next stream, what&rsquo;s waiting on you), today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, collab requests, client reviews, jobs, auditions, calendar and income. <b>Streams</b>: pre-stream checklist, your stream schedule (repeats, skipped nights, one-time streams) and the schedule graphic. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, collabs, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
+          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: the Today card (next stream, what&rsquo;s waiting on you), today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, collab requests, client reviews, jobs, auditions, calendar and income. <b>Streams</b>: pre-stream checklist, death counter, your stream schedule (repeats, skipped nights, one-time streams) and the schedule graphic. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, collabs, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
           <details class="dash-help-item"><summary>Can I use this on my phone?</summary><p>Yes. Open the dashboard in Safari, tap Share, then Add to Home Screen. It works like an app, and phone alerts only work from the home-screen app on iPhone.</p></details>
           <h3 class="dash-h3">Stream & site</h3>
           <details class="dash-help-item"><summary>Put a message across every page</summary><p>Site tab, Site banner. Type a message, add a link if you want, and tap Show banner. Use the one-tap buttons for common ones like Live now or No stream tonight. Set Start at to schedule one for later.</p></details>
           <details class="dash-help-item"><summary>Change what's on the site (bounties, quotes, lore&hellip;)</summary><p>Content tab. Pick a section, edit, then tap Save at the bottom. Changes are live right away.</p></details>
           <details class="dash-help-item"><summary>Set up a Ko-fi goal</summary><p>Ko-fi goal tab. Fill in the name, amount and description, pick where it shows, and switch it on. When it’s done, End goal &amp; save it moves it to the Funded list.</p></details>
           <details class="dash-help-item"><summary>Plan a subathon or special stream</summary><p>Content tab, Special event. Set the name, times, an optional goal and a run of show. The event page and the home page countdown update on their own.</p></details>
+          <details class="dash-help-item"><summary>Use the death counter</summary><p>Streams tab, Death counter. Type the game and tap Start counting. Tap +1 when you die (or press the + key while the card is on screen); &minus; fixes a mistake. Add the Death counter overlay in OBS (Site tab, Stream overlays), and tick the box to show it on the home page too. New game saves the old count in Past runs; End run hides it everywhere.</p></details>
           <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Site tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
           <details class="dash-help-item"><summary>Close the site for a bit</summary><p>Site tab, Maintenance mode. Visitors see a back-soon page. This dashboard, Ko-fi and client links keep working.</p></details>
           <h3 class="dash-h3">Business</h3>
@@ -765,6 +787,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=49" defer></script>
+  <script src="/dashboard.js?v=50" defer></script>
 </body>
 </html>

@@ -3757,3 +3757,24 @@ html:has(.dash-body) { background: var(--ink); }
 .clip-react.is-pop span[aria-hidden] { animation: clip-react-pop 0.35s ease-out; }
 @keyframes clip-react-pop { 40% { transform: scale(1.45) rotate(-8deg); } }
 @media (prefers-reduced-motion: reduce) { .clip-react.is-pop span[aria-hidden] { animation: none; } }
+
+/* Death counter (home status console) */
+.death-row strong b { color: var(--mustard); font-weight: 400; font-family: var(--display); font-size: 1.05rem; }
+.death-row .death-game { color: var(--muted, #b9ab97); }
+.death-row.is-hit { animation: death-hit 0.5s ease; }
+@keyframes death-hit { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-2px); } }
+@media (prefers-reduced-motion: reduce) { .death-row.is-hit { animation: none; } }
+/* Dashboard: death counter */
+.dc-game { margin: 0 0 0.6rem; display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; font-weight: 800; color: var(--paper); }
+.dc-pad { display: grid; grid-template-columns: 5rem 1fr 7rem; gap: 0.8rem; align-items: stretch; max-width: 30rem; }
+.dc-btn { min-height: 5rem; background: var(--ink-2, #1d1916); color: var(--paper); border: 3px solid var(--line, #3a322b); font: 400 2.4rem/1 Anton, Impact, sans-serif; cursor: pointer; touch-action: manipulation; }
+.dc-btn:hover, .dc-btn:focus-visible { border-color: var(--mustard); }
+.dc-btn:active { transform: translateY(2px); }
+.dc-plus { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.dc-plus:hover, .dc-plus:focus-visible { border-color: var(--paper); }
+.dc-count { display: grid; place-items: center; font: 400 3.6rem/1 Anton, Impact, sans-serif; color: var(--paper); font-variant-numeric: tabular-nums; background: #0b0908; border: 3px solid var(--line, #3a322b); }
+.dc-count.is-bump { animation: dc-bump 0.25s ease; }
+@keyframes dc-bump { 50% { transform: scale(1.08); color: var(--mustard); } }
+@media (prefers-reduced-motion: reduce) { .dc-count.is-bump { animation: none; } }
+.dc-past { margin-top: 1rem; }
+.dc-past summary { cursor: pointer; font-weight: 800; color: var(--paper); }
