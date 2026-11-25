@@ -644,7 +644,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     rollBtn.type = 'button';
     rollBtn.className = 'roll-credits';
     rollBtn.textContent = 'Roll credits';
-    const links = footer.querySelector('.footer-links');
+    const links = footer.querySelector('.footer-nav');
     links ? links.after(rollBtn) : footer.append(rollBtn);
 
     const dlg = document.createElement('dialog');
@@ -1055,11 +1055,9 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       window.dismeighSeasonFx?.();
     }
     // Gear page link in the footer, only while the page is switched on (dashboard: Content -> Gear)
-    if (s.gear) document.querySelectorAll('.footer-links a[href="/press/"]').forEach(a => {
-      if (a.parentNode.querySelector('a[href="/gear/"]')) return;
-      const sep = document.createElement('span'); sep.setAttribute('aria-hidden', 'true'); sep.textContent = ' \u00b7 ';
-      const g = document.createElement('a'); g.href = '/gear/'; g.textContent = 'Gear';
-      a.after(sep, g);
+    if (s.gear) document.querySelectorAll('.footer-nav a[href="/press/"]').forEach(a => {
+      const li = a.closest('li'); if (!li || li.parentNode.querySelector('a[href="/gear/"]')) return;
+      const g = document.createElement('li'); g.innerHTML = '<a href="/gear/">My gear</a>'; li.after(g);
     });
     // "Right now" status line on the home page
     const rn = document.getElementById('right-now');
