@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=132">
+  <link rel="stylesheet" href="/styles.css?v=133">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Dismeigh's Shelf", "item": "https://www.denizen-dismeigh.com/shelf/"}]}</script>
 </head>
@@ -218,6 +218,12 @@
             </article>
           </div>
         </section>
+        <section class="shelf-row backlog" id="backlog" aria-labelledby="backlog-heading" hidden>
+          <h2 class="shelf-row-title" id="backlog-heading"><svg class="icon icon-gamepad" viewBox="0 0 640 512" aria-hidden="true" focusable="false"><path d="M448 64c106 0 192 86 192 192s-86 192-192 192H192C86 448 0 362 0 256S86 64 192 64zM192 176c-13.3 0-24 10.7-24 24v32h-32c-13.3 0-24 10.7-24 24s10.7 24 24 24h32v32c0 13.3 10.7 24 24 24s24-10.7 24-24v-32h32c13.3 0 24-10.7 24-24s-10.7-24-24-24h-32v-32c0-13.3-10.7-24-24-24m240 96a32 32 0 1 0 0 64 32 32 0 1 0 0-64m64-96a32 32 0 1 0 0 64 32 32 0 1 0 0-64"/></svg> The backlog</h2>
+          <p class="verdicts-lede">What I&rsquo;m playing, what&rsquo;s next in the queue, and how the last ones went.</p>
+          <div class="backlog-cols" id="backlog-cols"></div>
+        </section>
+
         <section class="shelf-row verdicts" id="verdicts" aria-labelledby="verdicts-heading" hidden>
           <h2 class="shelf-row-title" id="verdicts-heading"><svg class="icon icon-gavel" viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M318.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-120 120c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l4-4 106.8 106.7-4 4c-12.5 12.5-12.5 32.8 0 45.3l16 16c12.5 12.5 32.8 12.5 45.3 0l120-120c12.5-12.5 12.5-32.8 0-45.3l-16-16c-12.5-12.5-32.8-12.5-45.3 0l-4 4L330.6 74.6l4-4c12.5-12.5 12.5-32.8 0-45.3zm-152 288c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l48 48c12.5 12.5 32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-1.4-1.4 58.8-58.7-45.3-45.3-58.7 58.7z"/></svg><span>Dismeigh&rsquo;s Verdicts</span></h2>
           <p class="verdicts-lede">Games I&rsquo;ve played, rated out of five. The good, the bad, and the uninstalled.</p>
@@ -246,6 +252,23 @@
       for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
     }, { threshold: 0.15 });
     document.querySelectorAll('.sweep').forEach(el => io.observe(el));
+
+    // Game backlog (dashboard: Content -> Game backlog): hidden until there's at least one
+    fetch('/api/content/backlog').then(r => r.ok ? r.json() : null).then(d => {
+      const list = (d && d.backlog) || []; if (!list.length) return;
+      const COLS = [['playing', 'Playing now'], ['next', 'Up next'], ['beaten', 'Beaten'], ['dropped', 'Dropped']];
+      const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+      const cols = COLS.map(([k, label]) => {
+        const items = list.filter(g => g.status === k); if (!items.length) return null;
+        const col = el('div', `backlog-col is-${k}`), ul = el('ul', 'backlog-list');
+        col.append(el('h3', 'backlog-col-title', `${label} (${items.length})`));
+        items.forEach(g => { const li = el('li', 'backlog-item'); li.append(el('b', '', g.game)); if (g.note) li.append(el('span', '', g.note)); ul.append(li); });
+        col.append(ul); return col;
+      }).filter(Boolean);
+      document.getElementById('backlog-cols').replaceChildren(...cols);
+      document.getElementById('backlog').hidden = false;
+      if (location.hash === '#backlog') document.getElementById('backlog').scrollIntoView();
+    }).catch(() => {});
 
     // Dismeigh's Verdicts (verdicts.json): hidden until there's at least one
     const LABELS = ['', 'Uninstalled', 'Rough ride', 'Decent', 'Solid', 'Masterpiece'];

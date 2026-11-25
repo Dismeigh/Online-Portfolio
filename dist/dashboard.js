@@ -372,6 +372,10 @@
       F('price', 'Price (e.g. from $50, $25/month)', 'text', { max: 30 }), F('summary', 'One-line description', 'text', { max: 160 }),
       F('points', 'What\u2019s included (one per line)', 'textarea', { max: 960 }),
     ] },
+    backlog: { note: 'The game backlog on the Shelf page: what you\u2019re playing, what\u2019s next, what you beat and what you dropped. Order inside each group follows this list. Hidden until you add one.', fields: [
+      F('status', 'Where it\u2019s at', 'select', { options: [['playing', 'Playing now'], ['next', 'Up next'], ['beaten', 'Beaten'], ['dropped', 'Dropped']] }),
+      F('game', 'Game', 'text', { max: 60, required: true }), F('note', 'Note (optional, like \u201cchat picked this\u201d)', 'text', { max: 140 }),
+    ] },
     gear: { note: 'The Gear page: what you stream with. Pick a section for each item. Links are optional (a store or product page). Nothing shows until you switch the page on below.', fields: [
       F('group', 'Section', 'select', { options: [['stream', 'Streaming (camera, capture, lights)'], ['audio', 'Audio (mic, headphones)'], ['pc', 'PC'], ['vtuber', 'VTuber setup'], ['desk', 'Desk & extras'], ['car', 'In the car']] }),
       F('name', 'What it is', 'text', { max: 80, required: true }), F('note', 'Note (optional, like why you like it)', 'text', { max: 200 }), F('link', 'Link (https://..., optional)', 'text', { max: 300 }),
@@ -381,7 +385,7 @@
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { gear: 'gear', bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates', dyno: 'dyno', spotlight: 'spotlight' };
+  const WRAP = { backlog: 'backlog', gear: 'gear', bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates', dyno: 'dyno', spotlight: 'spotlight' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -672,6 +676,19 @@
   const toLocal = ms => { if (!ms) return ''; const d = new Date(ms); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
   const fromLocal = v => (v ? new Date(v).getTime() : null);
   const NAMES = { newyear: 'New Year', mlk: 'MLK Day', valentines: 'Valentine’s', presidents: 'Presidents’ Day', stpatricks: 'St. Patrick’s', easter: 'Easter', mothers: 'Mother’s Day', memorial: 'Memorial Day', fathers: 'Father’s Day', juneteenth: 'Juneteenth', july4: 'Fourth of July', labor: 'Labor Day', spooky: 'Spooky (October)', veterans: 'Veterans Day', thanksgiving: 'Thanksgiving', holiday: 'Holidays (December)', birthday: 'Your birthday', anniversary: 'Twitch anniversary' };
+  // Collab nights: weekdays you're open, plus nights marked taken (same rules as the press kit page)
+  const CO_DAYS = [['MO', 'Mon'], ['TU', 'Tue'], ['WE', 'Wed'], ['TH', 'Thu'], ['FR', 'Fri'], ['SA', 'Sat'], ['SU', 'Sun']];
+  const CO_KEYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  let coTaken = new Set();
+  const coNights = () => [...document.querySelectorAll('#co-nights input:checked')].map(x => x.value);
+  function drawCoTaken() {
+    const nights = coNights(), start = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()), days = [];
+    for (let i = 1; i <= 21; i++) { const d = new Date(Date.parse(`${start}T12:00:00Z`) + i * 86400000).toISOString().slice(0, 10); if (nights.includes(CO_KEYS[new Date(`${d}T12:00:00Z`).getUTCDay()])) days.push(d); }
+    $('co-taken-wrap').hidden = !days.length;
+    $('co-taken').innerHTML = days.map(d => `<button type="button" class="dash-taken-day" data-d="${d}" aria-pressed="${coTaken.has(d)}">${esc(new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }))}<small>${coTaken.has(d) ? 'Taken' : 'Open'}</small></button>`).join('');
+  }
+  $('co-nights').addEventListener('change', drawCoTaken);
+  $('co-taken').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (!b) return; const d = b.dataset.d; coTaken.has(d) ? coTaken.delete(d) : coTaken.add(d); drawCoTaken(); flash($('co-msg'), 'Tap Save to update the press kit page.'); });
   loaders.site = async () => {
     const { data } = await api('site');
     const b = data.banner;
@@ -694,6 +711,9 @@
     $('co-on').checked = !!co.on; $('co-note').value = co.note || '';
     $('co-kinds').innerHTML = (data.collabKinds || []).map((k, i) => `<label><input type="checkbox" value="${esc(k)}" id="co-k${i}"${co.kinds.includes(k) ? ' checked' : ''}> ${esc(k)}</label>`).join('');
     $('co-chip').className = `dash-chip ${co.on ? 'dash-chip-ok' : ''}`; $('co-chip-text').textContent = co.on ? 'Showing' : 'Off';
+    coTaken = new Set(co.taken || []);
+    $('co-nights').innerHTML = CO_DAYS.map(([k, l]) => `<label><input type="checkbox" value="${k}"${(co.nights || []).includes(k) ? ' checked' : ''}> ${l}</label>`).join('');
+    $('co-time').value = co.time || ''; drawCoTaken();
     $('l-mode').value = data.look?.mode || 'auto'; $('l-until').value = toLocal(data.look?.until);
     updatePreview();
     const m = (await api('maintenance')).data.maintenance || {};
@@ -771,7 +791,7 @@
   });
   $('co-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const { data } = await api('site', { what: 'collab', on: $('co-on').checked, note: $('co-note').value, kinds: [...document.querySelectorAll('#co-kinds input:checked')].map(x => x.value) });
+    const { data } = await api('site', { what: 'collab', on: $('co-on').checked, note: $('co-note').value, kinds: [...document.querySelectorAll('#co-kinds input:checked')].map(x => x.value), nights: coNights(), time: $('co-time').value, taken: [...coTaken] });
     flash($('co-msg'), data.error || (data.collab?.on ? 'Saved. It shows on the press kit page now.' : 'Saved. The collab card is hidden.')); loaders.site();
   });
   $('look-form').addEventListener('submit', async e => {
@@ -935,6 +955,10 @@
       <label for="cn-${j.id}">Note for the client <span>(shows on their page)</span></label>
       <textarea id="cn-${j.id}" rows="2" maxlength="600" placeholder="Homepage is done. Waiting on your photos for the gallery.">${esc(j.client_note || '')}</textarea>
       <button type="button" class="dash-btn dash-small" data-tool="note" data-id="${j.id}">Save note</button>
+      <label for="nd-${j.id}">What you need from them <span>(one per line, up to 15; they tick each off on their page)</span></label>
+      <textarea id="nd-${j.id}" rows="3" maxlength="1900" placeholder="Logo (PNG or SVG)&#10;Brand colors&#10;Text for the About page">${esc((j.needs || []).map(n => n.t).join('\n'))}</textarea>
+      ${(j.needs || []).length ? `<ul class="dash-needs">${j.needs.map(n => `<li class="${n.done ? 'is-done' : ''}">${n.done ? '\u2713' : '\u25cb'} ${esc(n.t)}</li>`).join('')}</ul>` : ''}
+      <button type="button" class="dash-btn dash-small" data-tool="needs" data-id="${j.id}">Save list</button>
       <h4>Invoice</h4>
       <div class="dash-inv" id="inv-${j.id}">${(inv.items?.length ? inv.items : [{}]).map(invRow).join('')}</div>
       <button type="button" class="dash-btn dash-small" data-tool="inv-add" data-id="${j.id}">+ Add a line</button>
@@ -965,11 +989,11 @@
     const list = board.jobs.filter(j => (jbView === 'active' ? j.stage !== 'done' : j.stage === jbView));
     const today = new Date().toISOString().slice(0, 10);
     $('jb-body').innerHTML = (editingJob === 'new' ? jobForm() : '') + (list.length ? `<ul class="dash-list">${list.map(j => editingJob === j.id ? `<li class="dash-row">${jobForm(j)}</li>` : `
-      <li class="dash-row dash-job stage-${esc(j.stage)}"><div class="dash-row-main">
+      <li class="dash-row dash-job stage-${esc(j.stage)}" data-focus="job-${j.id}"><div class="dash-row-main">
         <b>${esc(j.client)}</b> <span class="dash-meta">${esc(j.service || '')}${j.price ? ` · ${esc(j.price)}` : ''}</span>
         <p class="dash-req-meta">${esc(STAGE[j.stage])}${j.due ? ` · due ${esc(j.due)}${j.stage !== 'done' && j.due < today ? ' <span class="dash-late">overdue</span>' : ''}` : ''}${j.contact ? ` · ${esc(j.contact)}` : ''}</p>
         ${j.notes ? `<p class="dash-note-text">${esc(j.notes)}</p>` : ''}
-        <p class="dash-job-tags">${j.agreement ? `<span>${j.agreement.signed ? `Agreement signed by ${esc(j.agreement.signed.name)}` : 'Agreement not signed yet'}</span>` : ''}${j.token ? '<span>Client link on</span>' : ''}${j.invoice ? `<span>Invoice ${esc(j.invoice.number)} · ${esc({ unpaid: 'unpaid', deposit: 'deposit paid', paid: 'paid' }[j.invoice.status])}${j.inv_token ? '' : ' · link off'}</span>` : ''}${paidFor(j.id) ? `<span>Received ${esc(money(paidFor(j.id)))}</span>` : ''}</p>
+        <p class="dash-job-tags">${j.agreement ? `<span>${j.agreement.signed ? `Agreement signed by ${esc(j.agreement.signed.name)}` : 'Agreement not signed yet'}</span>` : ''}${j.token ? '<span>Client link on</span>' : ''}${(j.needs || []).length ? `<span>${j.needs.every(n => n.done) ? 'Client sent everything' : `Waiting on client: ${j.needs.filter(n => !n.done).length} of ${j.needs.length}`}</span>` : ''}${j.invoice ? `<span>Invoice ${esc(j.invoice.number)} · ${esc({ unpaid: 'unpaid', deposit: 'deposit paid', paid: 'paid' }[j.invoice.status])}${j.inv_token ? '' : ' · link off'}</span>` : ''}${paidFor(j.id) ? `<span>Received ${esc(money(paidFor(j.id)))}</span>` : ''}</p>
         <details class="dash-job-more" data-job-more="${j.id}"${openMore === j.id ? ' open' : ''}><summary>Agreement, client link, invoice &amp; payments</summary>${jobTools(j)}</details></div>
         <div class="dash-row-actions">
           <label class="sr-only" for="js-${j.id}">Stage</label><select id="js-${j.id}" data-job-stage="${j.id}">${Object.entries(STAGE).map(([k, v]) => `<option value="${k}"${j.stage === k ? ' selected' : ''}>${v}</option>`).join('')}</select>
@@ -1512,7 +1536,7 @@
   let collabs = [];
   function drawCollabs() {
     $('cr-body').innerHTML = collabs.length ? `<ul class="dash-list">${collabs.map(c => `
-      <li class="dash-row${c.replied ? ' is-hidden' : ''}" data-focus="cr-${c.id}"><div class="dash-row-main"><b>${esc(c.name)}</b> <span class="dash-meta">${esc(c.kind)} · ${esc(when(c.at))}${c.replied ? ' · replied' : ''}</span>
+      <li class="dash-row${c.replied ? ' is-hidden' : ''}" data-focus="cr-${c.id}"><div class="dash-row-main"><b>${esc(c.name)}</b> <span class="dash-meta">${esc(c.kind)} · ${esc(when(c.at))}${c.replied ? ' · replied' : ''}</span>${c.night ? `<p class="dash-req-meta">Night they picked: <b>${esc(new Date(`${c.night}T12:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'short', day: 'numeric' }))}</b></p>` : ''}
         <p class="dash-req-meta">Reply to: <b>${esc(c.contact)}</b></p>${c.link ? `<p class="dash-req-links"><a href="${esc(c.link)}" target="_blank" rel="noopener noreferrer nofollow">Their link</a></p>` : ''}
         <p class="dash-note-text">${esc(c.message)}</p></div>
         <div class="dash-row-actions"><button type="button" class="dash-btn dash-small" data-cr="${c.replied ? 'unreplied' : 'replied'}" data-id="${c.id}">${c.replied ? 'Mark not replied' : 'Mark replied'}</button>
@@ -1584,6 +1608,7 @@
       'ag-off': { action: 'agreementOff' }, 'ag-on': { action: 'agreementOn' }, 'ref-on': { action: 'refOn' }, 'ref-off': { action: 'refOff' },
       'status-on': { action: 'jobShare', on: true }, 'status-off': { action: 'jobShare', on: false },
       note: { action: 'jobClientNote', note: $(`cn-${id}`)?.value },
+      needs: { action: 'jobNeeds', needs: $(`nd-${id}`)?.value },
       'inv-off': { action: 'invoiceOff' }, 'inv-on': { action: 'invoiceNewLink' },
       'inv-save': { action: 'invoiceSave', invoice: {
         number: job.invoice?.number, issued: job.invoice?.issued, deposit: $(`idp-${id}`).value, status: $(`ist-${id}`).value,

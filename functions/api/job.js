@@ -1,5 +1,5 @@
 // Public, private-link pages for clients: GET /api/job?s=<status code>, ?i=<invoice code> or ?a=<agreement code>. See lib/clients.js.
-import { clientTables, jobStatus, jobInvoice, jobAgreement, signAgreement } from '../../lib/clients.js';
+import { clientTables, jobStatus, jobInvoice, jobAgreement, signAgreement, tickNeed } from '../../lib/clients.js';
 import { sameOrigin } from '../../lib/arcade.js';
 import { alert } from '../../lib/push.js';
 import { reviewTables, reviewState, submitReview } from '../../lib/reviews.js';
@@ -23,6 +23,16 @@ export async function onRequestPost({ request, env, waitUntil }) {
   try {
     await clientTables(env.ARCADE);
     const b = await request.json().catch(() => ({}));
+    // "What I need from you": the client ticks an item on their page
+    if (b.need) {
+      const r = await tickNeed(env.ARCADE, b);
+      if (r.error) return out(r, 400);
+      if (r.alert) {
+        const a = r.alert, ping = alert(env, 'quote', { title: `${a.client} sent something`, body: `Ticked: ${a.item}${a.left ? ` (${a.left} left)` : ' (that\u2019s everything!)'}`, tab: 'clients', focus: `job-${a.id}` });
+        if (waitUntil) waitUntil(ping); else await ping;
+      }
+      return out({ ok: true, needs: r.needs });
+    }
     // Review from the status page (once the job is done)
     if (b.review) {
       await reviewTables(env.ARCADE);

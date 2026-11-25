@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=132">
+  <link rel="stylesheet" href="/styles.css?v=133">
 </head>
 <body class="client-page">
   <div class="fixed-bg" aria-hidden="true"></div>
@@ -25,6 +25,12 @@
       <ol class="client-steps" id="steps" hidden></ol>
       <p class="client-due" id="due" hidden></p>
       <div class="client-note" id="note" hidden></div>
+      <div class="client-needs" id="needs" hidden>
+        <h2 class="client-h2">What I need from you</h2>
+        <p class="client-needs-sub" id="needs-sub"></p>
+        <ul class="client-needs-list" id="needs-list"></ul>
+        <p class="client-needs-msg" id="needs-msg" role="status"></p>
+      </div>
       <div class="client-docs" id="docs" hidden></div>
       <div class="client-review" id="review" hidden>
         <h2 class="client-h2" id="rv-h">How did it go?</h2>
@@ -60,6 +66,29 @@
       $('steps').hidden = false;
       if (d.due) { $('due').textContent = `${d.stage === 'done' ? 'Finished' : 'Expected'}: ${new Date(d.due + 'T12:00:00').toLocaleDateString([], { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' })}`; $('due').hidden = false; }
       if (d.note) { $('note').textContent = d.note; $('note').hidden = false; }
+      // What I need from you: tick each one once it's sent (Dismeigh gets a heads-up)
+      const needs = d.needs || [];
+      const drawNeeds = list => {
+        const left = list.filter(n => !n.done).length;
+        $('needs-sub').textContent = left ? `Tick each one once you\u2019ve sent it. ${left} left.` : 'All sent. Thank you!';
+        $('needs-list').replaceChildren(...list.map((n, i) => {
+          const li = document.createElement('li'), lab = document.createElement('label'), cb = document.createElement('input'), sp = document.createElement('span');
+          cb.type = 'checkbox'; cb.checked = n.done; cb.dataset.i = i; sp.textContent = n.t; lab.append(cb, sp); li.append(lab); if (n.done) li.className = 'is-done'; return li;
+        }));
+      };
+      if (needs.length && d.stage !== 'done') {
+        drawNeeds(needs); $('needs').hidden = false;
+        $('needs-list').addEventListener('change', async e => {
+          const cb = e.target.closest('input[data-i]'); if (!cb) return;
+          cb.disabled = true;
+          try {
+            const r = await fetch('/api/job', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ need: true, s: code, i: Number(cb.dataset.i), done: cb.checked }) });
+            const x = await r.json();
+            if (r.ok) { drawNeeds(x.needs); $('needs-msg').textContent = cb.checked ? 'Got it. Dismeigh will see it\u2019s on the way.' : ''; }
+            else { cb.checked = !cb.checked; cb.disabled = false; $('needs-msg').textContent = x.error || 'Couldn\u2019t save that. Try again.'; }
+          } catch { cb.checked = !cb.checked; cb.disabled = false; $('needs-msg').textContent = 'Couldn\u2019t save that. Check your connection.'; }
+        });
+      }
       const usd = c => (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
       const docs = [];
       if (d.agreement) docs.push(`<div class="client-doc"><div><p class="client-kicker">Agreement</p><b>${d.agreement.signed ? `Signed by ${esc(d.agreement.signed.name)}` : 'Waiting for your signature'}</b></div><a class="social-btn" href="/agree/?a=${encodeURIComponent(d.agreement.code)}">${d.agreement.signed ? 'View' : 'Read &amp; sign'}</a></div>`);

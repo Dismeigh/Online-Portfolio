@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=132">
+  <link rel="stylesheet" href="/styles.css?v=133">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -231,6 +231,7 @@
             <button type="button" data-content="updates">What&rsquo;s new</button>
             <button type="button" data-content="captions">Clip captions</button>
             <button type="button" data-content="gear">Gear</button>
+            <button type="button" data-content="backlog">Game backlog</button>
           </div>
           <p class="dash-note" id="content-note"></p>
           <div class="dash-gear-switch" id="gear-switch" hidden>
@@ -634,6 +635,9 @@
             <label class="dash-check-line"><input type="checkbox" id="co-on"> <span>Show &ldquo;Open to collabs&rdquo; on the press kit page</span></label>
             <fieldset class="dash-checks"><legend>What you&rsquo;re open to</legend><div id="co-kinds"></div></fieldset>
             <label for="co-note">Note <span>(optional)</span></label><input id="co-note" maxlength="200" placeholder="Booking collabs for January. DM on Discord or email.">
+            <fieldset class="dash-checks dash-days"><legend>Nights you&rsquo;re open for collabs <span>(shows the next open dates on the press kit page)</span></legend><div id="co-nights"></div></fieldset>
+            <label for="co-time">Time <span>(optional)</span></label><input id="co-time" maxlength="40" placeholder="Evenings after 7 PM ET">
+            <div id="co-taken-wrap" hidden><p class="dash-label">Tap a night to mark it taken <span>(next 3 weeks)</span></p><div class="dash-taken" id="co-taken"></div></div>
             <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
             <p class="dash-msg" id="co-msg" role="status"></p>
           </form>
@@ -734,6 +738,9 @@
           <details class="dash-help-item"><summary>Change what's on the site (bounties, quotes, lore&hellip;)</summary><p>Content tab. Pick a section, edit, then tap Save at the bottom. Changes are live right away.</p></details>
           <details class="dash-help-item"><summary>Set up a Ko-fi goal</summary><p>Ko-fi goal tab. Fill in the name, amount and description, pick where it shows, and switch it on. When it’s done, End goal &amp; save it moves it to the Funded list.</p></details>
           <details class="dash-help-item"><summary>Plan a subathon or special stream</summary><p>Content tab, Special event. Set the name, times, an optional goal and a run of show. The event page and the home page countdown update on their own.</p></details>
+          <details class="dash-help-item"><summary>Ask a client for files and info</summary><p>Clients tab, open the job, then Agreement, client link, invoice &amp; payments. Under &ldquo;What you need from them&rdquo;, type one item per line and Save list. It shows on their client page as a checklist. Each time they tick something, you get an alert, and the job shows &ldquo;Waiting on client: 2 of 3&rdquo;.</p></details>
+          <details class="dash-help-item"><summary>Show open collab nights</summary><p>Site tab, Collabs. Tick the nights of the week you&rsquo;re open and add a time if you like. The press kit page lists the next open dates (3 weeks ahead). Tap a date in the dashboard to mark it taken, then Save. Streamers can pick a night in the request form.</p></details>
+          <details class="dash-help-item"><summary>Update the game backlog</summary><p>Content tab, Game backlog. Add games as Playing now, Up next, Beaten or Dropped. It shows on the Shelf page above your Verdicts.</p></details>
           <details class="dash-help-item"><summary>Set up the Gear page</summary><p>Content tab, Gear. Add your mic, camera, PC, VTuber setup and so on, pick a section for each, and save. The page stays hidden from visitors (it shows a &ldquo;page not found&rdquo;) until you tick &ldquo;Show the Gear page on the site&rdquo;. While it&rsquo;s off, use the Preview link under the switch to see it with what you&rsquo;ve saved. Once it&rsquo;s on, a Gear link shows in every page footer.</p></details>
           <details class="dash-help-item"><summary>Use the death counter</summary><p>Streams tab, Death counter. Type the game and tap Start counting. Tap +1 when you die (or press the + key while the card is on screen); &minus; fixes a mistake. Add the Death counter overlay in OBS (Site tab, Stream overlays), and tick the box to show it on the home page too. New game saves the old count in Past runs; End run hides it everywhere.</p></details>
           <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Site tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
@@ -793,6 +800,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=51" defer></script>
+  <script src="/dashboard.js?v=52" defer></script>
 </body>
 </html>

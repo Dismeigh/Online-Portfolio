@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=132">
+  <link rel="stylesheet" href="/styles.css?v=133">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Press Kit", "item": "https://www.denizen-dismeigh.com/press/"}]}</script>
 </head>
@@ -165,6 +165,10 @@
           <p class="press-collab-tag">Open to collabs</p>
           <ul class="press-collab-kinds" id="press-collab-kinds"></ul>
           <p class="press-collab-note" id="press-collab-note" hidden></p>
+          <div class="press-nights" id="press-nights" hidden>
+            <p class="press-nights-h">Open nights<span id="press-nights-time"></span></p>
+            <ul class="press-nights-list" id="press-nights-list"></ul>
+          </div>
           <p class="press-collab-how">Send a request below, or reach out at <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a> or on <a href="https://discord.gg/ttKfZbHnsj" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
           <details class="press-collab-form-wrap" id="cr-wrap">
             <summary>Send a collab request</summary>
@@ -172,6 +176,7 @@
               <label for="cr-name">Your name or channel</label><input id="cr-name" maxlength="60" autocomplete="nickname" required>
               <label for="cr-contact">Email or Discord username</label><input id="cr-contact" maxlength="120" required>
               <label for="cr-kind">What kind of collab?</label><select id="cr-kind" required></select>
+              <div id="cr-night-wrap" hidden><label for="cr-night">Night <span>(optional)</span></label><select id="cr-night"><option value="">No set night</option></select></div>
               <label for="cr-link">Your channel or page <span>(optional)</span></label><input id="cr-link" type="url" maxlength="300" placeholder="https://twitch.tv/...">
               <label for="cr-message">The idea</label><textarea id="cr-message" rows="4" maxlength="1000" required placeholder="What you have in mind, and when"></textarea>
               <label class="log-trap" aria-hidden="true">Website <input id="cr-website" tabindex="-1" autocomplete="off"></label>
@@ -270,6 +275,20 @@
       if (c.note) { const n = document.getElementById('press-collab-note'); n.textContent = c.note; n.hidden = false; }
       const sel = document.getElementById('cr-kind');
       [...(c.kinds || []), 'Something else'].forEach(k => { const o = document.createElement('option'); o.textContent = k; sel.append(o); });
+      // Open collab nights: tapping one opens the form with that night picked
+      const open = c.open || [], fmt = d => new Date(`${d}T12:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' });
+      if (open.length) {
+        const nl = document.getElementById('press-nights-list'), ns = document.getElementById('cr-night');
+        if (c.time) document.getElementById('press-nights-time').textContent = ` \u00b7 ${c.time}`;
+        open.forEach(d => {
+          const li = document.createElement('li'), b = document.createElement('button');
+          b.type = 'button'; b.className = 'press-night'; b.textContent = fmt(d); b.setAttribute('aria-label', `Request a collab on ${fmt(d)}`);
+          b.addEventListener('click', () => { ns.value = d; const w = document.getElementById('cr-wrap'); w.open = true; w.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('cr-name').focus({ preventScroll: true }); });
+          li.append(b); nl.append(li);
+          const o = document.createElement('option'); o.value = d; o.textContent = fmt(d); ns.append(o);
+        });
+        document.getElementById('press-nights').hidden = false; document.getElementById('cr-night-wrap').hidden = false;
+      }
       document.getElementById('press-collab').hidden = false;
     }).catch(() => {});
     const opened = Date.now();
@@ -279,7 +298,7 @@
       msg.textContent = ''; btn.disabled = true;
       try {
         const r = await fetch('/api/collab', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: v('cr-name'), contact: v('cr-contact'), kind: v('cr-kind'), link: v('cr-link'), message: v('cr-message'), website: v('cr-website'), elapsed: Date.now() - opened }) });
+          body: JSON.stringify({ name: v('cr-name'), contact: v('cr-contact'), kind: v('cr-kind'), link: v('cr-link'), message: v('cr-message'), night: v('cr-night'), website: v('cr-website'), elapsed: Date.now() - opened }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) { msg.textContent = d.error || 'Couldn\u2019t send that. Try again.'; if (d.field) document.getElementById(d.field)?.focus(); }
         else { msg.textContent = 'Sent! I\u2019ll get back to you soon.'; e.target.reset(); }

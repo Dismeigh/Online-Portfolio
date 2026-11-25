@@ -3789,3 +3789,41 @@ html:has(.dash-body) { background: var(--ink); }
 .gear-name a:hover, .gear-name a:focus-visible { color: var(--mustard); }
 .gear-note { margin: 0.3rem 0 0; color: var(--paper-dim); font-size: 0.95rem; overflow-wrap: anywhere; }
 .dash-hint a { color: var(--mustard); }
+/* Dashboard: collab nights */
+.dash-label { margin: 1rem 0 0.4rem; font-weight: 800; color: var(--paper); }
+.dash-label span { font-weight: 400; color: var(--paper-dim); }
+.dash-taken { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.dash-taken-day { display: grid; min-height: 2.75rem; padding: 0.35rem 0.7rem; background: rgba(63, 143, 140, 0.16); color: var(--paper); border: 2px solid var(--teal); font: 700 0.85rem/1.2 "Work Sans", sans-serif; cursor: pointer; text-align: left; }
+.dash-taken-day small { font-weight: 400; color: var(--paper-dim); }
+.dash-taken-day[aria-pressed="true"] { background: transparent; border-color: var(--line, #3a322b); color: var(--paper-dim); text-decoration: line-through; }
+/* Press kit: open collab nights */
+.press-nights { margin: 0.9rem 0 0; }
+.press-nights-h { margin: 0 0 0.4rem; font-family: var(--typed); color: #5a4c41; font-size: 0.9rem; }
+.press-nights-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.press-night { min-height: 2.75rem; padding: 0.3rem 0.8rem; background: #fffaf0; color: var(--ink); border: 2px solid var(--teal); font: 700 0.9rem/1.2 "Work Sans", sans-serif; cursor: pointer; }
+.press-night:hover, .press-night:focus-visible { background: var(--teal); color: var(--paper); outline: none; }
+#cr-night-wrap { display: grid; gap: 0.35rem; }
+/* Shelf: game backlog */
+.backlog { scroll-margin-top: 5rem; }
+.backlog-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+.backlog-col { padding: 0.9rem 1rem 1rem; background: var(--ink-2); border: 2px solid var(--line); border-top: 6px solid var(--teal); }
+.backlog-col.is-playing { border-top-color: var(--red); }
+.backlog-col.is-next { border-top-color: var(--mustard); }
+.backlog-col.is-dropped { opacity: 0.8; border-top-color: var(--line); }
+.backlog-col-title { margin: 0 0 0.6rem; font-family: var(--display); font-weight: 400; font-size: 1.25rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--paper); }
+.backlog-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+.backlog-item { display: grid; gap: 0.1rem; padding-left: 0.7rem; border-left: 3px solid rgba(239, 230, 210, 0.2); }
+.backlog-item b { color: var(--paper); overflow-wrap: anywhere; }
+.backlog-item span { font-size: 0.9rem; color: var(--paper-dim); overflow-wrap: anywhere; }
+.backlog-col.is-dropped .backlog-item b { text-decoration: line-through; text-decoration-color: var(--red); }
+/* Client page: what I need from you */
+.client-needs { margin: 0 0 1rem; }
+.client-needs-sub { margin: 0 0 0.5rem; color: var(--paper-dim); }
+.client-needs-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.client-needs-list label { display: flex; align-items: center; gap: 0.7rem; min-height: 2.75rem; padding: 0.4rem 0.8rem; background: rgba(0, 0, 0, 0.3); border-left: 4px solid var(--mustard); color: var(--paper); cursor: pointer; overflow-wrap: anywhere; }
+.client-needs-list input { width: 1.25rem; height: 1.25rem; flex: none; accent-color: var(--teal); }
+.client-needs-list .is-done label { border-left-color: var(--teal); color: var(--paper-dim); }
+.client-needs-list .is-done span { text-decoration: line-through; }
+.client-needs-msg { margin: 0.4rem 0 0; min-height: 1.2em; font-size: 0.9rem; color: var(--teal); }
+.dash-needs { list-style: none; margin: 0.4rem 0; padding: 0; font-size: 0.9rem; color: var(--paper); }
+.dash-needs .is-done { color: var(--paper-dim); text-decoration: line-through; }
