@@ -601,7 +601,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     });
   }
 
-  // Retro visitor counter: each visitor's number, odometer style (functions/api/visits.js)
+  // Retro visitor counter: how many people have visited the site so far, odometer style (functions/api/visits.js)
   if (footer) {
     const KEY = 'dismeigh-visitor';
     const show = n => {
@@ -609,17 +609,17 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       const digits = String(n).padStart(6, '0');
       const p = document.createElement('p');
       p.className = 'footer-visitor';
-      p.innerHTML = `<span>You are visitor</span> <span class="odo" aria-hidden="true">${[...digits].map(d => `<b>${d}</b>`).join('')}</span><span class="sr-only">number ${n.toLocaleString('en-US')}</span>`;
+      p.innerHTML = `<span class="odo" aria-hidden="true">${[...digits].map(d => `<b>${d}</b>`).join('')}</span> <span>visitors so far</span><span class="sr-only">: ${n.toLocaleString('en-US')} people have visited</span>`;
       const brand = footer.querySelector('.footer-brand');
       brand ? brand.before(p) : footer.append(p);
     };
     let saved = null;
     try { saved = Number(localStorage.getItem(KEY)) || null; } catch {}
-    if (saved) show(saved);
-    else fetch('/api/visits', { method: 'POST' }).then(r => (r.ok ? r.json() : null)).then(d => {
-      if (!d?.n) return;
-      try { localStorage.setItem(KEY, String(d.n)); } catch {}
-      show(d.n);
+    // First visit: count this visitor once. After that: just read the total.
+    (saved ? fetch('/api/visits') : fetch('/api/visits', { method: 'POST' })).then(r => (r.ok ? r.json() : null)).then(d => {
+      if (!d) return;
+      if (d.n) { try { localStorage.setItem(KEY, String(d.n)); } catch {} }
+      show(Math.max(d.total || 0, d.n || 0, saved || 0));
     }).catch(() => {});
   }
 
