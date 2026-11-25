@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=127">
+  <link rel="stylesheet" href="styles.css?v=129">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -565,6 +565,9 @@
               </video>
             </div>
 
+            <button class="clip-theater-btn" type="button" id="clip-theater-btn" aria-label="Watch in theater mode" title="Theater mode">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>
+            </button>
             <button class="clip-arrow clip-arrow-next" type="button" aria-label="Next clip">
               <svg class="icon icon-chevron-right" viewBox="0 0 320 512" aria-hidden="true" focusable="false"><path d="M311.1 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L243.2 256 73.9 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg>
             </button>
@@ -1682,6 +1685,59 @@
       } catch (e) { note.textContent = e.message || 'Couldn’t set that up. Try again in a bit.'; }
       finally { btn.disabled = false; }
     });
+  })();
+  </script>
+  <script>
+  // Theater mode for the home clips: dims the page and plays the clip big, with captions. Arrows, swipes or arrow keys change clips.
+  (() => {
+    const open = document.getElementById('clip-theater-btn');
+    const panels = [...document.querySelectorAll('.clip-panel')], dots = [...document.querySelectorAll('.clip-dot')];
+    if (!open || !panels.length || typeof HTMLDialogElement === 'undefined') { if (open) open.hidden = true; return; }
+    const dlg = document.createElement('dialog'); dlg.className = 'theater'; dlg.setAttribute('aria-label', 'Theater mode');
+    dlg.innerHTML = `<button type="button" class="theater-x" aria-label="Close theater mode">&times;</button>
+      <div class="theater-stage"><video class="theater-video" controls playsinline preload="auto"></video></div>
+      <div class="theater-bar">
+        <button type="button" class="theater-nav" data-step="-1" aria-label="Previous clip">&lsaquo;</button>
+        <div class="theater-info"><p class="theater-count" aria-live="polite"></p><div class="theater-dots" aria-hidden="true">${panels.map(() => '<i></i>').join('')}</div></div>
+        <button type="button" class="theater-nav" data-step="1" aria-label="Next clip">&rsaquo;</button>
+      </div>
+      <p class="theater-hint">Swipe or use the arrow keys · Esc to close</p>`;
+    document.body.append(dlg);
+    const video = dlg.querySelector('video'), count = dlg.querySelector('.theater-count'), marks = [...dlg.querySelectorAll('.theater-dots i')];
+    let i = 0;
+    const current = () => Math.max(0, panels.findIndex(p => p.classList.contains('is-active')));
+    function load(n) {
+      i = (n + panels.length) % panels.length;
+      const src = panels[i].querySelector('video');
+      video.replaceChildren(...[...src.querySelectorAll('source, track')].map(el => el.cloneNode(true)));
+      video.poster = src.dataset.poster || src.poster || '';
+      video.setAttribute('aria-label', src.getAttribute('aria-label') || `Clip ${i + 1}`);
+      video.load(); video.play().catch(() => {});
+      count.textContent = `Clip ${i + 1} of ${panels.length}`;
+      marks.forEach((m, k) => m.classList.toggle('on', k === i));
+      // keep captions showing when there are any
+      video.addEventListener('loadedmetadata', () => { for (const t of video.textTracks) t.mode = 'showing'; }, { once: true });
+    }
+    open.addEventListener('click', () => {
+      document.querySelectorAll('.clip-panel video').forEach(v => v.pause());
+      dlg.showModal(); load(current());
+      dlg.querySelector('.theater-x').focus();
+    });
+    const close = () => dlg.close();
+    dlg.querySelector('.theater-x').addEventListener('click', close);
+    dlg.addEventListener('close', () => { video.pause(); video.removeAttribute('src'); video.replaceChildren(); video.load(); dots[i]?.click(); open.focus(); });
+    dlg.addEventListener('click', e => { if (e.target === dlg) close(); const s = e.target.closest('[data-step]'); if (s) load(i + Number(s.dataset.step)); });
+    dlg.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); load(i + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); load(i - 1); }
+    });
+    video.addEventListener('ended', () => load(i + 1));
+    let sx = null, sy = null;
+    dlg.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    dlg.addEventListener('touchend', e => {
+      if (sx == null) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) load(i + (dx < 0 ? 1 : -1)); sx = null;
+    }, { passive: true });
   })();
   </script>
 </body>

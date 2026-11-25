@@ -3689,3 +3689,27 @@ html:has(.dash-body) { background: var(--ink); }
 .golive-btn { width: 100%; justify-content: center; }
 .golive-btn[aria-pressed="true"] { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
 .golive-note { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--paper-dim); }
+
+/* Theater mode for the home clips */
+.clip-frame { position: relative; }
+.clip-theater-btn { position: absolute; top: 0.6rem; right: 0.6rem; z-index: 4; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 2px solid var(--paper); border-radius: 6px; background: rgba(20, 17, 15, 0.8); color: var(--paper); cursor: pointer; }
+.clip-theater-btn svg { width: 1.3rem; height: 1.3rem; }
+.clip-theater-btn:hover, .clip-theater-btn:focus-visible { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.theater { width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; height: 100dvh; max-height: 100dvh; margin: 0; padding: 1rem; border: 0; background: rgba(10, 8, 7, 0.94); color: var(--paper); overflow: hidden; }
+.theater[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.theater::backdrop { background: rgba(0, 0, 0, 0.6); }
+.theater-stage { display: flex; justify-content: center; max-width: 100%; }
+.theater-video { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100dvh - 9rem); background: #000; border: 3px solid var(--paper); box-shadow: 8px 8px 0 var(--mustard); }
+.theater-video::cue { font-size: 1.1em; background: rgba(0, 0, 0, 0.8); }
+.theater-x { position: absolute; top: max(0.8rem, env(safe-area-inset-top)); right: 0.8rem; width: 2.75rem; height: 2.75rem; border: 2px solid var(--paper); border-radius: 6px; background: transparent; color: var(--paper); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+.theater-x:hover, .theater-x:focus-visible { background: var(--paper); color: var(--ink); }
+.theater-bar { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
+.theater-nav { width: 3rem; height: 3rem; border: 2px solid var(--mustard); border-radius: 50%; background: transparent; color: var(--mustard); font-size: 1.8rem; line-height: 1; cursor: pointer; }
+.theater-nav:hover, .theater-nav:focus-visible { background: var(--mustard); color: var(--ink); }
+.theater-info { min-width: 9rem; text-align: center; }
+.theater-count { margin: 0; font-family: var(--typed); color: var(--paper); }
+.theater-dots { display: flex; justify-content: center; gap: 0.35rem; margin-top: 0.4rem; }
+.theater-dots i { width: 1.1rem; height: 0.25rem; background: #5a514a; }
+.theater-dots i.on { background: var(--mustard); }
+.theater-hint { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--paper-dim); }
+@media (hover: none) { .theater-hint { display: none; } }
