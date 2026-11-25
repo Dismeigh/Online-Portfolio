@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=129">
+  <link rel="stylesheet" href="/styles.css?v=130">
 </head>
 <body class="client-page">
   <div class="fixed-bg" aria-hidden="true"></div>
@@ -26,6 +26,20 @@
       <p class="client-due" id="due" hidden></p>
       <div class="client-note" id="note" hidden></div>
       <div class="client-docs" id="docs" hidden></div>
+      <div class="client-review" id="review" hidden>
+        <h2 class="client-h2" id="rv-h">How did it go?</h2>
+        <p class="client-review-thanks" id="rv-thanks" hidden></p>
+        <form id="rv-form" novalidate>
+          <fieldset class="rv-stars"><legend>Your rating</legend>
+            <span class="rv-row"><label><input type="radio" name="rating" value="5" checked><span>5 stars</span></label><label><input type="radio" name="rating" value="4"><span>4 stars</span></label><label><input type="radio" name="rating" value="3"><span>3 stars</span></label><label><input type="radio" name="rating" value="2"><span>2 stars</span></label><label><input type="radio" name="rating" value="1"><span>1 star</span></label></span>
+          </fieldset>
+          <label for="rv-text">A sentence or two about working together</label><textarea id="rv-text" rows="4" maxlength="600"></textarea>
+          <label for="rv-name">Name to show with it <span>(like &ldquo;Alex&rdquo; or &ldquo;Alex, Bluebird Bakery&rdquo;)</span></label><input id="rv-name" maxlength="40" autocomplete="name">
+          <label class="rv-consent"><input type="checkbox" id="rv-consent"> <span>OK to show this review (with that name) on denizen-dismeigh.com</span></label>
+          <button type="submit" class="social-btn" id="rv-send">Send review</button>
+          <p class="client-review-msg" id="rv-msg" role="alert"></p>
+        </form>
+      </div>
       <p class="client-updated" id="updated"></p>
     </section>
     <p class="client-foot">Questions? <a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a>. This page is private: only people with this link can see it.</p>
@@ -54,8 +68,30 @@
         docs.push(`<div class="client-doc"><div><p class="client-kicker">Invoice ${esc(d.invoice.number)}</p><b>${usd(d.invoice.total)}</b> <span>${esc(due)}</span></div><span class="client-doc-btns"><a class="social-btn" href="/invoice/?i=${encodeURIComponent(d.invoice.code)}">View</a>${d.invoice.payLink ? `<a class="social-btn client-pay" href="${esc(d.invoice.payLink)}" target="_blank" rel="noopener noreferrer">${esc(d.invoice.payLabel || 'Pay now')}</a>` : ''}</span></div>`);
       }
       if (docs.length) { $('docs').innerHTML = `<h2 class="client-h2">Your documents</h2>${docs.join('')}`; $('docs').hidden = false; }
+      // Review (once the project is done)
+      if (d.review && d.review.open) {
+        const r = d.review.mine;
+        if (r) {
+          $('rv-thanks').textContent = 'Thanks for the review! You can change it below if you like.'; $('rv-thanks').hidden = false; $('rv-h').textContent = 'Your review';
+          $('rv-text').value = r.text; $('rv-name').value = r.name; $('rv-consent').checked = true;
+          const star = document.querySelector(`[name="rating"][value="${r.rating}"]`); if (star) star.checked = true;
+          $('rv-send').textContent = 'Update review';
+        }
+        $('review').hidden = false;
+      }
       $('updated').textContent = `Last updated ${new Date(d.updated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`;
     }).catch(() => { $('title').textContent = 'Couldn’t load'; $('sub').textContent = 'Check your connection and refresh.'; });
+    $('rv-form').addEventListener('submit', async e => {
+      e.preventDefault(); $('rv-msg').textContent = ''; $('rv-send').disabled = true;
+      try {
+        const r = await fetch('/api/job', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ review: true, s: code,
+          rating: Number(document.querySelector('[name="rating"]:checked')?.value), text: $('rv-text').value, name: $('rv-name').value, consent: $('rv-consent').checked }) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) { $('rv-msg').textContent = d.error || 'Couldn’t send that. Try again.'; if (d.field) $(d.field)?.focus(); }
+        else { $('rv-msg').textContent = 'Thank you! It’ll show on the Work page once Dismeigh has seen it.'; $('rv-msg').classList.add('is-ok'); $('rv-send').textContent = 'Update review'; }
+      } catch { $('rv-msg').textContent = 'Couldn’t send that. Check your connection.'; }
+      $('rv-send').disabled = false;
+    });
   })();
   </script>
 </body>

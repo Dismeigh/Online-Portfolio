@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=129">
+  <link rel="stylesheet" href="styles.css?v=130">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -581,6 +581,11 @@
             <button class="clip-dot" type="button" aria-label="Show clip 5"></button>
           </div>
           <p class="clip-swipe-hint">Swipe clips</p>
+          <div class="clip-reacts" id="clip-reacts" role="group" aria-label="React to this clip" hidden>
+            <button type="button" class="clip-react" data-kind="laugh" aria-pressed="false"><span aria-hidden="true">😂</span><b>0</b><span class="sr-only"> laughing reactions</span></button>
+            <button type="button" class="clip-react" data-kind="fire" aria-pressed="false"><span aria-hidden="true">🔥</span><b>0</b><span class="sr-only"> fire reactions</span></button>
+            <button type="button" class="clip-react" data-kind="skull" aria-pressed="false"><span aria-hidden="true">💀</span><b>0</b><span class="sr-only"> skull reactions</span></button>
+          </div>
           <div class="clip-vote" id="clip-vote" hidden><button type="button" class="clip-vote-btn" id="clip-vote-btn" aria-pressed="false">Vote for Clip of the Month</button><span class="clip-vote-msg" id="clip-vote-msg" role="status"></span></div>
           <details class="suggest-box suggest-clip">
             <summary>Got a clip that belongs here? Suggest it</summary>
@@ -1583,6 +1588,37 @@
         v.append(track);
       });
     }).catch(() => {});
+  })();
+  </script>
+  <script>
+  // Clip reactions: tap 😂 🔥 💀 under the clip that's showing (tap again to take it back). Counts only.
+  (() => {
+    const box = document.getElementById('clip-reacts'), panels = [...document.querySelectorAll('.clip-panel')];
+    if (!box || !panels.length) return;
+    const btns = [...box.querySelectorAll('.clip-react')];
+    let state = null, busy = false;
+    const active = () => Math.max(0, panels.findIndex(p => p.classList.contains('is-active'))) + 1;
+    function draw() {
+      if (!state) return;
+      const n = active(), c = state.counts[n] || {};
+      btns.forEach(b => { const k = b.dataset.kind; b.querySelector('b').textContent = (c[k] || 0).toLocaleString('en-US'); b.setAttribute('aria-pressed', String(state.mine.includes(`${n}:${k}`))); });
+    }
+    new MutationObserver(draw).observe(document.getElementById('clip-count'), { childList: true, characterData: true, subtree: true });
+    box.addEventListener('click', async e => {
+      const b = e.target.closest('.clip-react'); if (!b || !state || busy) return;
+      const n = active(), k = b.dataset.kind, key = `${n}:${k}`, on = !state.mine.includes(key);
+      busy = true;
+      // Show it right away, then sync with the real numbers
+      state.mine = on ? [...state.mine, key] : state.mine.filter(x => x !== key);
+      state.counts[n][k] = Math.max(0, (state.counts[n][k] || 0) + (on ? 1 : -1)); draw();
+      if (on) { b.classList.remove('is-pop'); void b.offsetWidth; b.classList.add('is-pop'); }
+      try {
+        const r = await fetch('/api/clipreact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clip: n, kind: k }) });
+        const d = await r.json(); if (r.ok && d.counts) state = { counts: d.counts, mine: d.mine };
+      } catch {}
+      busy = false; draw();
+    });
+    fetch('/api/clipreact', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => { if (!d || !d.counts) return; state = d; box.hidden = false; draw(); }).catch(() => {});
   })();
   </script>
   <script>

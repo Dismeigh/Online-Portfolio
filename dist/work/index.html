@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=129">
+  <link rel="stylesheet" href="/styles.css?v=130">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Dismeigh", "item": "https://www.denizen-dismeigh.com/"}, {"@type": "ListItem", "position": 2, "name": "Work", "item": "https://www.denizen-dismeigh.com/work/"}]}</script>
 </head>
@@ -236,6 +236,11 @@
           <div class="builder-total" aria-live="polite"><p id="bd-total"></p><button type="button" class="social-btn" id="bd-send">Send this in a quote request</button></div>
         </div>
 
+        <div class="reviews" id="reviews" hidden>
+          <h3>What clients say</h3>
+          <ul class="review-list" id="review-list"></ul>
+        </div>
+
         <div class="faq" id="faq">
           <h3>Questions</h3>
           <div class="faq-list" id="faq-list"><details class="faq-item"><summary>How long does it take?</summary><p>Discord setups usually take 2 to 4 days. One-page sites take about 1 to 2 weeks, and bigger sites 3 to 6 weeks, depending on how fast content and feedback come back.</p></details><details class="faq-item"><summary>How does payment work?</summary><p>Discord work is paid up front. For websites, half is paid to start and the rest before the site goes live. Monthly care is billed at the start of each month and you can cancel anytime.</p></details><details class="faq-item"><summary>What counts as a round of changes?</summary><p>One list of tweaks sent together, like &quot;swap this photo, change this color, reword this line.&quot; Bigger new features or pages are quoted separately.</p></details><details class="faq-item"><summary>Do I own the site or server when it&#x27;s done?</summary><p>Yes. The domain, the site and the server are yours. I can hand everything over, or keep looking after it with monthly care.</p></details><details class="faq-item"><summary>Do I need to know anything about tech?</summary><p>Nope. Tell me what you want it to do and who it&#x27;s for, and I&#x27;ll handle the rest and show you how to make simple updates.</p></details><details class="faq-item"><summary>What do you need from me to start?</summary><p>Your logo or colors if you have them, the text and photos you want to use, and links to anything you like the look of. For Discord, admin access to the server (or I can build a fresh one).</p></details></div>
@@ -395,6 +400,21 @@
     }).catch(() => {});
 
   }
+  </script>
+  <script>
+  // Client reviews (approved in the dashboard)
+  fetch('/api/reviews').then(r => r.ok ? r.json() : null).then(d => {
+    const list = (d && d.reviews) || []; if (!list.length) return;
+    const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+    document.getElementById('review-list').replaceChildren(...list.map(r => {
+      const li = el('li', 'review'), stars = el('p', 'review-stars', '\u2605'.repeat(r.rating) + '\u2606'.repeat(5 - r.rating));
+      stars.setAttribute('aria-label', `${r.rating} out of 5 stars`);
+      const q = el('blockquote', 'review-text'); r.text.split(/\n+/).forEach(p => q.append(el('p', '', p)));
+      const by = el('p', 'review-by'); by.append(el('b', '', r.name), r.service ? ` \u00b7 ${r.service}` : '');
+      li.append(stars, q, by); return li;
+    }));
+    document.getElementById('reviews').hidden = false;
+  }).catch(() => {});
   </script>
   <script src="/app.js?v=72" defer></script>
 </body>

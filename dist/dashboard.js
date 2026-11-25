@@ -1329,7 +1329,7 @@
   async function loadToday() {
     $('td-date').textContent = new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     const get = p => api(p).then(r => r.data).catch(() => ({}));
-    const [sched, ckd, ask, cl, co, fbk, sug] = await Promise.all([fetch('/api/schedule', { cache: 'no-store' }).then(r => r.json()).catch(() => ({})), get('checklist'), get('ask'), get('clients'), get('collab'), get('feedback'), get('suggest')]);
+    const [sched, ckd, ask, cl, co, fbk, sug, rvw] = await Promise.all([fetch('/api/schedule', { cache: 'no-store' }).then(r => r.json()).catch(() => ({})), get('checklist'), get('ask'), get('clients'), get('collab'), get('feedback'), get('suggest'), get('reviews')]);
     const items = [], next = sched.next;
     const todayKey = todayET(), nextDay = next ? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date(next.start)) : '';
     if (next) items.push({ tab: 'streams', icon: next.live ? '🔴' : '📺', text: next.live ? `Live now: <b>${esc(next.title)}</b>` : `${nextDay === todayKey ? 'Streaming today' : 'Next stream'}: <b>${esc(next.title)}</b>, ${esc(etWhen(next.start))} ET` });
@@ -1338,6 +1338,7 @@
     const waiting = (ask.questions || []).filter(q => !q.answered_at).length; if (waiting) items.push({ tab: 'guestbook', icon: '❓', text: `<b>${waiting}</b> question${waiting === 1 ? '' : 's'} waiting for an answer` });
     const newReq = (cl.requests || []).filter(r => r.status === 'new').length; if (newReq) items.push({ tab: 'clients', icon: '📥', text: `<b>${newReq}</b> new quote request${newReq === 1 ? '' : 's'}` });
     const newCo = (co.collabs || []).filter(c => !c.replied).length; if (newCo) items.push({ tab: 'clients', icon: '🤝', text: `<b>${newCo}</b> collab request${newCo === 1 ? '' : 's'} to answer` });
+    const newRv = (rvw.reviews || []).filter(r => r.status === 'new').length; if (newRv) items.push({ tab: 'clients', icon: '⭐', text: `<b>${newRv}</b> client review${newRv === 1 ? '' : 's'} waiting for your OK` });
     const newFb = (fbk.feedback || []).filter(f => !f.done).length; if (newFb) items.push({ tab: 'overview', icon: '\ud83d\udee0\ufe0f', text: `<b>${newFb}</b> site feedback note${newFb === 1 ? '' : 's'} to read` });
     const newSug = (sug.suggestions || []).length; if (newSug) items.push({ tab: 'content', icon: '\ud83d\udcac', text: `<b>${newSug}</b> quote or clip suggestion${newSug === 1 ? '' : 's'} waiting` });
     const dueSoon = (cl.jobs || []).filter(j => j.due && j.stage !== 'done' && j.due <= plusDays(todayKey, 3)).length; if (dueSoon) items.push({ tab: 'clients', icon: '⏰', text: `<b>${dueSoon}</b> job${dueSoon === 1 ? '' : 's'} due in the next 3 days` });
@@ -1436,7 +1437,25 @@
     if (status !== 200) return flash($('cr-msg'), data.error || 'Couldn’t save.');
     collabs = data.collabs || []; drawCollabs();
   });
-  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); loadCollabs(); };
+  // Client reviews: approve before they show on the Work page
+  let reviews = [];
+  const RVS = { new: 'waiting for you', approved: 'on the Work page', hidden: 'hidden' };
+  function drawReviews() {
+    $('rv-body').innerHTML = reviews.length ? `<ul class="dash-list">${reviews.map(r => `
+      <li class="dash-row${r.status === 'hidden' ? ' is-hidden' : ''}${r.status === 'new' ? ' is-new' : ''}" data-focus="rv-${r.id}"><div class="dash-row-main"><b>${'\u2605'.repeat(r.rating)}${'\u2606'.repeat(5 - r.rating)}</b> <span class="dash-meta">${esc(r.name)}${r.client && r.client !== r.name ? ` (job: ${esc(r.client)})` : ''} · ${esc(r.service || 'No service')} · ${esc(when(r.at))} · ${esc(RVS[r.status] || r.status)}</span>
+        <p class="dash-note-text">${esc(r.text)}</p></div>
+        <div class="dash-row-actions">${r.status !== 'approved' ? `<button type="button" class="dash-btn dash-small dash-primary" data-rv="approve" data-id="${r.id}">Approve</button>` : ''}${r.status !== 'hidden' ? `<button type="button" class="dash-btn dash-small" data-rv="hide" data-id="${r.id}">Hide</button>` : ''}
+          <button type="button" class="dash-btn dash-small dash-danger" data-rv="delete" data-id="${r.id}">Delete</button></div></li>`).join('')}</ul>` : '<p class="dash-note">No reviews yet. They show up after you mark a job Done.</p>';
+  }
+  const loadReviews = async () => { reviews = (await api('reviews')).data.reviews || []; drawReviews(); };
+  $('rv-body').addEventListener('click', async e => {
+    const b = e.target.closest('[data-rv]'); if (!b) return;
+    if (b.dataset.rv === 'delete' && !confirm('Delete this review for good?')) return;
+    const { status, data } = await api('reviews', { action: b.dataset.rv, id: Number(b.dataset.id) });
+    if (status !== 200) return flash($('rv-msg'), data.error || 'Couldn\u2019t save.');
+    reviews = data.reviews || []; drawReviews(); flash($('rv-msg'), b.dataset.rv === 'approve' ? 'Approved. It\u2019s on the Work page now.' : 'Saved.', true);
+  });
+  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); loadCollabs(); loadReviews(); };
   const clientAct = async body => { const { status, data } = await api('clients', body); if (status !== 200) return flash($('jb-msg'), data.error || 'Couldn\u2019t save.'); drawBoard(data); return data; };
   $('rq-refresh').addEventListener('click', loaders.clients);
   document.querySelectorAll('#rq-filter [data-rq]').forEach(b => b.addEventListener('click', () => { rqView = b.dataset.rq; document.querySelectorAll('#rq-filter [data-rq]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRequests(); }));
