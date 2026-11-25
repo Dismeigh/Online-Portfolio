@@ -361,3 +361,9 @@
 .dash-taken-day[aria-pressed="true"] { background: transparent; border-color: var(--line, #3a322b); color: var(--paper-dim); text-decoration: line-through; }
 .dash-needs { list-style: none; margin: 0.4rem 0; padding: 0; font-size: 0.9rem; color: var(--paper); }
 .dash-needs .is-done { color: var(--paper-dim); text-decoration: line-through; }
+/* Content tab: grouped picker */
+.dash-pick { display: grid; gap: 0.7rem; margin-bottom: 1rem; }
+.dash-pick-group { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.6rem; align-items: start; }
+.dash-pick-h { margin: 0; padding-top: 0.55rem; font-family: var(--typed); font-size: 0.85rem; color: var(--paper-dim); }
+.dash-pick .dash-sub { margin: 0; }
+@media (max-width: 560px) { .dash-pick-group { grid-template-columns: 1fr; gap: 0.3rem; } .dash-pick-h { padding-top: 0; } }

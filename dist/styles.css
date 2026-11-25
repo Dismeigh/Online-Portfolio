@@ -3811,3 +3811,16 @@ html:has(.dash-body) { background: var(--ink); }
 .client-needs-msg { margin: 0.4rem 0 0; min-height: 1.2em; font-size: 0.9rem; color: var(--teal); }
 
 
+/* Home: More aboard teaser cards */
+.teaser-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.2rem; margin-top: 0.6rem; }
+.teaser-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.2rem 1.3rem 1.3rem; background: var(--ink-2); border: 2px solid var(--line); border-top: 6px solid var(--mustard); box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.5); }
+.teaser-log { border-top-color: var(--teal); }
+.teaser-kicker { margin: 0; font-family: var(--typed); font-size: 0.85rem; color: var(--paper-dim); }
+.teaser-card h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4vw, 2.4rem); line-height: 1; text-transform: uppercase; color: var(--paper); }
+.teaser-text { margin: 0; color: var(--paper); }
+.teaser-stat { margin: 0; font-family: var(--typed); color: var(--mustard); overflow-wrap: anywhere; }
+.teaser-card .social-btn { align-self: flex-start; margin-top: auto; }
+.teaser-card .log-list-mini { grid-template-columns: 1fr; margin: 0.2rem 0 0.4rem; }
+.teaser-card .log-empty { margin: 0; color: var(--paper-dim); }
+.arcade-more { margin: 2rem 0 0; color: var(--paper-dim); }
+.arcade-more a { color: var(--mustard); }

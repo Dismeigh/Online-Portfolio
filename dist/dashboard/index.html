@@ -18,8 +18,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=134">
-  <link rel="stylesheet" href="/dashboard.css?v=1">
+  <link rel="stylesheet" href="/styles.css?v=135">
+  <link rel="stylesheet" href="/dashboard.css?v=2">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -79,7 +79,7 @@
         <button type="button" data-tab="notes">Notes</button>
         <button type="button" data-tab="alerts">Alerts</button>
         <button type="button" data-tab="site">Site</button>
-        <button type="button" data-tab="security">Logins</button>
+        <button type="button" data-tab="security">Security &amp; backups</button>
         <button type="button" data-tab="help">Help</button>
       </nav>
 
@@ -214,25 +214,11 @@
       <div data-panel="content" hidden>
         <section class="dash-card dash-card-content" aria-labelledby="content-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Edit the site</p><h2 id="content-h">Content</h2></div></div>
-          <div class="dash-sub" id="content-pick" role="group" aria-label="What to edit">
-            <button type="button" data-content="bounties" aria-pressed="true">Bounties</button>
-            <button type="button" data-content="pinned">Pinned clip</button>
-            <button type="button" data-content="quotes">Quotes</button>
-            <button type="button" data-content="lore">Lore</button>
-            <button type="button" data-content="verdicts">Verdicts</button>
-            <button type="button" data-content="crew">Crew</button>
-            <button type="button" data-content="pricing">Rates</button>
-            <button type="button" data-content="faq">Work FAQ</button>
-            <button type="button" data-content="builder">Price builder</button>
-            <button type="button" data-content="garage">Garage build</button>
-            <button type="button" data-content="collabs">Past collabs</button>
-            <button type="button" data-content="meets">Car meets</button>
-            <button type="button" data-content="dyno">Dyno sheet</button>
-            <button type="button" data-content="spotlight">Track spotlight</button>
-            <button type="button" data-content="updates">What&rsquo;s new</button>
-            <button type="button" data-content="captions">Clip captions</button>
-            <button type="button" data-content="gear">Gear</button>
-            <button type="button" data-content="backlog">Game backlog</button>
+          <div class="dash-pick" id="content-pick" role="group" aria-label="What to edit">
+            <div class="dash-pick-group"><p class="dash-pick-h" id="cp-0">Home page</p><div class="dash-sub" role="group" aria-labelledby="cp-0"><button type="button" data-content="bounties" aria-pressed="true">Bounties</button><button type="button" data-content="pinned">Pinned clip</button><button type="button" data-content="spotlight">Track spotlight</button><button type="button" data-content="captions">Clip captions</button></div></div>
+            <div class="dash-pick-group"><p class="dash-pick-h" id="cp-1">Pages</p><div class="dash-sub" role="group" aria-labelledby="cp-1"><button type="button" data-content="quotes">Quotes</button><button type="button" data-content="lore">Lore</button><button type="button" data-content="verdicts">Verdicts</button><button type="button" data-content="backlog">Game backlog</button><button type="button" data-content="crew">Crew</button><button type="button" data-content="gear">Gear</button><button type="button" data-content="updates">What&rsquo;s new</button><button type="button" data-content="collabs">Past collabs</button></div></div>
+            <div class="dash-pick-group"><p class="dash-pick-h" id="cp-2">Work page</p><div class="dash-sub" role="group" aria-labelledby="cp-2"><button type="button" data-content="pricing">Rates</button><button type="button" data-content="faq">Work FAQ</button><button type="button" data-content="builder">Price builder</button></div></div>
+            <div class="dash-pick-group"><p class="dash-pick-h" id="cp-3">Garage</p><div class="dash-sub" role="group" aria-labelledby="cp-3"><button type="button" data-content="garage">Garage build</button><button type="button" data-content="meets">Car meets</button><button type="button" data-content="dyno">Dyno sheet</button></div></div>
           </div>
           <p class="dash-note" id="content-note"></p>
           <div class="dash-gear-switch" id="gear-switch" hidden>
@@ -362,13 +348,52 @@
           <div class="dash-card-head"><div><p class="dash-card-kicker">From the press kit page</p><h2 id="cr-h">Collab requests</h2></div></div>
           <p class="dash-msg" id="cr-msg" role="status"></p>
           <div id="cr-body"></div>
-          <p class="dash-hint">The form only shows while &ldquo;Open to collabs&rdquo; is on (Site tab). Requests delete themselves after 120 days.</p>
+          <p class="dash-hint">The form only shows while &ldquo;Open to collabs&rdquo; is on (Collabs card, below). Requests delete themselves after 120 days.</p>
         </section>
         <section class="dash-card" aria-labelledby="rv-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">From finished jobs</p><h2 id="rv-h">Client reviews</h2></div></div>
           <p class="dash-msg" id="rv-msg" role="status"></p>
           <div id="rv-body"></div>
           <p class="dash-hint">When a job is set to Done, the client&rsquo;s status page asks for a review. Nothing shows on the Work page until you approve it. If a client edits their review, it comes back here for another OK.</p>
+        </section>
+        <section class="dash-card dash-card-comm" aria-labelledby="comm-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Voice and Work pages</p><h2 id="comm-h">Commissions</h2></div></div>
+          <form id="comm-form">
+            <div class="dash-comm-row">
+              <div><label for="cm-voice">Voice acting</label><select id="cm-voice"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-voice-note">Note <span>(optional)</span></label><input id="cm-voice-note" maxlength="120" placeholder="Booking for January"></div>
+            </div>
+            <div class="dash-comm-row">
+              <div><label for="cm-web">Websites</label><select id="cm-web"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-web-note">Note <span>(optional)</span></label><input id="cm-web-note" maxlength="120" placeholder="1 spot left this month"></div>
+            </div>
+            <div class="dash-comm-row">
+              <div><label for="cm-discord">Discord servers</label><select id="cm-discord"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
+              <div><label for="cm-discord-note">Note <span>(optional)</span></label><input id="cm-discord-note" maxlength="120" placeholder="Usually done in 2&ndash;3 days"></div>
+            </div>
+            <fieldset class="dash-checks dash-cap">
+              <legend>Spots <span>(optional)</span></legend>
+              <p class="dash-hint">How many jobs you can have going at once. The Work page shows &ldquo;2 spots left&rdquo; on its own, counting jobs that are Booked, Deposit paid or In progress, and shows Closed when you&rsquo;re full. Leave empty for no limit.</p>
+              <div class="dash-two"><div><label for="cap-web">Websites at once</label><input id="cap-web" type="number" min="0" max="50" inputmode="numeric" placeholder="3"></div>
+                <div><label for="cap-discord">Discord servers at once</label><input id="cap-discord" type="number" min="0" max="50" inputmode="numeric" placeholder="5"></div></div>
+              <p class="dash-hint" id="cap-status"></p>
+            </fieldset>
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
+            <p class="dash-msg" id="comm-msg" role="status"></p>
+          </form>
+        </section>
+        <section class="dash-card" aria-labelledby="co-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Press kit page</p><h2 id="co-h">Collabs</h2></div><span class="dash-chip" id="co-chip"><span class="dash-dot" aria-hidden="true"></span><span id="co-chip-text">Off</span></span></div>
+          <form id="co-form">
+            <label class="dash-check-line"><input type="checkbox" id="co-on"> <span>Show &ldquo;Open to collabs&rdquo; on the press kit page</span></label>
+            <fieldset class="dash-checks"><legend>What you&rsquo;re open to</legend><div id="co-kinds"></div></fieldset>
+            <label for="co-note">Note <span>(optional)</span></label><input id="co-note" maxlength="200" placeholder="Booking collabs for January. DM on Discord or email.">
+            <fieldset class="dash-checks dash-days"><legend>Nights you&rsquo;re open for collabs <span>(shows the next open dates on the press kit page)</span></legend><div id="co-nights"></div></fieldset>
+            <label for="co-time">Time <span>(optional)</span></label><input id="co-time" maxlength="40" placeholder="Evenings after 7 PM ET">
+            <div id="co-taken-wrap" hidden><p class="dash-label">Tap a night to mark it taken <span>(next 3 weeks)</span></p><div class="dash-taken" id="co-taken"></div></div>
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
+            <p class="dash-msg" id="co-msg" role="status"></p>
+          </form>
         </section>
         <section class="dash-card" aria-labelledby="jb-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Your client board</p><h2 id="jb-h">Jobs</h2></div><button type="button" class="dash-btn dash-small dash-primary" id="jb-new">+ New job</button></div>
@@ -443,7 +468,7 @@
           <label class="dash-check-line"><input type="checkbox" id="dc-home"> <span>Show &ldquo;Deaths this run&rdquo; on the home page</span></label>
           <p class="dash-msg" id="dc-msg" role="status"></p>
           <details class="dc-past"><summary>Past runs</summary><ul class="dash-list" id="dc-runs"></ul></details>
-          <p class="dash-hint">Overlay: Site tab &rarr; Stream overlays &rarr; Death counter. With this card on screen, the + and &minus; keys also count.</p>
+          <p class="dash-hint">Overlay: Stream overlays card (below) &rarr; Death counter. With this card on screen, the + and &minus; keys also count.</p>
         </section>
         <section class="dash-card" aria-labelledby="gl-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Viewers who tapped &ldquo;Notify me&rdquo;</p><h2 id="gl-h">Go-live alerts</h2></div><span class="dash-chip" id="gl-chip"><span class="dash-dot" aria-hidden="true"></span><span id="gl-count">0 signed up</span></span></div>
@@ -498,11 +523,45 @@
           <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="sg-dl">Download image</button><button type="button" class="dash-btn" id="sg-share" hidden>Share</button></div>
           <p class="dash-hint">Made from your Streams tab. Skipped nights show as off.</p>
         </section>
-        <section class="dash-card" aria-labelledby="sti-h" id="st-import-card">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">One-time move</p><h2 id="sti-h">Bring over your old streams</h2></div></div>
-          <p class="dash-hint" id="st-import-text"></p>
-          <div class="dash-actions"><button type="button" class="dash-btn" id="st-import">Bring over past streams from Calendar.online</button><button type="button" class="dash-btn dash-danger" id="st-clear-past" hidden>Remove imported history</button></div>
-          <p class="dash-msg" id="st-import-msg" role="status"></p>
+      
+        <section class="dash-card dash-card-ovl" aria-labelledby="ovl-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">For OBS</p><h2 id="ovl-h">Stream overlays</h2></div></div>
+          <p class="dash-note">In OBS: Sources &rarr; + &rarr; Browser, paste a link, and set the size. They&rsquo;re see-through and update on their own.</p>
+          <ul class="dash-list" id="ovl-list"></ul>
+          <p class="dash-msg" id="ovl-msg" role="status"></p>
+        </section>
+        <section class="dash-card dash-card-qr" aria-labelledby="qr-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Business card</p><h2 id="qr-h">QR code</h2></div></div>
+          <p class="dash-note">Scanning it opens your site. Made right here in your browser, nothing is sent to an outside QR service.</p>
+          <form id="qr-form">
+            <label for="qr-page">Opens</label>
+            <select id="qr-page">
+              <option value="/">Home page</option>
+              <option value="/work/">Work page (websites and Discord servers)</option>
+              <option value="/voice/">Voice page</option>
+            </select>
+            <fieldset class="dash-checks">
+              <legend>Scans</legend>
+              <label><input type="checkbox" id="qr-count" checked> <span>Count scans <small>(shows as &ldquo;Business card QR&rdquo; in Where visitors come from)</small></span></label>
+            </fieldset>
+            <label for="qr-line1">Card line 1</label>
+            <input id="qr-line1" maxlength="40" value="Streamer &middot; VTuber">
+            <label for="qr-line2">Card line 2</label>
+            <input id="qr-line2" maxlength="40" value="Websites &amp; Discord servers">
+          </form>
+          <div class="dash-qr-wrap"><div class="dash-qr" id="qr-box"></div><code class="dash-code" id="qr-url"></code></div>
+          <fieldset class="dash-checks"><legend>Booth mode</legend>
+            <p class="dash-hint">At a convention or meet? Booth mode is a full-screen page for a tablet or laptop: a big QR code, your live status, next stream, socials and clips on a loop. It keeps the screen awake. Pick which clips play (leave out any that aren&rsquo;t right for an all-ages crowd).</p>
+            <div class="dash-days" id="booth-clips"><label><input type="checkbox" value="1" checked> Clip 1</label><label><input type="checkbox" value="2" checked> Clip 2</label><label><input type="checkbox" value="3" checked> Clip 3</label><label><input type="checkbox" value="4" checked> Clip 4</label><label><input type="checkbox" value="5" checked> Clip 5</label></div>
+            <div class="dash-actions"><a class="dash-btn dash-primary" id="booth-open" href="/booth/" target="_blank" rel="noopener">Open booth mode</a></div>
+          </fieldset>
+          <div class="dash-actions">
+            <button type="button" class="dash-btn dash-primary" id="qr-card">Download card</button>
+            <button type="button" class="dash-btn" id="qr-png">QR as PNG</button>
+            <button type="button" class="dash-btn" id="qr-svg">QR as SVG</button>
+          </div>
+          <p class="dash-note">The card is business-card size (3.5 &times; 2 in) at print quality. The SVG stays sharp at any size, for stickers or banners.</p>
+          <p class="dash-msg" id="qr-msg" role="status"></p>
         </section>
       </div>
 
@@ -604,114 +663,6 @@
             <p class="dash-msg" id="shop-msg" role="status"></p>
           </form>
         </section>
-        <section class="dash-card dash-card-comm" aria-labelledby="comm-h">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">Voice and Work pages</p><h2 id="comm-h">Commissions</h2></div></div>
-          <form id="comm-form">
-            <div class="dash-comm-row">
-              <div><label for="cm-voice">Voice acting</label><select id="cm-voice"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
-              <div><label for="cm-voice-note">Note <span>(optional)</span></label><input id="cm-voice-note" maxlength="120" placeholder="Booking for January"></div>
-            </div>
-            <div class="dash-comm-row">
-              <div><label for="cm-web">Websites</label><select id="cm-web"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
-              <div><label for="cm-web-note">Note <span>(optional)</span></label><input id="cm-web-note" maxlength="120" placeholder="1 spot left this month"></div>
-            </div>
-            <div class="dash-comm-row">
-              <div><label for="cm-discord">Discord servers</label><select id="cm-discord"><option value="open">Open</option><option value="closed">Closed</option><option value="off">Don&rsquo;t show</option></select></div>
-              <div><label for="cm-discord-note">Note <span>(optional)</span></label><input id="cm-discord-note" maxlength="120" placeholder="Usually done in 2&ndash;3 days"></div>
-            </div>
-            <fieldset class="dash-checks dash-cap">
-              <legend>Spots <span>(optional)</span></legend>
-              <p class="dash-hint">How many jobs you can have going at once. The Work page shows &ldquo;2 spots left&rdquo; on its own, counting jobs that are Booked, Deposit paid or In progress, and shows Closed when you&rsquo;re full. Leave empty for no limit.</p>
-              <div class="dash-two"><div><label for="cap-web">Websites at once</label><input id="cap-web" type="number" min="0" max="50" inputmode="numeric" placeholder="3"></div>
-                <div><label for="cap-discord">Discord servers at once</label><input id="cap-discord" type="number" min="0" max="50" inputmode="numeric" placeholder="5"></div></div>
-              <p class="dash-hint" id="cap-status"></p>
-            </fieldset>
-            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
-            <p class="dash-msg" id="comm-msg" role="status"></p>
-          </form>
-        </section>
-        <section class="dash-card" aria-labelledby="co-h">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">Press kit page</p><h2 id="co-h">Collabs</h2></div><span class="dash-chip" id="co-chip"><span class="dash-dot" aria-hidden="true"></span><span id="co-chip-text">Off</span></span></div>
-          <form id="co-form">
-            <label class="dash-check-line"><input type="checkbox" id="co-on"> <span>Show &ldquo;Open to collabs&rdquo; on the press kit page</span></label>
-            <fieldset class="dash-checks"><legend>What you&rsquo;re open to</legend><div id="co-kinds"></div></fieldset>
-            <label for="co-note">Note <span>(optional)</span></label><input id="co-note" maxlength="200" placeholder="Booking collabs for January. DM on Discord or email.">
-            <fieldset class="dash-checks dash-days"><legend>Nights you&rsquo;re open for collabs <span>(shows the next open dates on the press kit page)</span></legend><div id="co-nights"></div></fieldset>
-            <label for="co-time">Time <span>(optional)</span></label><input id="co-time" maxlength="40" placeholder="Evenings after 7 PM ET">
-            <div id="co-taken-wrap" hidden><p class="dash-label">Tap a night to mark it taken <span>(next 3 weeks)</span></p><div class="dash-taken" id="co-taken"></div></div>
-            <div class="dash-actions"><button type="submit" class="dash-btn dash-primary">Save</button></div>
-            <p class="dash-msg" id="co-msg" role="status"></p>
-          </form>
-        </section>
-        <section class="dash-card dash-card-links" aria-labelledby="lk-h">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">Housekeeping</p><h2 id="lk-h">Link check</h2></div></div>
-          <p class="dash-note">Tests every outside link on the site and in your content (lore, pinned clip, event, banners). Some sites, like Instagram or TikTok, block checkers, so those show as &ldquo;couldn&rsquo;t check&rdquo;.</p>
-          <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="lk-go">Check all links</button></div>
-          <p class="dash-msg" id="lk-msg" role="status"></p>
-          <div id="lk-body"></div>
-        </section>
-        <section class="dash-card dash-card-ovl" aria-labelledby="ovl-h">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">For OBS</p><h2 id="ovl-h">Stream overlays</h2></div></div>
-          <p class="dash-note">In OBS: Sources &rarr; + &rarr; Browser, paste a link, and set the size. They&rsquo;re see-through and update on their own.</p>
-          <ul class="dash-list" id="ovl-list"></ul>
-          <p class="dash-msg" id="ovl-msg" role="status"></p>
-        </section>
-        <section class="dash-card dash-card-qr" aria-labelledby="qr-h">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">Business card</p><h2 id="qr-h">QR code</h2></div></div>
-          <p class="dash-note">Scanning it opens your site. Made right here in your browser, nothing is sent to an outside QR service.</p>
-          <form id="qr-form">
-            <label for="qr-page">Opens</label>
-            <select id="qr-page">
-              <option value="/">Home page</option>
-              <option value="/work/">Work page (websites and Discord servers)</option>
-              <option value="/voice/">Voice page</option>
-            </select>
-            <fieldset class="dash-checks">
-              <legend>Scans</legend>
-              <label><input type="checkbox" id="qr-count" checked> <span>Count scans <small>(shows as &ldquo;Business card QR&rdquo; in Where visitors come from)</small></span></label>
-            </fieldset>
-            <label for="qr-line1">Card line 1</label>
-            <input id="qr-line1" maxlength="40" value="Streamer &middot; VTuber">
-            <label for="qr-line2">Card line 2</label>
-            <input id="qr-line2" maxlength="40" value="Websites &amp; Discord servers">
-          </form>
-          <div class="dash-qr-wrap"><div class="dash-qr" id="qr-box"></div><code class="dash-code" id="qr-url"></code></div>
-          <fieldset class="dash-checks"><legend>Booth mode</legend>
-            <p class="dash-hint">At a convention or meet? Booth mode is a full-screen page for a tablet or laptop: a big QR code, your live status, next stream, socials and clips on a loop. It keeps the screen awake. Pick which clips play (leave out any that aren&rsquo;t right for an all-ages crowd).</p>
-            <div class="dash-days" id="booth-clips"><label><input type="checkbox" value="1" checked> Clip 1</label><label><input type="checkbox" value="2" checked> Clip 2</label><label><input type="checkbox" value="3" checked> Clip 3</label><label><input type="checkbox" value="4" checked> Clip 4</label><label><input type="checkbox" value="5" checked> Clip 5</label></div>
-            <div class="dash-actions"><a class="dash-btn dash-primary" id="booth-open" href="/booth/" target="_blank" rel="noopener">Open booth mode</a></div>
-          </fieldset>
-          <div class="dash-actions">
-            <button type="button" class="dash-btn dash-primary" id="qr-card">Download card</button>
-            <button type="button" class="dash-btn" id="qr-png">QR as PNG</button>
-            <button type="button" class="dash-btn" id="qr-svg">QR as SVG</button>
-          </div>
-          <p class="dash-note">The card is business-card size (3.5 &times; 2 in) at print quality. The SVG stays sharp at any size, for stickers or banners.</p>
-          <p class="dash-msg" id="qr-msg" role="status"></p>
-        </section>
-        <section class="dash-card dash-card-backup" aria-labelledby="bk-h">
-          <div class="dash-card-head"><div><p class="dash-card-kicker">Just in case</p><h2 id="bk-h">Backup and restore</h2></div></div>
-          <p class="dash-note">One file with everything you&rsquo;ve typed in here: content, site settings, Ko-fi goals, arcade targets, notes, client jobs and Ship&rsquo;s Log entries. No passwords, login codes or visitor info.</p>
-          <div class="dash-actions"><a class="dash-btn dash-primary" id="bk-download" href="/api/admin/backup" download>Download backup</a></div>
-          <form id="bk-form">
-            <label for="bk-file">Restore from a backup file</label>
-            <input id="bk-file" type="file" accept="application/json,.json">
-            <fieldset class="dash-checks" id="bk-only">
-              <legend>Restore these parts</legend>
-              <label><input type="checkbox" value="content" checked> <span>Content <small>(bounties, quotes, lore, crew&hellip;)</small></span></label>
-              <label><input type="checkbox" value="site" checked> <span>Site settings <small>(banner, look, right now, commissions)</small></span></label>
-              <label><input type="checkbox" value="goal" checked> <span>Ko-fi goal and past goals</span></label>
-              <label><input type="checkbox" value="arcade" checked> <span>Arcade targets</span></label>
-              <label><input type="checkbox" value="notes" checked> <span>Notes</span></label>
-              <label><input type="checkbox" value="guestbook" checked> <span>Ship&rsquo;s Log <small>(only adds missing entries)</small></span></label>
-              <label><input type="checkbox" value="jobs" checked> <span>Client jobs, payments, expenses &amp; auditions <small>(only adds missing ones)</small></span></label>
-              <label><input type="checkbox" value="streams" checked> <span>Stream schedule, stream stats and pre-stream checklist <small>(only adds missing streams)</small></span></label>
-              <label><input type="checkbox" value="ask" checked> <span>Answered questions <small>(only adds missing ones)</small></span></label>
-            </fieldset>
-            <div class="dash-actions"><button type="submit" class="dash-btn dash-danger">Restore</button><button type="button" class="dash-btn" id="bk-before">Download pre-restore copy</button></div>
-            <p class="dash-msg" id="bk-msg" role="status"></p>
-          </form>
-        </section>
         <section class="dash-card dash-card-look" aria-labelledby="look-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Holiday looks</p><h2 id="look-h">Site look</h2></div></div>
           <p class="dash-note">Normally the site picks its holiday look by date. Force one on, turn them off, or preview any of them.</p>
@@ -732,7 +683,7 @@
           <label for="help-find" class="sr-only">Search help</label>
           <input id="help-find" type="search" placeholder="Search help, like &ldquo;invoice&rdquo; or &ldquo;banner&rdquo;" autocomplete="off">
           <h3 class="dash-h3">Getting around</h3>
-          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: the Today card (next stream, what&rsquo;s waiting on you), today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, collab requests, client reviews, jobs, auditions, calendar and income. <b>Streams</b>: pre-stream checklist, death counter, your stream schedule (repeats, skipped nights, one-time streams) and the schedule graphic. <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: right-now line, commissions, collabs, banner, look, maintenance mode, overlays, link check, backups. <b>Logins</b>: login history and backup codes.</p></details>
+          <details class="dash-help-item"><summary>What's on each tab?</summary><p><b>Overview</b>: the Today card (next stream, what&rsquo;s waiting on you), today's numbers, site health, activity, where visitors come from and what they search. <b>Ko-fi goal</b>: your goal bar and past goals. <b>Content</b>: bounties, quotes, lore, verdicts, crew, rates, Work FAQ, pinned clip, Clip of the Month votes, YouTube row and special event. <b>Ship's Log</b>: answer Ask the Captain questions and moderate log entries. <b>Arcade</b>: scores, targets and weekly resets. <b>Clients</b>: quote requests, collab requests, client reviews, commissions and collab settings (including open nights), jobs, auditions, calendar and income. <b>Streams</b>: pre-stream checklist, death counter, go-live alerts, your stream schedule (repeats, skipped nights, one-time streams), the schedule graphic, OBS overlays and the QR code (with booth mode). <b>Notes</b>: private notes. <b>Alerts</b>: phone notifications. <b>Site</b>: banner, right-now line, maintenance mode and site look. <b>Security &amp; backups</b>: your devices, backup codes, login history, link check and site backups.</p></details>
           <details class="dash-help-item"><summary>Can I use this on my phone?</summary><p>Yes. Open the dashboard in Safari, tap Share, then Add to Home Screen. It works like an app, and phone alerts only work from the home-screen app on iPhone.</p></details>
           <h3 class="dash-h3">Stream & site</h3>
           <details class="dash-help-item"><summary>Put a message across every page</summary><p>Site tab, Site banner. Type a message, add a link if you want, and tap Show banner. Use the one-tap buttons for common ones like Live now or No stream tonight. Set Start at to schedule one for later.</p></details>
@@ -740,14 +691,14 @@
           <details class="dash-help-item"><summary>Set up a Ko-fi goal</summary><p>Ko-fi goal tab. Fill in the name, amount and description, pick where it shows, and switch it on. When it’s done, End goal &amp; save it moves it to the Funded list.</p></details>
           <details class="dash-help-item"><summary>Plan a subathon or special stream</summary><p>Content tab, Special event. Set the name, times, an optional goal and a run of show. The event page and the home page countdown update on their own.</p></details>
           <details class="dash-help-item"><summary>Ask a client for files and info</summary><p>Clients tab, open the job, then Agreement, client link, invoice &amp; payments. Under &ldquo;What you need from them&rdquo;, type one item per line and Save list. It shows on their client page as a checklist. Each time they tick something, you get an alert, and the job shows &ldquo;Waiting on client: 2 of 3&rdquo;.</p></details>
-          <details class="dash-help-item"><summary>Show open collab nights</summary><p>Site tab, Collabs. Tick the nights of the week you&rsquo;re open and add a time if you like. The press kit page lists the next open dates (3 weeks ahead). Tap a date in the dashboard to mark it taken, then Save. Streamers can pick a night in the request form.</p></details>
+          <details class="dash-help-item"><summary>Show open collab nights</summary><p>Clients tab, Collabs. Tick the nights of the week you&rsquo;re open and add a time if you like. The press kit page lists the next open dates (3 weeks ahead). Tap a date in the dashboard to mark it taken, then Save. Streamers can pick a night in the request form.</p></details>
           <details class="dash-help-item"><summary>Update the game backlog</summary><p>Content tab, Game backlog. Add games as Playing now, Up next, Beaten or Dropped. It shows on the Shelf page above your Verdicts.</p></details>
           <details class="dash-help-item"><summary>Set up the Gear page</summary><p>Content tab, Gear. Add your mic, camera, PC, VTuber setup and so on, pick a section for each, and save. The page stays hidden from visitors (it shows a &ldquo;page not found&rdquo;) until you tick &ldquo;Show the Gear page on the site&rdquo;. While it&rsquo;s off, use the Preview link under the switch to see it with what you&rsquo;ve saved. Once it&rsquo;s on, a Gear link shows in every page footer.</p></details>
-          <details class="dash-help-item"><summary>Use the death counter</summary><p>Streams tab, Death counter. Type the game and tap Start counting. Tap +1 when you die (or press the + key while the card is on screen); &minus; fixes a mistake. Add the Death counter overlay in OBS (Site tab, Stream overlays), and tick the box to show it on the home page too. New game saves the old count in Past runs; End run hides it everywhere.</p></details>
-          <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Site tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
+          <details class="dash-help-item"><summary>Use the death counter</summary><p>Streams tab, Death counter. Type the game and tap Start counting. Tap +1 when you die (or press the + key while the card is on screen); &minus; fixes a mistake. Add the Death counter overlay in OBS (Streams tab, Stream overlays), and tick the box to show it on the home page too. New game saves the old count in Past runs; End run hides it everywhere.</p></details>
+          <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Streams tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
           <details class="dash-help-item"><summary>Close the site for a bit</summary><p>Site tab, Maintenance mode. Visitors see a back-soon page. This dashboard, Ko-fi and client links keep working.</p></details>
           <h3 class="dash-h3">Business</h3>
-          <details class="dash-help-item"><summary>Change my rates or open/close commissions</summary><p>Rates: Content tab, Rates. Open/closed: Site tab, Commissions, with a separate switch and note for voice, websites and Discord. Set Spots there too, and the Work page shows spots left and closes itself when you’re full.</p></details>
+          <details class="dash-help-item"><summary>Change my rates or open/close commissions</summary><p>Rates: Content tab, Rates. Open/closed: Clients tab, Commissions, with a separate switch and note for voice, websites and Discord. Set Spots there too, and the Work page shows spots left and closes itself when you’re full.</p></details>
           <details class="dash-help-item"><summary>Someone sent a quote request. Now what?</summary><p>Clients tab. Email them (button on the request), then Mark replied. If it turns into work, tap Make it a job. Requests delete themselves after 90 days unless you keep them.</p></details>
           <details class="dash-help-item"><summary>How do client reviews work?</summary><p>Turn on the client&rsquo;s status page link for a job. Once you set the job to Done, that page asks them for a star rating and a few words (no links allowed). You get an alert, then approve, hide or delete it in Clients &rarr; Client reviews. Only approved reviews show in &ldquo;What clients say&rdquo; on the Work page. If they edit it later, it waits for your OK again.</p></details>
           <details class="dash-help-item"><summary>Send a client an agreement, invoice or status page</summary><p>Clients tab, open the job, then Agreement, client link, invoice & payments. Fill in each part, save, and use the Copy link buttons. Turn any link off at any time.</p></details>
@@ -757,13 +708,13 @@
           <details class="dash-help-item"><summary>Tell viewers I&rsquo;m live</summary><p>Streams tab, Go-live alerts. Viewers who tapped &ldquo;Notify me when Dismeigh goes live&rdquo; on the home page get a notification. With &ldquo;Send it automatically&rdquo; on, it goes out by itself a few minutes after you start (once per stream). Or tap &ldquo;I&rsquo;m live: notify viewers&rdquo; to send it right away.</p></details>
           <details class="dash-help-item"><summary>Post this week&rsquo;s schedule</summary><p>Streams tab, Schedule graphic. Pick the week and the size (square for X or Discord, story for Instagram), then Download or Share.</p></details>
           <details class="dash-help-item"><summary>Post a site update or a car meet</summary><p>Content tab. &ldquo;What&rsquo;s new&rdquo; adds a post to the What&rsquo;s new page, and visitors get a small dot in the menu until they see it (it goes away on its own after 2 weeks). &ldquo;Car meets&rdquo; shows upcoming meets on the Garage page; past ones disappear the day after.</p></details>
-          <details class="dash-help-item"><summary>Dyno sheet, track spotlight and booth mode</summary><p>Content tab: &ldquo;Dyno sheet&rdquo; fills the numbers card on the Garage page, and &ldquo;Track spotlight&rdquo; picks the Xssy track on the home page (paste a YouTube, Spotify or SoundCloud link). Booth mode lives in the Site tab, in the QR code card: pick the clips, then Open booth mode on the tablet or laptop at your table.</p></details>
+          <details class="dash-help-item"><summary>Dyno sheet, track spotlight and booth mode</summary><p>Content tab: &ldquo;Dyno sheet&rdquo; fills the numbers card on the Garage page, and &ldquo;Track spotlight&rdquo; picks the Xssy track on the home page (paste a YouTube, Spotify or SoundCloud link). Booth mode lives in the Streams tab, in the QR code card: pick the clips, then Open booth mode on the tablet or laptop at your table.</p></details>
           <details class="dash-help-item"><summary>Answer a viewer&rsquo;s question</summary><p>Ship&rsquo;s Log tab, Questions. Type your answer and tap &ldquo;Answer and post&rdquo;. It shows on the Ask the Captain page right away. Delete the ones you don&rsquo;t want to answer.</p></details>
           <details class="dash-help-item"><summary>Track voice auditions</summary><p>Clients tab, Auditions. Add each one with its deadline and change the status as you hear back. Deadlines show on the calendar.</p></details>
           <h3 class="dash-h3">Safety</h3>
-          <details class="dash-help-item"><summary>I lost my phone</summary><p>On the login screen, tap Lost your phone? Use a backup code. Each code works once. Make a set in the Logins tab ahead of time. Out of codes? Change DASHBOARD_PASSWORD in Cloudflare, which signs everyone out and resets two-step login.</p></details>
-          <details class="dash-help-item"><summary>Back everything up</summary><p>Site tab, Backup and restore, then Download backup. Do it every month or so. Restoring keeps a copy of how things were right before, just in case.</p></details>
-          <details class="dash-help-item"><summary>Something looks broken</summary><p>Overview tab, Site health shows what's down. Site tab, Link check finds dead links. Turn on Something on the site breaks in Alerts to get pinged.</p></details>
+          <details class="dash-help-item"><summary>I lost my phone</summary><p>On the login screen, tap Lost your phone? Use a backup code. Each code works once. Make a set in the Security &amp; backups tab ahead of time. Out of codes? Change DASHBOARD_PASSWORD in Cloudflare, which signs everyone out and resets two-step login.</p></details>
+          <details class="dash-help-item"><summary>Back everything up</summary><p>Security &amp; backups tab, Backup and restore, then Download backup. Do it every month or so. Restoring keeps a copy of how things were right before, just in case.</p></details>
+          <details class="dash-help-item"><summary>Something looks broken</summary><p>Overview tab, Site health shows what's down. Security &amp; backups tab, Link check finds dead links. Turn on Something on the site breaks in Alerts to get pinged.</p></details>
           <details class="dash-help-item"><summary>Someone posted something nasty in the Ship's Log</summary><p>Ship's Log tab. Hide it or delete it. The site already blocks links and slurs.</p></details>
           <p class="dash-note" id="help-none" hidden>Nothing matches. Try another word.</p>
         </section>
@@ -797,10 +748,41 @@
           <p class="dash-note" id="install-note">Add the dashboard to your home screen to use it like an app. On iPhone: Share &rarr; Add to Home Screen. On Android: the menu &rarr; Install app.</p>
           <button type="button" class="dash-btn dash-primary" id="install-btn" hidden>Install the dashboard</button>
         </section>
+      
+        <section class="dash-card dash-card-links" aria-labelledby="lk-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Housekeeping</p><h2 id="lk-h">Link check</h2></div></div>
+          <p class="dash-note">Tests every outside link on the site and in your content (lore, pinned clip, event, banners). Some sites, like Instagram or TikTok, block checkers, so those show as &ldquo;couldn&rsquo;t check&rdquo;.</p>
+          <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="lk-go">Check all links</button></div>
+          <p class="dash-msg" id="lk-msg" role="status"></p>
+          <div id="lk-body"></div>
+        </section>
+        <section class="dash-card dash-card-backup" aria-labelledby="bk-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Just in case</p><h2 id="bk-h">Backup and restore</h2></div></div>
+          <p class="dash-note">One file with everything you&rsquo;ve typed in here: content, site settings, Ko-fi goals, arcade targets, notes, client jobs and Ship&rsquo;s Log entries. No passwords, login codes or visitor info.</p>
+          <div class="dash-actions"><a class="dash-btn dash-primary" id="bk-download" href="/api/admin/backup" download>Download backup</a></div>
+          <form id="bk-form">
+            <label for="bk-file">Restore from a backup file</label>
+            <input id="bk-file" type="file" accept="application/json,.json">
+            <fieldset class="dash-checks" id="bk-only">
+              <legend>Restore these parts</legend>
+              <label><input type="checkbox" value="content" checked> <span>Content <small>(bounties, quotes, lore, crew&hellip;)</small></span></label>
+              <label><input type="checkbox" value="site" checked> <span>Site settings <small>(banner, look, right now, commissions)</small></span></label>
+              <label><input type="checkbox" value="goal" checked> <span>Ko-fi goal and past goals</span></label>
+              <label><input type="checkbox" value="arcade" checked> <span>Arcade targets</span></label>
+              <label><input type="checkbox" value="notes" checked> <span>Notes</span></label>
+              <label><input type="checkbox" value="guestbook" checked> <span>Ship&rsquo;s Log <small>(only adds missing entries)</small></span></label>
+              <label><input type="checkbox" value="jobs" checked> <span>Client jobs, payments, expenses &amp; auditions <small>(only adds missing ones)</small></span></label>
+              <label><input type="checkbox" value="streams" checked> <span>Stream schedule, stream stats and pre-stream checklist <small>(only adds missing streams)</small></span></label>
+              <label><input type="checkbox" value="ask" checked> <span>Answered questions <small>(only adds missing ones)</small></span></label>
+            </fieldset>
+            <div class="dash-actions"><button type="submit" class="dash-btn dash-danger">Restore</button><button type="button" class="dash-btn" id="bk-before">Download pre-restore copy</button></div>
+            <p class="dash-msg" id="bk-msg" role="status"></p>
+          </form>
+        </section>
       </div>
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=52" defer></script>
+  <script src="/dashboard.js?v=53" defer></script>
 </body>
 </html>

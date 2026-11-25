@@ -705,7 +705,7 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
     ['This Week’s Streams', '/#schedule', 'Home', 'The stream schedule, plus buttons to add it to your own calendar.', 'schedule when times calendar google apple outlook subscribe ics next stream'],
     ['Bounty Board', '/#bounties', 'Home', 'Challenges up for grabs on stream, and what you win.', 'bounty bounties challenge reward claim'],
     ['Clips', '/#highlights', 'Home', 'Highlights and the latest YouTube Shorts.', 'clips highlights youtube shorts videos pinned clip'],
-    ['Bounty Run', '/#bounty-run-section', 'Arcade', 'The arcade game on the home page, with a weekly leaderboard.', 'game arcade play high score leaderboard scoreboard'],
+    ['Bounty Run', '/arcade/', 'Arcade', 'The arcade game, with a weekly leaderboard.', 'game arcade play high score leaderboard scoreboard'],
     ['Support & Shop', '/#support-heading', 'Home', 'Ways to support the stream.', 'support tip donate shop merch sponsor xssy'],
     ['Ship’s Log', '/log/', 'Page', 'The guestbook. Leave a note for the crew.', 'guestbook log sign message note'],
     ['The Garage', '/garage/', 'Page', 'Project Sojourn: the 2014 Ford Focus ST and its build sheet.', 'car garage sojourn st focus ford mods build sheet'],

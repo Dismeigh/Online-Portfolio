@@ -67,7 +67,7 @@
   const mini = document.getElementById('log-mini');
   if (mini) {
     const empty = document.getElementById('log-mini-empty');
-    load().then(e => render(mini, e, empty, 'No entries yet. Be the first to sign the log!', 3))
+    load().then(e => render(mini, e, empty, 'No entries yet. Be the first to sign the log!', Number(mini.dataset.count) || 3))
       .catch(() => { empty.textContent = 'The log is taking a break. Try again later.'; });
   }
 

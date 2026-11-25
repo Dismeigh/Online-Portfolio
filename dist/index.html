@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=134">
+  <link rel="stylesheet" href="styles.css?v=135">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -633,51 +633,24 @@
         <a class="social-btn shelf-more" href="/shelf/">See the whole shelf <span aria-hidden="true">&rarr;</span></a>
       </section>
 
-      <section id="bounty-run-section" class="content-section run-section sweep" aria-labelledby="bounty-run-heading">
-        <div class="section-kicker"><span>Side game</span> Bounty Run</div>
-        <div class="bounty-run" id="bounty-run">
-          <div class="run-head">
+      <section id="more-aboard" class="content-section teaser-section sweep" aria-label="More aboard">
+        <div class="section-kicker"><span>Side B</span> More aboard</div>
+        <div class="teaser-grid">
+          <article class="teaser-card teaser-arcade" id="bounty-run-section">
+            <p class="teaser-kicker">Side game</p>
             <h2 id="bounty-run-heading">Bounty Run</h2>
-            <p>Dodge the rocks, grab the <b>B</b> chips for +50, and get your name on the board.</p>
-          </div>
-          <div class="run-layout">
-            <div class="game-box" id="game-box">
-              <canvas id="game" role="img" aria-label="Bounty Run game. Drag inside the game, use the mouse, or the arrow keys to steer."></canvas>
-              <div class="game-hud" aria-hidden="true"><span>Score <b id="g-score">0</b></span><span>Best <b id="g-best">0</b></span></div>
-              <div class="game-overlay" id="g-overlay">
-                <p class="game-title" id="g-title">Bounty Run</p>
-                <p class="game-sub" id="g-sub" aria-live="polite">Phone: drag inside this box to steer. Computer: mouse, arrow keys or A and D.</p>
-                <form class="game-form" id="g-form" hidden>
-                  <label for="g-name">Name for the scoreboard</label>
-                  <input id="g-name" name="name" maxlength="10" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="send" placeholder="Up to 10 characters">
-                  <p class="game-msg" id="g-msg" role="alert"></p>
-                  <div class="game-form-btns"><button type="submit" id="g-post">Post score</button><button type="button" id="g-skip" class="game-skip">Skip</button></div>
-                </form>
-                <button type="button" class="game-start" id="g-start">Launch</button>
-                <a class="game-tip" id="g-tip" href="https://ko-fi.com/dismeigh" target="_blank" rel="noopener noreferrer" data-kofi-tip hidden>Enjoying the arcade? Refuel the ship &#9749;</a>
-              </div>
-            </div>
-            <section class="scoreboard" aria-labelledby="scoreboard-heading">
-              <h4 id="scoreboard-heading">Scoreboard</h4>
-              <div class="board-tabs" role="tablist" aria-label="Scoreboard">
-                <button type="button" role="tab" data-board="all" aria-selected="true">All-time</button>
-                <button type="button" role="tab" data-board="week" aria-selected="false">This week</button>
-              </div>
-              <ol class="board-list" id="board-list" aria-live="polite"></ol>
-              <p class="board-msg" id="board-msg">Loading the board&hellip;</p>
-              <p class="board-note">This week&rsquo;s board resets every Monday. Your personal best also saves on this device.</p>
-            </section>
-          </div>
+            <p class="teaser-text">Dodge the rocks, grab the <b>B</b> chips, and get your name on the weekly board.</p>
+            <p class="teaser-stat" id="teaser-leader" hidden></p>
+            <a class="social-btn teaser-go" href="/arcade/">Play in the arcade <span aria-hidden="true">&rarr;</span></a>
+          </article>
+          <article class="teaser-card teaser-log log-strip" id="log-strip">
+            <p class="teaser-kicker">Guestbook</p>
+            <h2 id="log-strip-heading">Ship&rsquo;s Log</h2>
+            <ol class="log-list log-list-mini" id="log-mini" data-count="1" aria-live="polite"></ol>
+            <p class="log-empty" id="log-mini-empty">Loading the log&hellip;</p>
+            <a class="social-btn log-sign" href="/log/"><svg class="icon icon-book-open" viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M256 141.3v309.3l.5-.2A449 449 0 0 1 428.8 416H448V96h-19.2c-42.2 0-84.1 8.4-123.1 24.6-16.8 7-33.4 13.9-49.7 20.7m-25.1-79.8L256 72l25.1-10.5C327.9 42 378.1 32 428.8 32H464c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48h-35.2c-50.7 0-100.9 10-147.7 29.5l-12.8 5.3c-7.9 3.3-16.7 3.3-24.6 0l-12.8-5.3C184.1 490 133.9 480 83.2 480H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h35.2c50.7 0 100.9 10 147.7 29.5"/></svg><span>Sign the log</span></a>
+          </article>
         </div>
-      </section>
-
-      <section id="log-strip" class="content-section log-strip sweep" aria-labelledby="log-strip-heading">
-        <div class="section-kicker"><span>Side B</span> Guestbook</div>
-        <h2 id="log-strip-heading">Ship&rsquo;s Log</h2>
-        <p class="log-lede">Latest notes from the crew. Leave yours on the way out.</p>
-        <ol class="log-list log-list-mini" id="log-mini" aria-live="polite"></ol>
-        <p class="log-empty" id="log-mini-empty">Loading the log&hellip;</p>
-        <a class="social-btn log-sign" href="/log/"><svg class="icon icon-book-open" viewBox="0 0 512 512" aria-hidden="true" focusable="false"><path d="M256 141.3v309.3l.5-.2A449 449 0 0 1 428.8 416H448V96h-19.2c-42.2 0-84.1 8.4-123.1 24.6-16.8 7-33.4 13.9-49.7 20.7m-25.1-79.8L256 72l25.1-10.5C327.9 42 378.1 32 428.8 32H464c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48h-35.2c-50.7 0-100.9 10-147.7 29.5l-12.8 5.3c-7.9 3.3-16.7 3.3-24.6 0l-12.8-5.3C184.1 490 133.9 480 83.2 480H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h35.2c50.7 0 100.9 10 147.7 29.5"/></svg><span>Sign the log</span></a>
       </section>
 
 
@@ -698,7 +671,7 @@
       <p class="footer-est">Est. June 10, 2021</p>
       <nav class="footer-nav" aria-label="All pages">
         <div class="footer-col"><p class="footer-col-h">Hang out</p><ul><li><a href="/guide/">Viewer guide</a></li><li><a href="/crew/">The Crew</a></li><li><a href="/log/">Ship&rsquo;s Log</a></li><li><a href="/ask/">Ask the Captain</a></li><li><a href="/lore/">Channel lore</a></li><li><a href="/rewind/">Dismeigh Rewind</a></li></ul></div>
-        <div class="footer-col"><p class="footer-col-h">Explore</p><ul><li><a href="/shelf/">Shelf</a></li><li><a href="/garage/">Garage</a></li><li><a href="/wallpapers/">Wallpapers</a></li><li><a href="/map/">Ship map</a></li><li><a href="/new/">What&rsquo;s new</a></li><li data-install><a class="footer-install" href="/install/">Get the app</a></li></ul></div>
+        <div class="footer-col"><p class="footer-col-h">Explore</p><ul><li><a href="/shelf/">Shelf</a></li><li><a href="/arcade/">Arcade</a></li><li><a href="/garage/">Garage</a></li><li><a href="/wallpapers/">Wallpapers</a></li><li><a href="/map/">Ship map</a></li><li><a href="/new/">What&rsquo;s new</a></li><li data-install><a class="footer-install" href="/install/">Get the app</a></li></ul></div>
         <div class="footer-col"><p class="footer-col-h">Work with me</p><ul><li><a href="/work/">Websites &amp; Discord</a></li><li><a href="/voice/">Voice acting</a></li><li><a href="/press/">Press kit</a></li></ul></div>
       </nav>
       <p class="footer-contact"><a href="mailto:denizen.dismeigh@gmail.com">denizen.dismeigh@gmail.com</a></p>
@@ -1573,11 +1546,18 @@
 
   }
   </script>
-  <script src="/log.js?v=6" defer></script>
+  <script>
+  // More aboard: this week's Bounty Run leader on the arcade card
+  fetch('/api/arcade/scores?game=bounty').then(r => r.ok ? r.json() : null).then(d => {
+    const top = (d && (d.week || [])[0]) || (d && (d.all || [])[0]); if (!top) return;
+    const el = document.getElementById('teaser-leader'), week = !!(d.week || [])[0];
+    el.textContent = `${week ? 'This week\u2019s leader' : 'All-time best'}: ${top.name} \u00b7 ${Number(top.score).toLocaleString('en-US')}`; el.hidden = false;
+  }).catch(() => {});
+  </script>
+  <script src="/log.js?v=7" defer></script>
   <script src="/crew.js?v=6" defer></script>
-  <script src="/bounty-run.js?v=38" defer></script>
   <script src="/suggest.js?v=1" defer></script>
-  <script src="/app.js?v=74" defer></script>
+  <script src="/app.js?v=75" defer></script>
   <script src="/goal.js?v=2" defer></script>
   <script>
   // Clip captions (typed in the dashboard: Content, Clip captions) become a CC track on each clip

@@ -1070,11 +1070,6 @@
       + (old.length ? `<details class="dash-job-more"><summary>Past one-time streams (${old.length})</summary><ul class="dash-list">${old.map(item).join('')}</ul></details>` : '')
       + (!b.streams.length && stEdit !== 'new' ? '<p class="dash-note">No streams yet. Tap &ldquo;Add a stream&rdquo; to set up your schedule.</p>' : '');
     $('st-up').innerHTML = b.upcoming.length ? `<ul class="dash-pays">${b.upcoming.slice(0, 20).map(e => `<li><b>${esc(etWhen(e.start))}</b> · ${esc(e.title)}</li>`).join('')}</ul>` : '<p class="dash-note">Nothing in the next few weeks. The home page shows &ldquo;no streams scheduled&rdquo; until you add some.</p>';
-    $('st-import-card').hidden = !b.canImport && !b.pastCount;
-    $('st-import').hidden = !b.canImport;
-    $('st-clear-past').hidden = !b.pastCount;
-    $('st-import-text').textContent = (b.pastCount ? `${b.pastCount} past stream${b.pastCount === 1 ? ' is' : 's are'} saved for Dismeigh Rewind. ` : '')
-      + (b.canImport ? 'This copies the streams that already happened on Calendar.online (just titles and times) so Rewind keeps your history. Running it again replaces the copy. Upcoming streams aren’t copied: add your regular ones above. Once you’re happy, you can delete CALENDAR_FEED_URL in Cloudflare.' : '');
   }
   const stAct = async body => {
     const { status, data } = await api('streams', body);
@@ -1400,13 +1395,6 @@
       minutes: Number($('sf-len').value), days: [...f.querySelectorAll('.dash-days input:checked')].map(x => x.value), until: $('sf-until').value, link: $('sf-link').value, note: $('sf-note').value });
     if (d) { stEdit = null; drawStreams(); flash($('st-msg'), 'Saved. It’s on the site now.'); }
   });
-  $('st-import').addEventListener('click', async e => {
-    e.target.disabled = true; flash($('st-import-msg'), 'Copying…');
-    const { status, data } = await api('streams', { action: 'import' }); e.target.disabled = false;
-    if (status !== 200) return flash($('st-import-msg'), data.error || 'Couldn’t copy them.');
-    stBoard = data; drawStreams(); flash($('st-import-msg'), `Copied ${data.imported} past stream${data.imported === 1 ? '' : 's'}.`);
-  });
-  $('st-clear-past').addEventListener('click', async () => { if (confirm('Remove the imported past streams? Rewind will lose that history.')) { await stAct({ action: 'clearPast' }); flash($('st-import-msg'), 'Removed.'); } });
 
 
   // Booth mode link: which clips play
@@ -1568,7 +1556,7 @@
     if (status !== 200) return flash($('rv-msg'), data.error || 'Couldn\u2019t save.');
     reviews = data.reviews || []; drawReviews(); flash($('rv-msg'), b.dataset.rv === 'approve' ? 'Approved. It\u2019s on the Work page now.' : 'Saved.', true);
   });
-  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); loadCollabs(); loadReviews(); };
+  loaders.clients = async () => { const { data } = await api('clients'); drawBoard(data); loadIncome(); loadCollabs(); loadReviews(); loaders.site(); };   // site: commissions + collab settings live on this tab
   const clientAct = async body => { const { status, data } = await api('clients', body); if (status !== 200) return flash($('jb-msg'), data.error || 'Couldn\u2019t save.'); drawBoard(data); return data; };
   $('rq-refresh').addEventListener('click', loaders.clients);
   document.querySelectorAll('#rq-filter [data-rq]').forEach(b => b.addEventListener('click', () => { rqView = b.dataset.rq; document.querySelectorAll('#rq-filter [data-rq]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); drawRequests(); }));
