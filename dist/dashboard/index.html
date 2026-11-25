@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=126">
+  <link rel="stylesheet" href="/styles.css?v=127">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -411,6 +411,14 @@
           <p class="dash-msg" id="ck-msg" role="status"></p>
           <p class="dash-hint">Ticks sync between your phone and computer, and clear on their own the next day.</p>
         </section>
+        <section class="dash-card" aria-labelledby="gl-h">
+          <div class="dash-card-head"><div><p class="dash-card-kicker">Viewers who tapped &ldquo;Notify me&rdquo;</p><h2 id="gl-h">Go-live alerts</h2></div><span class="dash-chip" id="gl-chip"><span class="dash-dot" aria-hidden="true"></span><span id="gl-count">0 signed up</span></span></div>
+          <label for="gl-message">Alert message</label><input id="gl-message" maxlength="120" placeholder="Dismeigh is live! Come hang out on Twitch.">
+          <label class="dash-check-line"><input type="checkbox" id="gl-auto"> <span>Send it automatically when I go live (checks every few minutes, once per stream)</span></label>
+          <div class="dash-actions"><button type="button" class="dash-btn dash-primary" id="gl-send">I&rsquo;m live: notify viewers</button><button type="button" class="dash-btn" id="gl-save">Save</button></div>
+          <p class="dash-msg" id="gl-msg" role="status"></p>
+          <p class="dash-hint">Tapping the alert opens your Twitch. It only sends once every 3 hours, so a restart mid-stream won&rsquo;t ping everyone twice.</p>
+        </section>
         <section class="dash-card" aria-labelledby="st-h">
           <div class="dash-card-head"><div><p class="dash-card-kicker">Home page schedule, calendar subscriptions and Rewind</p><h2 id="st-h">Stream schedule</h2></div><button type="button" class="dash-btn dash-small dash-primary" id="st-new">Add a stream</button></div>
           <p class="dash-hint">Set up your regular streams once (like every Tuesday and Thursday at 8 PM) and add one-time streams as they come up. To cancel one night, use &ldquo;Skip a date&rdquo; on that stream. Times are Eastern. Changes show on the site within a minute.</p>
@@ -703,6 +711,7 @@
           <details class="dash-help-item"><summary>Record money and see profit</summary><p>On the job, Record payment for anything paid outside Ko-fi (Ko-fi counts on its own). Add costs under Income, Expenses. Download spreadsheet gives you everything for tax time.</p></details>
           <details class="dash-help-item"><summary>Change the stream schedule</summary><p>Streams tab. Add your regular streams once with &ldquo;Every week&rdquo; and the days. To cancel one night, pick the date under &ldquo;Skip a date&rdquo; on that stream. For a one-off, add a one-time stream. The home page, calendar subscriptions and Rewind all update on their own.</p></details>
           <details class="dash-help-item"><summary>Log a stream&rsquo;s stats</summary><p>Streams tab, Stream stats, &ldquo;Log a stream&rdquo;. Open Twitch&rsquo;s stream summary email, select all, copy, paste it in the box and tap &ldquo;Read the numbers&rdquo;. Check them and Save. You can also type them in yourself. If a stream sets a new best peak, average or follower count, you get a one-tap &ldquo;New record&rdquo; banner for the site. Under the chart, &ldquo;Best time to stream&rdquo; shows which days and start times get the most viewers.</p></details>
+          <details class="dash-help-item"><summary>Tell viewers I&rsquo;m live</summary><p>Streams tab, Go-live alerts. Viewers who tapped &ldquo;Notify me when Dismeigh goes live&rdquo; on the home page get a notification. With &ldquo;Send it automatically&rdquo; on, it goes out by itself a few minutes after you start (once per stream). Or tap &ldquo;I&rsquo;m live: notify viewers&rdquo; to send it right away.</p></details>
           <details class="dash-help-item"><summary>Post this week&rsquo;s schedule</summary><p>Streams tab, Schedule graphic. Pick the week and the size (square for X or Discord, story for Instagram), then Download or Share.</p></details>
           <details class="dash-help-item"><summary>Post a site update or a car meet</summary><p>Content tab. &ldquo;What&rsquo;s new&rdquo; adds a post to the What&rsquo;s new page, and visitors get a small dot in the menu until they see it (it goes away on its own after 2 weeks). &ldquo;Car meets&rdquo; shows upcoming meets on the Garage page; past ones disappear the day after.</p></details>
           <details class="dash-help-item"><summary>Dyno sheet, track spotlight and booth mode</summary><p>Content tab: &ldquo;Dyno sheet&rdquo; fills the numbers card on the Garage page, and &ldquo;Track spotlight&rdquo; picks the Xssy track on the home page (paste a YouTube, Spotify or SoundCloud link). Booth mode lives in the Site tab, in the QR code card: pick the clips, then Open booth mode on the tablet or laptop at your table.</p></details>
@@ -749,6 +758,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=46" defer></script>
+  <script src="/dashboard.js?v=47" defer></script>
 </body>
 </html>

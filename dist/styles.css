@@ -3683,3 +3683,9 @@ html:has(.dash-body) { background: var(--ink); }
 .footer-visitor.is-milestone .odo b { background: var(--mustard); color: var(--ink); }
 @media (prefers-reduced-motion: no-preference) { .footer-visitor.is-milestone .odo b { animation: odoGlow 1.6s ease-in-out infinite alternate; } }
 @keyframes odoGlow { from { box-shadow: 0 0 0 rgba(227, 169, 43, 0); } to { box-shadow: 0 0 10px rgba(227, 169, 43, 0.8); } }
+
+/* Go-live alerts for viewers */
+.golive { margin-top: 1rem; }
+.golive-btn { width: 100%; justify-content: center; }
+.golive-btn[aria-pressed="true"] { background: var(--mustard); color: var(--ink); border-color: var(--mustard); }
+.golive-note { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--paper-dim); }

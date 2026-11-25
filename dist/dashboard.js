@@ -1247,7 +1247,25 @@
     const del = e.target.closest('[data-ss-del]');
     if (del && confirm('Delete these stats?')) { const { data } = await api('streamstats', { action: 'delete', id: Number(del.dataset.ssDel) }); ssRows = data.stats || []; ssBest = data.best || null; drawStats(); }
   });
-  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); loadStats(); };
+  // Go-live alerts for viewers
+  function drawGl(d) {
+    $('gl-count').textContent = `${d.count} signed up`; $('gl-chip').className = `dash-chip ${d.count ? 'dash-chip-ok' : ''}`;
+    if (document.activeElement !== $('gl-message')) $('gl-message').value = d.message || ''; $('gl-auto').checked = !!d.auto;
+    const j = d.job; if (j) $('gl-msg').textContent = `Last alert: ${when(new Date(j.at).toISOString())}, sent to ${j.sent} of ${j.total}${j.done ? '' : ' (still sending)'}.`;
+  }
+  const loadGl = async () => drawGl((await api('golive')).data);
+  $('gl-save').addEventListener('click', async () => { const { data } = await api('golive', { action: 'settings', auto: $('gl-auto').checked, message: $('gl-message').value }); drawGl(data); flash($('gl-msg'), 'Saved.'); });
+  $('gl-send').addEventListener('click', async e => {
+    const btn = e.currentTarget; btn.disabled = true;
+    try {
+      let { data } = await api('golive', { action: 'start', message: $('gl-message').value });
+      if (data.skipped && !confirm('An alert already went out in the last 3 hours. Send another one anyway?')) { drawGl(data); return; }
+      if (data.skipped) data = (await api('golive', { action: 'start', message: $('gl-message').value, force: true })).data;
+      for (let i = 0; i < 400 && data.job && !data.job.done; i++) { drawGl(data); data = (await api('golive', { action: 'work' })).data; }
+      drawGl(data); flash($('gl-msg'), `Sent to ${data.job?.sent ?? 0} viewer${data.job?.sent === 1 ? '' : 's'}.`);
+    } finally { btn.disabled = false; }
+  });
+  loaders.streams = async () => { stBoard = (await api('streams')).data; drawStreams(); sgReady.then(drawGraphic); ck = (await api('checklist')).data; drawCk(); loadStats(); loadGl(); };
   $('st-new').addEventListener('click', () => { stEdit = 'new'; drawStreams(); $('sf-title').focus(); });
   $('st-body').addEventListener('change', e => {
     if (e.target.id !== 'sf-repeat') return;

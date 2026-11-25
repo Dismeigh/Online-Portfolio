@@ -1,7 +1,7 @@
 // Dismeigh site service worker: makes the site installable and gives it an offline page.
 // Pages are always fetched fresh when online; only static files are cached.
-const CACHE = 'dismeigh-v114';
-const PRECACHE = ['/offline.html', '/styles.css?v=126', '/app.js?v=72', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
+const CACHE = 'dismeigh-v115';
+const PRECACHE = ['/offline.html', '/styles.css?v=127', '/app.js?v=72', '/favicon-32.png', '/icon-192.png', '/avatar-280.jpg?v=2', '/banner.webp'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -16,6 +16,13 @@ self.addEventListener('activate', event => {
 // Dashboard phone alerts (sent by lib/push.js). Tapping one opens the dashboard on the right tab.
 self.addEventListener('push', event => {
   let d = {}; try { d = event.data ? event.data.json() : {}; } catch {}
+  // Viewer go-live alert (lib/golive.js): tapping it opens Twitch
+  if (d.viewer) {
+    event.waitUntil(self.registration.showNotification(String(d.title || 'Dismeigh is live!').slice(0, 80), {
+      body: String(d.body || '').slice(0, 180), icon: '/icon-192.png', badge: '/favicon-48.png', tag: 'golive', data: { url: 'https://twitch.tv/dismeigh' },
+    }));
+    return;
+  }
   event.waitUntil(self.registration.showNotification(d.title || 'Dismeigh dashboard', {
     body: d.body || '', icon: '/dashboard/icon-192.png', badge: '/favicon-48.png', tag: d.tab || 'dash', data: { url: `/dashboard/#${String(d.tab || 'overview').replace(/[^a-z]/g, '')}${/^[a-z]+-\d+$/.test(d.focus || '') ? `:${d.focus}` : ''}` },
   }));
@@ -23,6 +30,7 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = event.notification.data?.url || '/dashboard/';
+  if (url === 'https://twitch.tv/dismeigh') { event.waitUntil(self.clients.openWindow(url)); return; }
   event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
     const open = list.find(c => new URL(c.url).pathname.startsWith('/dashboard/'));
     return open ? open.navigate(url).then(c => (c || open).focus()).catch(() => open.focus()) : self.clients.openWindow(url);

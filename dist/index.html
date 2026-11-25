@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="styles.css?v=126">
+  <link rel="stylesheet" href="styles.css?v=127">
   <!-- Icons: Font Awesome Free (fontawesome.com), CC BY 4.0, inlined as SVG -->
 
   <script type="application/ld+json">
@@ -488,6 +488,10 @@
             <button class="subscribe-btn" type="button" id="copy-calendar-link" data-link="https://www.denizen-dismeigh.com/calendar.ics">
               <svg class="icon icon-link" viewBox="0 0 576 512" aria-hidden="true" focusable="false"><path d="M419.5 96c-16.6 0-32.7 4.5-46.8 12.7-15.8-16-34.2-29.4-54.5-39.5 28.2-24 64.1-37.2 101.3-37.2C505.9 32 576 102 576 188.5c0 41.5-16.5 81.3-45.8 110.6l-71.1 71.1C429.8 399.5 390 416 348.5 416 262.1 416 192 346 192 259.5c0-1.5 0-3 .1-4.5.5-17.7 15.2-31.6 32.9-31.1s31.6 15.2 31.1 32.9v2.6c0 51.1 41.4 92.5 92.5 92.5 24.5 0 48-9.7 65.4-27.1l71.1-71.1c17.3-17.3 27.1-40.9 27.1-65.4 0-51.1-41.4-92.5-92.5-92.5zm-144.3 77.3c-1.9-.8-3.8-1.9-5.5-3.1-12.6-6.5-27-10.2-42.1-10.2-24.5 0-48 9.7-65.4 27.1l-71.1 71.1C73.8 275.5 64 299.1 64 323.6c0 51.1 41.4 92.5 92.5 92.5 16.5 0 32.6-4.4 46.7-12.6 15.8 16 34.2 29.4 54.6 39.5-28.2 23.9-64 37.2-101.3 37.2C70.1 480.2 0 410.2 0 323.7c0-41.5 16.5-81.3 45.8-110.6l71.1-71.1c29.3-29.3 69.1-45.8 110.6-45.8 86.6 0 156.5 70.6 156.5 156.9v3.9c-.4 17.7-15.1 31.6-32.8 31.2s-31.6-15.1-31.2-32.8v-2.3c0-33.7-18-63.3-44.8-79.6z"/></svg><span>Copy link</span>
             </button>
+          </div>
+          <div class="golive" id="golive" hidden>
+            <button type="button" class="subscribe-btn golive-btn" id="golive-btn" aria-pressed="false"><span aria-hidden="true">&#128276;</span> <span id="golive-label">Notify me when Dismeigh goes live</span></button>
+            <p class="golive-note" id="golive-note"></p>
           </div>
         </div>
       </section>
@@ -1640,6 +1644,45 @@
     });
     $('spotlight').hidden = false;
   }).catch(() => {});
+  </script>
+  <script>
+  // Go-live alerts for viewers: a notification on this phone or computer when the stream starts (lib/golive.js)
+  (() => {
+    const box = document.getElementById('golive'), btn = document.getElementById('golive-btn'), label = document.getElementById('golive-label'), note = document.getElementById('golive-note');
+    if (!box) return;
+    const ios = /iP(hone|ad|od)/.test(navigator.userAgent), installed = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    const can = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    box.hidden = false;
+    if (!can) {
+      btn.hidden = true;
+      note.textContent = ios && !installed ? 'On iPhone: tap Share, then “Add to Home Screen.” Open the site from your Home Screen and this button shows up.' : 'This browser can’t do notifications. Follow on Twitch to get live alerts there.';
+      return;
+    }
+    const b64 = s => { const p = '='.repeat((4 - (s.length % 4)) % 4); const r = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+    const set = on => { btn.setAttribute('aria-pressed', String(on)); label.textContent = on ? 'You’ll get a heads-up when I go live (tap to stop)' : 'Notify me when Dismeigh goes live'; };
+    navigator.serviceWorker.ready.then(reg => reg.pushManager.getSubscription()).then(sub => set(!!sub && localStorage.getItem('dm-golive') === '1')).catch(() => {});
+    note.textContent = 'One notification when the stream starts. No account, no email. Turn it off here any time.';
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (btn.getAttribute('aria-pressed') === 'true') {
+          if (sub) await fetch('/api/notify', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint }) });
+          try { localStorage.removeItem('dm-golive'); } catch {}
+          set(false); note.textContent = 'Okay, no more live alerts on this device.';
+        } else {
+          if (await Notification.requestPermission() !== 'granted') { note.textContent = 'Notifications are blocked for this site. Allow them in your browser settings, then try again.'; return; }
+          if (!sub) { const { key } = await (await fetch('/api/notify')).json(); sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(key) }); }
+          const r = await fetch('/api/notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sub: sub.toJSON() }) });
+          if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || '');
+          try { localStorage.setItem('dm-golive', '1'); } catch {}
+          set(true); note.textContent = 'You’re on the list. See you on stream!';
+        }
+      } catch (e) { note.textContent = e.message || 'Couldn’t set that up. Try again in a bit.'; }
+      finally { btn.disabled = false; }
+    });
+  })();
   </script>
 </body>
 </html>
