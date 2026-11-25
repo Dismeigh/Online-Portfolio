@@ -353,7 +353,7 @@
       F('what', 'What you did', 'text', { max: 120 }), F('when', 'When (like Oct 2026)', 'text', { max: 30 }),
     ] },
     captions: { note: 'Subtitles for the clips on the home page. One line per caption: which clip, when it starts and ends (like 0:03 and 0:06), and what\u2019s said. Order doesn\u2019t matter.', fields: [
-      F('clip', 'Clip', 'select', { options: [['1', 'Clip 1'], ['2', 'Clip 2'], ['3', 'Clip 3'], ['4', 'Clip 4'], ['5', 'Clip 5']] }),
+      F('clip', 'Clip', 'select', { options: [['1', 'Clip 1'], ['2', 'Clip 2'], ['3', 'Clip 3'], ['4', 'Clip 4'], ['5', 'Clip 5'], ['6', 'Clip 6'], ['7', 'Clip 7'], ['8', 'Clip 8']] }),
       F('start', 'Starts (m:ss)', 'text', { max: 9 }), F('end', 'Ends (m:ss)', 'text', { max: 9 }), F('text', 'What\u2019s said', 'text', { max: 160, required: true }),
     ] },
     garage: { note: 'The Sojourn ST build sheet on the Garage page. Move a mod to Done when it\u2019s on the car; the progress bar updates on its own.', fields: [
