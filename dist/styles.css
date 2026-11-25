@@ -3778,3 +3778,14 @@ html:has(.dash-body) { background: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .dc-count.is-bump { animation: none; } }
 .dc-past { margin-top: 1rem; }
 .dc-past summary { cursor: pointer; font-weight: 800; color: var(--paper); }
+/* Gear page */
+.gear-preview { margin: 1rem 0 0; padding: 0.7rem 1rem; background: rgba(227, 169, 43, 0.14); border-left: 5px solid var(--mustard); color: var(--paper); font-weight: 600; max-width: 44rem; }
+.gear-groups { display: grid; gap: 1.6rem; margin-top: 1.4rem; max-width: 52rem; }
+.gear-group-title { margin: 0 0 0.6rem; font-family: var(--display); font-weight: 400; font-size: 1.6rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--mustard); }
+.gear-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+.gear-item { padding: 0.8rem 1rem; background: var(--ink-2); border-left: 5px solid var(--teal); }
+.gear-name { margin: 0; font-weight: 800; color: var(--paper); overflow-wrap: anywhere; }
+.gear-name a { color: var(--paper); text-decoration-color: var(--mustard); text-underline-offset: 3px; }
+.gear-name a:hover, .gear-name a:focus-visible { color: var(--mustard); }
+.gear-note { margin: 0.3rem 0 0; color: var(--paper-dim); font-size: 0.95rem; overflow-wrap: anywhere; }
+.dash-hint a { color: var(--mustard); }

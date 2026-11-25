@@ -1054,6 +1054,13 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       else { try { const old = JSON.parse(before || 'null'); if (old?.mode && root.dataset.season === old.mode) delete root.dataset.season; } catch {} }
       window.dismeighSeasonFx?.();
     }
+    // Gear page link in the footer, only while the page is switched on (dashboard: Content -> Gear)
+    if (s.gear) document.querySelectorAll('.footer-links a[href="/press/"]').forEach(a => {
+      if (a.parentNode.querySelector('a[href="/gear/"]')) return;
+      const sep = document.createElement('span'); sep.setAttribute('aria-hidden', 'true'); sep.textContent = ' \u00b7 ';
+      const g = document.createElement('a'); g.href = '/gear/'; g.textContent = 'Gear';
+      a.after(sep, g);
+    });
     // "Right now" status line on the home page
     const rn = document.getElementById('right-now');
     if (rn) {

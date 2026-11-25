@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Work+Sans:wght@400;600;800&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=131">
+  <link rel="stylesheet" href="/styles.css?v=132">
 </head>
 <body class="dash-body">
   <main class="dash" id="main">
@@ -230,8 +230,13 @@
             <button type="button" data-content="spotlight">Track spotlight</button>
             <button type="button" data-content="updates">What&rsquo;s new</button>
             <button type="button" data-content="captions">Clip captions</button>
+            <button type="button" data-content="gear">Gear</button>
           </div>
           <p class="dash-note" id="content-note"></p>
+          <div class="dash-gear-switch" id="gear-switch" hidden>
+            <label class="dash-check-line"><input type="checkbox" id="gear-on"> <span>Show the Gear page on the site <small>(off = the page is hidden from visitors)</small></span></label>
+            <p class="dash-hint"><a href="/gear/?preview=1" target="_blank" rel="noopener">Preview the Gear page</a> (shows what you&rsquo;ve saved, even while it&rsquo;s off). <span id="gear-msg" role="status"></span></p>
+          </div>
           <div id="content-body"></div>
           <div class="dash-actions dash-sticky-save">
             <button type="button" class="dash-btn dash-primary" id="content-save">Save changes</button>
@@ -729,6 +734,7 @@
           <details class="dash-help-item"><summary>Change what's on the site (bounties, quotes, lore&hellip;)</summary><p>Content tab. Pick a section, edit, then tap Save at the bottom. Changes are live right away.</p></details>
           <details class="dash-help-item"><summary>Set up a Ko-fi goal</summary><p>Ko-fi goal tab. Fill in the name, amount and description, pick where it shows, and switch it on. When it’s done, End goal &amp; save it moves it to the Funded list.</p></details>
           <details class="dash-help-item"><summary>Plan a subathon or special stream</summary><p>Content tab, Special event. Set the name, times, an optional goal and a run of show. The event page and the home page countdown update on their own.</p></details>
+          <details class="dash-help-item"><summary>Set up the Gear page</summary><p>Content tab, Gear. Add your mic, camera, PC, VTuber setup and so on, pick a section for each, and save. The page stays hidden from visitors (it shows a &ldquo;page not found&rdquo;) until you tick &ldquo;Show the Gear page on the site&rdquo;. While it&rsquo;s off, use the Preview link under the switch to see it with what you&rsquo;ve saved. Once it&rsquo;s on, a Gear link shows in every page footer.</p></details>
           <details class="dash-help-item"><summary>Use the death counter</summary><p>Streams tab, Death counter. Type the game and tap Start counting. Tap +1 when you die (or press the + key while the card is on screen); &minus; fixes a mistake. Add the Death counter overlay in OBS (Site tab, Stream overlays), and tick the box to show it on the home page too. New game saves the old count in Past runs; End run hides it everywhere.</p></details>
           <details class="dash-help-item"><summary>Add overlays to OBS</summary><p>Site tab, Stream overlays. Copy a link and add it in OBS as a Browser source at the size shown.</p></details>
           <details class="dash-help-item"><summary>Close the site for a bit</summary><p>Site tab, Maintenance mode. Visitors see a back-soon page. This dashboard, Ko-fi and client links keep working.</p></details>
@@ -787,6 +793,6 @@
     </div>
   </main>
   <script src="/qr.js?v=2" defer></script>
-  <script src="/dashboard.js?v=50" defer></script>
+  <script src="/dashboard.js?v=51" defer></script>
 </body>
 </html>

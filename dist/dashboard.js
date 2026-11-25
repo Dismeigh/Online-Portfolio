@@ -372,12 +372,16 @@
       F('price', 'Price (e.g. from $50, $25/month)', 'text', { max: 30 }), F('summary', 'One-line description', 'text', { max: 160 }),
       F('points', 'What\u2019s included (one per line)', 'textarea', { max: 960 }),
     ] },
+    gear: { note: 'The Gear page: what you stream with. Pick a section for each item. Links are optional (a store or product page). Nothing shows until you switch the page on below.', fields: [
+      F('group', 'Section', 'select', { options: [['stream', 'Streaming (camera, capture, lights)'], ['audio', 'Audio (mic, headphones)'], ['pc', 'PC'], ['vtuber', 'VTuber setup'], ['desk', 'Desk & extras'], ['car', 'In the car']] }),
+      F('name', 'What it is', 'text', { max: 80, required: true }), F('note', 'Note (optional, like why you like it)', 'text', { max: 200 }), F('link', 'Link (https://..., optional)', 'text', { max: 300 }),
+    ] },
     pinned: { single: true, note: 'Pins a clip at the top of Clips on the home page. Twitch, YouTube or TikTok links.', fields: [
       F('url', 'Clip link (https://...)', 'text', { max: 300 }), F('title', 'Title (optional)', 'text', { max: 100 }), F('by', 'Clipped by', 'text', { max: 40 }),
       F('reason', 'Why it’s pinned (optional, e.g. the bounty it won)', 'text', { max: 120 }), F('until', 'Unpin after', 'date'),
     ] },
   };
-  const WRAP = { bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates', dyno: 'dyno', spotlight: 'spotlight' };
+  const WRAP = { gear: 'gear', bounties: 'bounties', quotes: 'quotes', lore: 'entries', verdicts: 'verdicts', crew: 'crew', pinned: 'pinned', pricing: 'pricing', faq: 'faq', builder: 'builder', garage: 'garage', captions: 'captions', collabs: 'collabs', meets: 'meets', updates: 'updates', dyno: 'dyno', spotlight: 'spotlight' };
   let kind = 'bounties', items = [], dirty = false;
   const fieldHtml = (f, v, i) => {
     const id = `c-${i}-${f.key}`, val = f.type === 'links' ? (v || []).map(l => `${l.label} | ${l.url}`).join('\n') : (v ?? '');
@@ -391,6 +395,7 @@
   function drawContent() {
     const s = SCHEMA[kind];
     $('content-note').textContent = s.note;
+    $('gear-switch').hidden = kind !== 'gear';
     if (s.single) {
       $('content-body').innerHTML = `<div class="dash-item">${s.fields.map(f => fieldHtml(f, items[0]?.[f.key], 0)).join('')}
         <div class="dash-item-actions"><button type="button" class="dash-btn dash-small" data-act="clearpin">Clear the pin</button></div></div>`;
@@ -436,6 +441,7 @@
     const { data } = await api(`content?key=${k}`);
     const v = data[WRAP[k]];
     items = SCHEMA[k].single ? (v ? [v] : []) : (Array.isArray(v) ? v.map(x => ({ ...x })) : []);
+    if (k === 'gear') api('site').then(r => { $('gear-on').checked = !!r.data.gear; }).catch(() => {});
     drawContent();
     return true;
   }
@@ -453,7 +459,14 @@
     if (status !== 200) { $('content-msg').textContent = data.error || 'Couldn’t save.'; return; }
     const v = data[WRAP[kind]], sent = SCHEMA[kind].single ? (items[0] ? 1 : 0) : items.length, kept = SCHEMA[kind].single ? (v ? 1 : 0) : (v || []).length;
     items = SCHEMA[kind].single ? (v ? [v] : []) : v.map(x => ({ ...x })); dirty = false; drawContent();
-    flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (something was missing or not valid${kind === 'captions' ? ', like an end time before the start time' : ''}).` : 'Saved. It’s live on the site now.');
+    flash($('content-msg'), kept < sent ? `Saved. ${sent - kept} entr${sent - kept === 1 ? 'y was' : 'ies were'} skipped (something was missing or not valid${kind === 'captions' ? ', like an end time before the start time' : ''}).` : kind === 'gear' && !$('gear-on').checked ? 'Saved. The page is still hidden: tick the box above when you\u2019re ready.' : 'Saved. It’s live on the site now.');
+  });
+  $('gear-on').addEventListener('change', async e => {
+    const on = e.target.checked;
+    if (on && !items.length && !confirm('The gear list is empty. Turn the page on anyway?')) { e.target.checked = false; return; }
+    const { status, data } = await api('site', { what: 'gear', on });
+    if (status !== 200) { e.target.checked = !on; return flash($('gear-msg'), data.error || 'Couldn\u2019t save.'); }
+    flash($('gear-msg'), on ? 'On. The page and footer link show for visitors within a minute.' : 'Off. Visitors get \u201cpage not found\u201d now.');
   });
   loaders.content = () => { if (!$('content-body').children.length) loadContent(kind); loadEvent(); loadClips(); loadVotes(); loadSug(); };
 
