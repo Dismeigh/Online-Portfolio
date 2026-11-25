@@ -620,6 +620,20 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
       if (!d) return;
       if (d.n) { try { localStorage.setItem(KEY, String(d.n)); } catch {} }
       show(Math.max(d.total || 0, d.n || 0, saved || 0));
+      // Visitor milestone (1,000 visitors and so on): gold odometer and a strip across the top for a day
+      const m = d.milestone; if (!m || !Number.isInteger(m.n)) return;
+      footer.querySelector('.footer-visitor')?.classList.add('is-milestone');
+      const key = `dm-milestone-${m.n}`; let shut = false; try { shut = localStorage.getItem(key) === '1'; } catch {}
+      if (shut || /^\/(dashboard|overlay|booth)/.test(location.pathname)) return;
+      const me = d.n === m.n && !saved;
+      const strip = document.createElement('div'); strip.className = 'site-banner is-party is-milestone'; strip.setAttribute('role', 'note');
+      const p = document.createElement('p');
+      p.textContent = me ? `\ud83c\udf89 You\u2019re visitor #${m.n.toLocaleString('en-US')}! You just hit the milestone. Welcome aboard!` : `\ud83c\udf89 We just hit ${m.n.toLocaleString('en-US')} visitors! Thanks for being part of the crew.`;
+      const x = document.createElement('button'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.innerHTML = '&times;';
+      strip.append(p, x);
+      const nav = document.querySelector('.site-nav');
+      if (nav) { nav.prepend(strip); nav.classList.add('has-banner'); } else { strip.classList.add('is-loose'); document.body.prepend(strip); }
+      x.addEventListener('click', () => { strip.remove(); try { localStorage.setItem(key, '1'); } catch {} if (nav) nav.classList.toggle('has-banner', !!nav.querySelector('.site-banner:not([hidden])')); });
     }).catch(() => {});
   }
 

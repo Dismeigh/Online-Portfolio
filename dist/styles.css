@@ -3678,3 +3678,8 @@ html:has(.dash-body) { background: var(--ink); }
 .fb-close { background: transparent; color: var(--ink); }
 .fb-msg { margin: 0.2rem 0 0; font-weight: 700; color: #9e3326; }
 .fb-msg.is-ok { color: var(--ink); }
+
+/* Visitor milestone */
+.footer-visitor.is-milestone .odo b { background: var(--mustard); color: var(--ink); }
+@media (prefers-reduced-motion: no-preference) { .footer-visitor.is-milestone .odo b { animation: odoGlow 1.6s ease-in-out infinite alternate; } }
+@keyframes odoGlow { from { box-shadow: 0 0 0 rgba(227, 169, 43, 0); } to { box-shadow: 0 0 10px rgba(227, 169, 43, 0.8); } }
