@@ -1079,12 +1079,18 @@
     const [W, H] = SG[$('sg-size').value], c = $('sg-canvas'), x = c.getContext('2d'); c.width = W; c.height = H;
     const C = { ink: '#14110f', ink2: '#1e1a17', paper: '#efe6d2', dim: '#8f8471', mustard: '#e3a92b', red: '#b73b2c' };
     const fit = (t, font, size, max, min = 12) => { let z = size; do { x.font = font.replace('#', z); if (x.measureText(t).width <= max) break; z -= 2; } while (z > min); return z; };
-    const wide = W > H, P = Math.round(Math.min(W, H) * 0.065);
+    const wide = W > H, tall = H > W, P = Math.round(Math.min(W, H) * 0.065), M = Math.min(W, H);
+    // Stories: Instagram/TikTok cover the top and bottom ~10% with their own buttons, so keep text out of there
+    const safe = tall ? Math.round(H * 0.09) : 0;
+    const LINKS = ['twitch.tv/dismeigh', 'denizen-dismeigh.com'];
+    // Two lines (stacked) for stories and the wide layout's left column, one line for square
+    const stacked = tall || wide, fz = Math.round(M * (tall ? 0.036 : wide ? 0.034 : 0.032)), lineH = fz * 1.45;
+    const foot = stacked ? lineH * 2 : lineH;
     x.fillStyle = C.ink; x.fillRect(0, 0, W, H);
     // Header
     const days = Array.from({ length: 7 }, (_, i) => { const d = plusDays(wk.start, i); return { d, ev: (wk.events || []).filter(e => etDay(e.start) === d) }; });
-    const hx = P, hy = P, hw = wide ? W * 0.34 : W - 2 * P;
-    const av = wide ? hw * 0.55 : Math.min(W, H) * (H > W ? 0.2 : 0.16);
+    const hx = P, hy = P + safe, hw = wide ? W * 0.34 : W - 2 * P;
+    const av = wide ? Math.min(hw * 0.5, H * 0.3) : M * (tall ? 0.22 : 0.16);
     x.textAlign = 'left'; x.textBaseline = 'alphabetic';
     x.fillStyle = C.mustard; x.font = `${Math.round(av * 0.16)}px "Special Elite", monospace`;
     const kick = 'STREAM SCHEDULE', range = `${short(days[0].d)} – ${short(days[6].d)}`;
@@ -1100,12 +1106,19 @@
       x.fillStyle = C.dim; x.font = `${Math.round(av * 0.15)}px "Special Elite", monospace`; x.fillText(range, hx, y + av * 0.24);
     }
     // Rows
-    const foot = Math.min(W, H) * 0.07;
-    const rx = wide ? W * 0.42 : P, rw = W - P - rx, ry = wide ? P : hy + av + (H > W ? P * 2.2 : P * 1.6), rh = (H - P - foot - ry) / 7;
+    const rx = wide ? W * 0.42 : P, rw = W - P - rx, ry = wide ? P : hy + av + P * 1.6;
+    const rowsEnd = wide ? H - P : H - safe - P * (tall ? 0.9 : 0.6) - foot, rh = (rowsEnd - ry) / 7;
+    // Titles wrap to two lines when the rows are tall enough (stories), otherwise they get a … at the end
+    const wrap = (t, max, lines) => {
+      const words = t.split(/\s+/), out = []; let cur = '';
+      for (const w of words) { const next = cur ? `${cur} ${w}` : w; if (x.measureText(next).width <= max || !cur) cur = next; else { out.push(cur); cur = w; } }
+      out.push(cur);
+      const keep = out.slice(0, lines); if (out.length > lines) keep[lines - 1] += '…';
+      return keep.map(l => { while (x.measureText(l).width > max && l.length > 4) l = l.slice(0, -2).trimEnd() + '…'; return l.replace(/……$/, '…'); });
+    };
     // Slabs: under the header, never across the text
-    const M = Math.min(W, H);
     x.save();
-    if (wide) { x.beginPath(); x.rect(0, 0, rx - P * 0.6, H); x.clip(); x.translate(0, H - P - foot - M * 0.02); x.rotate(-0.05); }
+    if (wide) { x.beginPath(); x.rect(0, 0, rx - P * 0.6, H); x.clip(); x.translate(0, H - P - foot - M * 0.05); x.rotate(-0.05); }
     else { x.translate(0, ry - P * 0.55); x.rotate(-0.025); }
     x.fillStyle = C.mustard; x.fillRect(-W * 0.2, 0, W * 1.5, M * 0.026); x.fillStyle = C.red; x.fillRect(-W * 0.2, M * 0.026, W * 1.5, M * 0.012); x.restore();
     days.forEach((day, i) => {
@@ -1113,18 +1126,33 @@
       x.fillStyle = i % 2 ? C.ink : C.ink2; x.fillRect(rx, y, rw, rh - 4);
       if (on) { x.fillStyle = C.mustard; x.fillRect(rx, y, 8, rh - 4); }
       const dn = new Date(`${day.d}T12:00:00Z`).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short' }).toUpperCase();
-      x.fillStyle = on ? C.mustard : C.dim; x.font = `${Math.round(rh * 0.38)}px Anton, Impact, sans-serif`; x.fillText(dn, rx + rh * 0.35, y + rh * 0.5);
-      x.font = `${Math.round(rh * 0.2)}px "Special Elite", monospace`; x.fillStyle = C.dim; x.fillText(short(day.d), rx + rh * 0.35, y + rh * 0.78);
-      const tx = rx + rh * 1.75, tw = rw - (tx - rx) - rh * 0.3;
-      if (!on) { x.fillStyle = C.dim; x.font = `${Math.round(rh * 0.28)}px "Special Elite", monospace`; x.fillText('Off', tx, y + rh * 0.6); return; }
+      // rk: row size for widths and the day label, capped so tall story rows don't eat the title space
+      const rk = Math.min(rh, M * 0.13), mid = y + rh / 2;
+      x.fillStyle = on ? C.mustard : C.dim; x.font = `${Math.round(rk * 0.38)}px Anton, Impact, sans-serif`; x.fillText(dn, rx + rk * 0.35, mid);
+      x.font = `${Math.round(rk * 0.2)}px "Special Elite", monospace`; x.fillStyle = C.dim; x.fillText(short(day.d), rx + rk * 0.35, mid + rk * 0.28);
+      const tx = rx + rk * 1.75, tw = rw - (tx - rx) - rk * 0.3;
+      if (!on) { x.fillStyle = C.dim; x.font = `${Math.round(rk * 0.28)}px "Special Elite", monospace`; x.fillText('Off', tx, mid + rk * 0.1); return; }
       const e = day.ev[0], more = day.ev.length > 1 ? `  +${day.ev.length - 1} more` : '';
-      x.fillStyle = C.mustard; x.font = `${Math.round(rh * 0.24)}px "Special Elite", monospace`; x.fillText(etTime(e.start) + ' ET' + more, tx, y + rh * 0.38);
-      x.fillStyle = C.paper; let t = e.title;
-      x.font = `800 ${Math.round(rh * (wide ? 0.22 : 0.24))}px "Work Sans", sans-serif`; while (x.measureText(t).width > tw && t.length > 4) t = t.slice(0, -2).trimEnd() + '…';
-      x.fillText(t, tx, y + rh * 0.74);
+      // Stories wrap long titles to two lines; square and wide shrink the title a little before cutting it off
+      const two = tall, tz = two ? Math.round(rk * 0.21) : fit(e.title, '800 #px "Work Sans", sans-serif', Math.round(rh * (wide ? 0.22 : 0.24)), tw, Math.round(rh * 0.17));
+      x.font = `800 ${tz}px "Work Sans", sans-serif`; const lines = wrap(e.title, tw, two ? 2 : 1);
+      const tmz = Math.round(rk * (two ? 0.2 : 0.24)), block = tmz + tz * 0.35 + lines.length * tz * 1.2 - tz * 0.2;
+      const timeY = two ? mid - block / 2 + tmz - tz * 0.12 : y + rh * 0.38, firstY = two ? timeY + tz * 0.35 + tz * 1.05 : y + rh * 0.74;
+      x.fillStyle = C.mustard; x.font = `${tmz}px "Special Elite", monospace`; x.fillText(etTime(e.start) + ' ET' + more, tx, timeY);
+      x.fillStyle = C.paper; x.font = `800 ${tz}px "Work Sans", sans-serif`; lines.forEach((l, k) => x.fillText(l, tx, firstY + k * tz * 1.2));
     });
-    x.fillStyle = C.paper; x.font = `${Math.round(foot * 0.42)}px "Special Elite", monospace`; x.textAlign = wide ? 'left' : 'center';
-    x.fillText('twitch.tv/dismeigh', wide ? hx : W / 2, H - P * 0.6 - foot * 0.2);
+    // Footer: Twitch and the website (stacked on stories and wide, side by side on square)
+    const fx = wide ? hx : W / 2, base = H - safe - P * (wide ? 1 : 0.6) - fz * 0.3; x.textAlign = wide ? 'left' : 'center';
+    const footFont = z => `${z}px "Special Elite", monospace`;
+    if (stacked) {
+      const z = Math.min(fz, fit(LINKS[1], footFont('#'), fz, (wide ? hw : W - 2 * P)));
+      x.font = footFont(z); x.fillStyle = C.paper; x.fillText(LINKS[0], fx, base - lineH); x.fillStyle = C.mustard; x.fillText(LINKS[1], fx, base);
+    } else {
+      const sep = '   \u2022   ', z = fit(LINKS.join(sep), footFont('#'), fz, W - 2 * P); x.font = footFont(z);
+      const w0 = x.measureText(LINKS[0] + sep).width, total = x.measureText(LINKS.join(sep)).width; let lx = W / 2 - total / 2; x.textAlign = 'left';
+      x.fillStyle = C.paper; x.fillText(LINKS[0], lx, base); x.fillStyle = C.dim; x.fillText(sep, lx + x.measureText(LINKS[0]).width, base);
+      x.fillStyle = C.mustard; x.fillText(LINKS[1], lx + w0, base);
+    }
   }
   const sgReady = Promise.all([document.fonts.load('40px Anton'), document.fonts.load('20px "Special Elite"'), document.fonts.load('800 20px "Work Sans"'),
     new Promise(res => { const i = new Image(); i.onload = () => { sgAvatar = i; res(); }; i.onerror = res; i.src = '/avatar-420.jpg?v=2'; })]).catch(() => {});
