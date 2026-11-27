@@ -1008,9 +1008,8 @@ try { localStorage.removeItem('dismeigh-lang'); } catch {}
   }
   const check = async () => {
     try {
-      const r = await fetch(`https://decapi.me/twitch/uptime/dismeigh?t=${Date.now()}`, { cache: 'no-store' });
-      const t = (await r.text()).trim().toLowerCase();
-      set(r.ok && !!t && !/offline|not live|not currently|error|not found/.test(t));
+      const r = await fetch('/api/live', { cache: 'no-store' });
+      if (r.ok) set(!!(await r.json()).live);
     } catch {}
   };
   if (new URLSearchParams(location.search).has('livefavicon')) set(true);

@@ -35,6 +35,13 @@ Redeploy once after adding the variable. Every push to `main` deploys automatica
 
 `www.denizen-dismeigh.com` and `denizen-dismeigh.com` are connected as custom domains on the Pages project (project name `online-portfolio`). The site moved off GitHub Pages in November 2026.
 
+## Twitch live status
+
+`/api/live` (`functions/api/live.js`, `lib/twitch.js`) tells the site, the go-live alerts and the dashboard health light whether Dismeigh is live.
+It asks Twitch directly when these two secrets are set, and falls back to decapi.me otherwise:
+
+- `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`: from a free app at dev.twitch.tv/console (Register Your Application, OAuth redirect `http://localhost`, category Website Integration, client type Confidential).
+
 ## Stream schedule
 
 Add, move or cancel streams in the Calendar.online calendar. The site picks up changes within about five minutes. It shows the next stream (or "On Now" while one is running) and up to four more in the next 90 days, in Eastern time.

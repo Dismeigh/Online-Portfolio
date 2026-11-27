@@ -707,7 +707,6 @@
     // Twitch live/offline status
     const streamStatus = document.getElementById('stream-status');
     const streamStatusCopy = document.getElementById('stream-status-copy');
-    const twitchStatusUrl = 'https://decapi.me/twitch/uptime/dismeigh';
 
     function setStreamStatus(state, message) {
       streamStatus.classList.remove('is-live', 'is-offline', 'is-checking');
@@ -715,17 +714,16 @@
       streamStatusCopy.textContent = message;
     }
 
+    // /api/live: the site's own Twitch check (functions/api/live.js)
     async function refreshStreamStatus() {
       setStreamStatus('checking', 'Checking the signal...');
 
       try {
-        const response = await fetch(`${twitchStatusUrl}?t=${Date.now()}`, { cache: 'no-store' });
-        const rawText = (await response.text()).trim();
-        const text = rawText.toLowerCase();
-        const isOffline = text.includes('offline') || text.includes('not live') || text.includes('not currently');
+        const response = await fetch('/api/live', { cache: 'no-store' });
+        const data = response.ok ? await response.json() : null;
 
-        if (response.ok && !isOffline) {
-          window.dispatchEvent(new CustomEvent('dismeigh:uptime', { detail: rawText }));
+        if (data && data.live) {
+          window.dispatchEvent(new CustomEvent('dismeigh:uptime', { detail: data }));
           setStreamStatus('live', 'Live now. Come watch the questionable decisions happen in real time.');
         } else {
           setStreamStatus('offline', 'Probably cooking something');
@@ -1217,13 +1215,6 @@
     // Now playing: game + time live, shown in the on-air bar
     const detail = document.getElementById('onair-detail');
     let liveSince = null, liveGame = '';
-    const parseUptime = text => {
-      let secs = 0;
-      for (const [, n, unit] of text.matchAll(/(\d+)\s*(day|hour|minute|second)/gi)) {
-        secs += Number(n) * { day: 86400, hour: 3600, minute: 60, second: 1 }[unit.toLowerCase()];
-      }
-      return secs;
-    };
     const renderDetail = () => {
       if (!liveSince) { detail.hidden = true; bar.classList.remove('has-detail'); return; }
       const mins = Math.max(0, Math.floor((Date.now() - liveSince) / 60000));
@@ -1233,14 +1224,12 @@
       detail.hidden = false;
       bar.classList.add('has-detail');
     };
-    window.addEventListener('dismeigh:uptime', async e => {
-      const secs = parseUptime(e.detail || '');
-      liveSince = secs ? Date.now() - secs * 1000 : Date.now();
-      try {
-        const r = await fetch('https://decapi.me/twitch/game/dismeigh', { cache: 'no-store' });
-        const g = r.ok ? (await r.text()).trim() : '';
-        liveGame = g && g.length < 80 && !/error|not found|offline/i.test(g) ? g : '';
-      } catch { liveGame = ''; }
+    window.addEventListener('dismeigh:uptime', e => {
+      const d = e.detail || {};
+      const started = Date.parse(d.startedAt || '');
+      liveSince = Number.isFinite(started) ? started : Date.now();
+      const g = typeof d.game === 'string' ? d.game.trim() : '';
+      liveGame = g && g.length < 80 ? g : '';
       renderDetail();
       // Shared with crew.js so it can spot a crew member live in the same game ("Co-op in progress")
       window.dismeighLiveGame = liveGame;
@@ -1578,7 +1567,7 @@
   <script src="/log.js?v=7" defer></script>
   <script src="/crew.js?v=6" defer></script>
   <script src="/suggest.js?v=1" defer></script>
-  <script src="/app.js?v=75" defer></script>
+  <script src="/app.js?v=76" defer></script>
   <script src="/goal.js?v=2" defer></script>
   <script>
   // Clip captions (typed in the dashboard: Content, Clip captions) become a CC track on each clip
